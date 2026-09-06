@@ -1,7 +1,7 @@
 package service
 
 import (
-	"github.com/go-kratos/kratos-layout/internal/support/commerce/biz/payment"
+	"cqrs/internal/support/commerce/biz/payment"
 )
 
 // PaymentService is a payment service.

@@ -1,8 +1,8 @@
 package course
 
 import (
-	"github.com/go-kratos/kratos-layout/internal/core/teaching/biz/teacher"
-	"github.com/go-kratos/kratos-layout/internal/core/venue/biz/classroom"
+	"cqrs/internal/core/teaching/biz/teacher"
+	"cqrs/internal/core/venue/biz/classroom"
 )
 
 // CourseUsecase is the course usecase.

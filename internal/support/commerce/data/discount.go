@@ -3,8 +3,8 @@ package data
 import (
 	"context"
 
-	"github.com/go-kratos/kratos-layout/internal/support/commerce/biz/discount"
-	"github.com/go-kratos/kratos-layout/internal/shared/types"
+	"cqrs/internal/support/commerce/biz/discount"
+	"cqrs/internal/shared/types"
 
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 )

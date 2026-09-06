@@ -3,10 +3,10 @@ package venue
 import (
 	"github.com/google/wire"
 
-	"github.com/go-kratos/kratos-layout/internal/core/venue/biz/classroom"
-	"github.com/go-kratos/kratos-layout/internal/core/venue/data"
-	"github.com/go-kratos/kratos-layout/internal/core/venue/server"
-	"github.com/go-kratos/kratos-layout/internal/core/venue/service"
+	"cqrs/internal/core/venue/biz/classroom"
+	"cqrs/internal/core/venue/data"
+	"cqrs/internal/core/venue/server"
+	"cqrs/internal/core/venue/service"
 )
 
 // Servers is an alias for server.Servers.

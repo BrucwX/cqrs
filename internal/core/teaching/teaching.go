@@ -3,13 +3,13 @@ package teaching
 import (
 	"github.com/google/wire"
 
-	"github.com/go-kratos/kratos-layout/internal/core/teaching/biz"
-	"github.com/go-kratos/kratos-layout/internal/core/teaching/biz/course"
-	"github.com/go-kratos/kratos-layout/internal/core/teaching/biz/student"
-	"github.com/go-kratos/kratos-layout/internal/core/teaching/biz/teacher"
-	"github.com/go-kratos/kratos-layout/internal/core/teaching/data"
-	"github.com/go-kratos/kratos-layout/internal/core/teaching/server"
-	"github.com/go-kratos/kratos-layout/internal/core/teaching/service"
+	"cqrs/internal/core/teaching/biz"
+	"cqrs/internal/core/teaching/biz/course"
+	"cqrs/internal/core/teaching/biz/student"
+	"cqrs/internal/core/teaching/biz/teacher"
+	"cqrs/internal/core/teaching/data"
+	"cqrs/internal/core/teaching/server"
+	"cqrs/internal/core/teaching/service"
 )
 
 // Servers is an alias for server.Servers.

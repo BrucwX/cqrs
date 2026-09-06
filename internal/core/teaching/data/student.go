@@ -3,8 +3,8 @@ package data
 import (
 	"context"
 
-	"github.com/go-kratos/kratos-layout/internal/core/teaching/biz/student"
-	"github.com/go-kratos/kratos-layout/internal/shared/types"
+	"cqrs/internal/core/teaching/biz/student"
+	"cqrs/internal/shared/types"
 )
 
 type studentRepo struct {

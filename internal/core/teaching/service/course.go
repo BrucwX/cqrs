@@ -1,7 +1,7 @@
 package service
 
 import (
-	"github.com/go-kratos/kratos-layout/internal/core/teaching/biz/course"
+	"cqrs/internal/core/teaching/biz/course"
 )
 
 // CourseService is a course service.

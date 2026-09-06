@@ -3,7 +3,7 @@ package classroom
 import (
 	"context"
 
-	"github.com/go-kratos/kratos-layout/internal/shared/types"
+	"cqrs/internal/shared/types"
 )
 
 // ClassroomRepo defines the classroom repository interface.

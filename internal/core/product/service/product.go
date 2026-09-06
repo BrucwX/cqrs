@@ -1,7 +1,7 @@
 package service
 
 import (
-	"github.com/go-kratos/kratos-layout/internal/core/product/biz/product"
+	"cqrs/internal/core/product/biz/product"
 )
 
 // ProductService is a product service.

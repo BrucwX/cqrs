@@ -3,8 +3,8 @@ package data
 import (
 	"context"
 
-	"github.com/go-kratos/kratos-layout/internal/support/commerce/biz/payment"
-	"github.com/go-kratos/kratos-layout/internal/shared/types"
+	"cqrs/internal/support/commerce/biz/payment"
+	"cqrs/internal/shared/types"
 )
 
 type paymentRepo struct {

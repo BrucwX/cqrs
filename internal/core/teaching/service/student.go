@@ -1,7 +1,7 @@
 package service
 
 import (
-	"github.com/go-kratos/kratos-layout/internal/core/teaching/biz/student"
+	"cqrs/internal/core/teaching/biz/student"
 )
 
 // StudentService is a student service.

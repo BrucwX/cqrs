@@ -3,7 +3,7 @@ package student
 import (
 	"context"
 
-	"github.com/go-kratos/kratos-layout/internal/shared/types"
+	"cqrs/internal/shared/types"
 )
 
 // StudentRepo defines the student repository interface.

@@ -3,7 +3,7 @@ package biz
 import (
 	"context"
 
-	"github.com/go-kratos/kratos-layout/internal/core/teaching/biz/course"
+	"cqrs/internal/core/teaching/biz/course"
 )
 
 // CourseFinder queries existing courses to build conflict-candidate sets for

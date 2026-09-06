@@ -1,7 +1,7 @@
 package service
 
 import (
-	"github.com/go-kratos/kratos-layout/internal/core/venue/biz/classroom"
+	"cqrs/internal/core/venue/biz/classroom"
 )
 
 // ClassroomService is a classroom service.

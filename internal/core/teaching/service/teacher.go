@@ -1,7 +1,7 @@
 package service
 
 import (
-	"github.com/go-kratos/kratos-layout/internal/core/teaching/biz/teacher"
+	"cqrs/internal/core/teaching/biz/teacher"
 )
 
 // TeacherService is a teacher service.

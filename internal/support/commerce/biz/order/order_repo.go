@@ -3,7 +3,7 @@ package order
 import (
 	"context"
 
-	"github.com/go-kratos/kratos-layout/internal/shared/types"
+	"cqrs/internal/shared/types"
 )
 
 // OrderRepo defines the order repository interface.

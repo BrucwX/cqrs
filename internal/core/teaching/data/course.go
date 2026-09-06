@@ -3,8 +3,8 @@ package data
 import (
 	"context"
 
-	"github.com/go-kratos/kratos-layout/internal/core/teaching/biz/course"
-	"github.com/go-kratos/kratos-layout/internal/shared/types"
+	"cqrs/internal/core/teaching/biz/course"
+	"cqrs/internal/shared/types"
 
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 )

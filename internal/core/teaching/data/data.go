@@ -1,7 +1,7 @@
 package data
 
 import (
-	"github.com/go-kratos/kratos-layout/internal/conf"
+	"cqrs/internal/conf"
 
 	"github.com/go-kratos/kratos/v3/log"
 	"github.com/google/wire"

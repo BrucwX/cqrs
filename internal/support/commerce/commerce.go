@@ -3,11 +3,11 @@ package commerce
 import (
 	"github.com/google/wire"
 
-	"github.com/go-kratos/kratos-layout/internal/support/commerce/biz/discount"
-	"github.com/go-kratos/kratos-layout/internal/support/commerce/biz/payment"
-	"github.com/go-kratos/kratos-layout/internal/support/commerce/data"
-	"github.com/go-kratos/kratos-layout/internal/support/commerce/server"
-	"github.com/go-kratos/kratos-layout/internal/support/commerce/service"
+	"cqrs/internal/support/commerce/biz/discount"
+	"cqrs/internal/support/commerce/biz/payment"
+	"cqrs/internal/support/commerce/data"
+	"cqrs/internal/support/commerce/server"
+	"cqrs/internal/support/commerce/service"
 )
 
 // Servers is an alias for server.Servers.

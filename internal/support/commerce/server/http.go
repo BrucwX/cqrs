@@ -1,8 +1,8 @@
 package server
 
 import (
-	"github.com/go-kratos/kratos-layout/internal/conf"
-	"github.com/go-kratos/kratos-layout/internal/support/commerce/service"
+	"cqrs/internal/conf"
+	"cqrs/internal/support/commerce/service"
 
 	"github.com/go-kratos/kratos/v3/middleware/recovery"
 	"github.com/go-kratos/kratos/v3/transport/http"

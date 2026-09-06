@@ -3,10 +3,10 @@ package product
 import (
 	"github.com/google/wire"
 
-	"github.com/go-kratos/kratos-layout/internal/core/product/biz/product"
-	"github.com/go-kratos/kratos-layout/internal/core/product/data"
-	"github.com/go-kratos/kratos-layout/internal/core/product/server"
-	"github.com/go-kratos/kratos-layout/internal/core/product/service"
+	"cqrs/internal/core/product/biz/product"
+	"cqrs/internal/core/product/data"
+	"cqrs/internal/core/product/server"
+	"cqrs/internal/core/product/service"
 )
 
 // Servers is an alias for server.Servers.

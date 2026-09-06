@@ -1,10 +1,10 @@
 package server
 
 import (
-	"github.com/go-kratos/kratos-layout/internal/support/commerce"
-	"github.com/go-kratos/kratos-layout/internal/core/product"
-	"github.com/go-kratos/kratos-layout/internal/core/teaching"
-	"github.com/go-kratos/kratos-layout/internal/core/venue"
+	"cqrs/internal/support/commerce"
+	"cqrs/internal/core/product"
+	"cqrs/internal/core/teaching"
+	"cqrs/internal/core/venue"
 
 	"github.com/go-kratos/kratos/v3/transport"
 	"github.com/google/wire"

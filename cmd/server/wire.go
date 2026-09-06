@@ -8,12 +8,12 @@ package main
 import (
 	"log/slog"
 
-	"github.com/go-kratos/kratos-layout/internal/conf"
-	"github.com/go-kratos/kratos-layout/internal/support/commerce"
-	"github.com/go-kratos/kratos-layout/internal/core/product"
-	"github.com/go-kratos/kratos-layout/internal/core/teaching"
-	"github.com/go-kratos/kratos-layout/internal/core/venue"
-	"github.com/go-kratos/kratos-layout/internal/server"
+	"cqrs/internal/conf"
+	"cqrs/internal/support/commerce"
+	"cqrs/internal/core/product"
+	"cqrs/internal/core/teaching"
+	"cqrs/internal/core/venue"
+	"cqrs/internal/server"
 
 	"github.com/go-kratos/kratos/v3"
 	"github.com/google/wire"

@@ -1,4 +1,4 @@
-module github.com/go-kratos/kratos-layout
+module cqrs
 
 go 1.25.7
 

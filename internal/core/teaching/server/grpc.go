@@ -1,8 +1,8 @@
 package server
 
 import (
-	"github.com/go-kratos/kratos-layout/internal/conf"
-	"github.com/go-kratos/kratos-layout/internal/core/teaching/service"
+	"cqrs/internal/conf"
+	"cqrs/internal/core/teaching/service"
 
 	"github.com/go-kratos/kratos/v3/middleware/recovery"
 	"github.com/go-kratos/kratos/v3/transport/grpc"

@@ -3,7 +3,7 @@ package biz
 import (
 	"context"
 
-	"github.com/go-kratos/kratos-layout/internal/core/teaching/biz/course"
+	"cqrs/internal/core/teaching/biz/course"
 )
 
 // ScheduleValidator validates schedule conflicts across aggregates.

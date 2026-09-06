@@ -3,7 +3,7 @@ package teacher
 import (
 	"context"
 
-	"github.com/go-kratos/kratos-layout/internal/shared/types"
+	"cqrs/internal/shared/types"
 )
 
 // TeacherRepo defines the teacher repository interface.
