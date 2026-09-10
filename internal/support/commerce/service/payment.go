@@ -1,15 +1,13 @@
 package service
 
-import (
-	"cqrs/internal/support/commerce/biz/payment"
-)
+import "cqrs/internal/support/commerce/app/command"
 
 // PaymentService is a payment service.
 type PaymentService struct {
-	uc *payment.PaymentUsecase
+	uc *command.PaymentUsecase
 }
 
 // NewPaymentService creates a new PaymentService.
-func NewPaymentService(uc *payment.PaymentUsecase) *PaymentService {
+func NewPaymentService(uc *command.PaymentUsecase) *PaymentService {
 	return &PaymentService{uc: uc}
 }

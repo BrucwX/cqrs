@@ -1,15 +1,13 @@
 package service
 
-import (
-	"cqrs/internal/core/product/biz/product"
-)
+import "cqrs/internal/core/product/app/command"
 
 // ProductService is a product service.
 type ProductService struct {
-	uc *product.ProductUsecase
+	uc *command.ProductUsecase
 }
 
 // NewProductService creates a new ProductService.
-func NewProductService(uc *product.ProductUsecase) *ProductService {
+func NewProductService(uc *command.ProductUsecase) *ProductService {
 	return &ProductService{uc: uc}
 }

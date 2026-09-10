@@ -9,11 +9,10 @@ import (
 	"log/slog"
 
 	"cqrs/internal/conf"
-	"cqrs/internal/support/commerce"
 	"cqrs/internal/core/product"
 	"cqrs/internal/core/teaching"
-	"cqrs/internal/core/venue"
 	"cqrs/internal/server"
+	"cqrs/internal/support/commerce"
 
 	"github.com/go-kratos/kratos/v3"
 	"github.com/google/wire"
@@ -23,7 +22,6 @@ import (
 func wireApp(*conf.Server, *conf.Data, *slog.Logger) (*kratos.App, func(), error) {
 	panic(wire.Build(
 		teaching.ProviderSet,
-		venue.ProviderSet,
 		product.ProviderSet,
 		commerce.ProviderSet,
 		server.ProviderSet,

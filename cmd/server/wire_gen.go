@@ -8,26 +8,19 @@ package main
 
 import (
 	"cqrs/internal/conf"
-	"cqrs/internal/support/commerce/biz/discount"
-	"cqrs/internal/support/commerce/biz/payment"
-	data4 "cqrs/internal/support/commerce/data"
-	server4 "cqrs/internal/support/commerce/server"
-	service4 "cqrs/internal/support/commerce/service"
-	"cqrs/internal/core/product/biz/product"
-	data3 "cqrs/internal/core/product/data"
-	server3 "cqrs/internal/core/product/server"
-	service3 "cqrs/internal/core/product/service"
-	"cqrs/internal/core/teaching/biz/course"
-	"cqrs/internal/core/teaching/biz/student"
-	"cqrs/internal/core/teaching/biz/teacher"
-	"cqrs/internal/core/teaching/data"
-	"cqrs/internal/core/teaching/server"
+	"cqrs/internal/core/product/adapters/memory"
+	"cqrs/internal/core/product/adapters/memory/command"
+	command2 "cqrs/internal/core/product/app/command"
+	ports2 "cqrs/internal/core/product/ports"
+	service2 "cqrs/internal/core/product/service"
+	"cqrs/internal/core/teaching/ports"
 	"cqrs/internal/core/teaching/service"
-	"cqrs/internal/core/venue/biz/classroom"
-	data2 "cqrs/internal/core/venue/data"
-	server2 "cqrs/internal/core/venue/server"
-	service2 "cqrs/internal/core/venue/service"
-	server5 "cqrs/internal/server"
+	"cqrs/internal/server"
+	memory2 "cqrs/internal/support/commerce/adapters/memory"
+	command3 "cqrs/internal/support/commerce/adapters/memory/command"
+	command4 "cqrs/internal/support/commerce/app/command"
+	ports3 "cqrs/internal/support/commerce/ports"
+	service3 "cqrs/internal/support/commerce/service"
 	"github.com/go-kratos/kratos/v3"
 	"log/slog"
 )
@@ -39,67 +32,40 @@ import (
 // Injectors from wire.go:
 
 // wireApp init kratos application.
-func wireApp(confServer *conf.Server, confData *conf.Data, logger *slog.Logger) (*kratos.App, func(), error) {
-	dataData, cleanup, err := data.NewData(confData)
+func wireApp(confServer *conf.Server, data *conf.Data, logger *slog.Logger) (*kratos.App, func(), error) {
+	teacherService := service.NewTeacherService()
+	studentService := service.NewStudentService()
+	courseService := service.NewCourseService()
+	httpServer := ports.NewHTTPServer(confServer, teacherService, studentService, courseService)
+	grpcServer := ports.NewGRPCServer(confServer, teacherService, studentService, courseService)
+	v := ports.NewServers(httpServer, grpcServer)
+	memoryData, cleanup, err := memory.NewData(data)
 	if err != nil {
 		return nil, nil, err
 	}
-	teacherRepo := data.NewTeacherRepo(dataData)
-	teacherUsecase := teacher.NewTeacherUsecase(teacherRepo)
-	teacherService := service.NewTeacherService(teacherUsecase)
-	studentRepo := data.NewStudentRepo(dataData)
-	studentUsecase := student.NewStudentUsecase(studentRepo)
-	studentService := service.NewStudentService(studentUsecase)
-	courseRepo := data.NewCourseRepo(dataData)
-	data5, cleanup2, err := data2.NewData(confData)
+	productRepo := command.NewProductRepo(memoryData)
+	productUsecase := command2.NewProductUsecase(productRepo)
+	productService := service2.NewProductService(productUsecase)
+	portsHTTPServer := ports2.NewHTTPServer(confServer, productService)
+	portsGRPCServer := ports2.NewGRPCServer(confServer, productService)
+	v2 := ports2.NewServers(portsHTTPServer, portsGRPCServer)
+	data2, cleanup2, err := memory2.NewData(data)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
 	}
-	classroomRepo := data2.NewClassroomRepo(data5)
-	courseUsecase := course.NewCourseUsecase(courseRepo, teacherRepo, classroomRepo)
-	courseService := service.NewCourseService(courseUsecase)
-	httpServer := server.NewHTTPServer(confServer, teacherService, studentService, courseService)
-	grpcServer := server.NewGRPCServer(confServer, teacherService, studentService, courseService)
-	v := server.NewServers(httpServer, grpcServer)
-	classroomUsecase := classroom.NewClassroomUsecase(classroomRepo)
-	classroomService := service2.NewClassroomService(classroomUsecase)
-	serverHTTPServer := server2.NewHTTPServer(confServer, classroomService)
-	serverGRPCServer := server2.NewGRPCServer(confServer, classroomService)
-	v2 := server2.NewServers(serverHTTPServer, serverGRPCServer)
-	data6, cleanup3, err := data3.NewData(confData)
-	if err != nil {
-		cleanup2()
-		cleanup()
-		return nil, nil, err
-	}
-	productRepo := data3.NewProductRepo(data6)
-	productUsecase := product.NewProductUsecase(productRepo)
-	productService := service3.NewProductService(productUsecase)
-	httpServer2 := server3.NewHTTPServer(confServer, productService)
-	grpcServer2 := server3.NewGRPCServer(confServer, productService)
-	v3 := server3.NewServers(httpServer2, grpcServer2)
-	data7, cleanup4, err := data4.NewData(confData)
-	if err != nil {
-		cleanup3()
-		cleanup2()
-		cleanup()
-		return nil, nil, err
-	}
-	paymentRepo := data4.NewPaymentRepo(data7)
-	paymentUsecase := payment.NewPaymentUsecase(paymentRepo)
-	paymentService := service4.NewPaymentService(paymentUsecase)
-	discountRepo := data4.NewDiscountRepo(data7)
-	discountUsecase := discount.NewDiscountUsecase(discountRepo)
-	discountService := service4.NewDiscountService(discountUsecase)
-	httpServer3 := server4.NewHTTPServer(confServer, paymentService, discountService)
-	grpcServer3 := server4.NewGRPCServer(confServer, paymentService, discountService)
-	v4 := server4.NewServers(httpServer3, grpcServer3)
-	servers := server5.NewServers(v, v2, v3, v4)
+	paymentRepo := command3.NewPaymentRepo(data2)
+	paymentUsecase := command4.NewPaymentUsecase(paymentRepo)
+	paymentService := service3.NewPaymentService(paymentUsecase)
+	discountRepo := command3.NewDiscountRepo(data2)
+	discountUsecase := command4.NewDiscountUsecase(discountRepo)
+	discountService := service3.NewDiscountService(discountUsecase)
+	httpServer2 := ports3.NewHTTPServer(confServer, paymentService, discountService)
+	grpcServer2 := ports3.NewGRPCServer(confServer, paymentService, discountService)
+	v3 := ports3.NewServers(httpServer2, grpcServer2)
+	servers := server.NewServers(v, v2, v3)
 	app := newApp(logger, servers)
 	return app, func() {
-		cleanup4()
-		cleanup3()
 		cleanup2()
 		cleanup()
 	}, nil
