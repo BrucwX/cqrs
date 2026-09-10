@@ -6,3 +6,8 @@ import "cqrs/internal/core/course_scheduling/domain/repo/query"
 type Handler struct {
 	Query query.StudentQuery
 }
+
+// NewHandler 创建学员查询处理器
+func NewHandler(q query.StudentQuery) *Handler {
+	return &Handler{Query: q}
+}

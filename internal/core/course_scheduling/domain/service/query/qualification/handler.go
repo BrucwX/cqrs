@@ -6,3 +6,8 @@ import "cqrs/internal/core/course_scheduling/domain/repo/query"
 type Handler struct {
 	Query query.QualificationQuery
 }
+
+// NewHandler 创建授课资质查询处理器
+func NewHandler(q query.QualificationQuery) *Handler {
+	return &Handler{Query: q}
+}
