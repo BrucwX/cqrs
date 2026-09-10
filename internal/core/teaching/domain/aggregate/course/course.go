@@ -6,7 +6,6 @@ import "time"
 
 type Course struct {
 	id         string
-	isRetake   bool
 	capacity   Capacity
 	enrollment EnrollmentWindow
 	period     CoursePeriod
@@ -15,14 +14,12 @@ type Course struct {
 // 工厂方法创建 Course 聚合根
 func NewCourse(
 	id string,
-	isRetake bool,
 	capacity Capacity,
 	enrollment EnrollmentWindow,
 	period CoursePeriod,
 ) *Course {
 	return &Course{
 		id:         id,
-		isRetake:   isRetake,
 		capacity:   capacity,
 		enrollment: enrollment,
 		period:     period,
@@ -67,7 +64,6 @@ func (c *Course) RecordCompletedHours(hours int) error {
 // --- Getter（仅读，无 Setter）---
 
 func (c *Course) ID() string                   { return c.id }
-func (c *Course) IsRetake() bool               { return c.isRetake }
 func (c *Course) Capacity() Capacity           { return c.capacity }
 func (c *Course) Enrollment() EnrollmentWindow { return c.enrollment }
 func (c *Course) Period() CoursePeriod         { return c.period }
