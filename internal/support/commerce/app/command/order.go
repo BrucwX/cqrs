@@ -1,13 +1,17 @@
 package command
 
-import "cqrs/internal/support/commerce/domain/repo"
+import (
+	"cqrs/internal/support/commerce/domain/repo/command"
+	"cqrs/internal/support/commerce/domain/repo/query"
+)
 
 // OrderUsecase is the order usecase.
 type OrderUsecase struct {
-	Repo repo.OrderRepo
+	Query   query.OrderQuery
+	Command command.OrderCommand
 }
 
 // NewOrderUsecase creates a new OrderUsecase.
-func NewOrderUsecase(r repo.OrderRepo) *OrderUsecase {
-	return &OrderUsecase{Repo: r}
+func NewOrderUsecase(q query.OrderQuery, c command.OrderCommand) *OrderUsecase {
+	return &OrderUsecase{Query: q, Command: c}
 }

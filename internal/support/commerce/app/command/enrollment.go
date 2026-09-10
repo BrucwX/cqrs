@@ -1,13 +1,17 @@
 package command
 
-import "cqrs/internal/support/commerce/domain/repo"
+import (
+	"cqrs/internal/support/commerce/domain/repo/command"
+	"cqrs/internal/support/commerce/domain/repo/query"
+)
 
 // EnrollmentUsecase is the enrollment usecase.
 type EnrollmentUsecase struct {
-	Repo repo.EnrollmentRepo
+	Query   query.EnrollmentQuery
+	Command command.EnrollmentCommand
 }
 
 // NewEnrollmentUsecase creates a new EnrollmentUsecase.
-func NewEnrollmentUsecase(r repo.EnrollmentRepo) *EnrollmentUsecase {
-	return &EnrollmentUsecase{Repo: r}
+func NewEnrollmentUsecase(q query.EnrollmentQuery, c command.EnrollmentCommand) *EnrollmentUsecase {
+	return &EnrollmentUsecase{Query: q, Command: c}
 }

@@ -1,13 +1,17 @@
 package command
 
-import "cqrs/internal/core/product/domain/repo"
+import (
+	"cqrs/internal/core/product/domain/repo/command"
+	"cqrs/internal/core/product/domain/repo/query"
+)
 
 // ProductUsecase is the product usecase.
 type ProductUsecase struct {
-	Repo repo.ProductRepo
+	Query   query.ProductQuery
+	Command command.ProductCommand
 }
 
 // NewProductUsecase creates a new ProductUsecase.
-func NewProductUsecase(r repo.ProductRepo) *ProductUsecase {
-	return &ProductUsecase{Repo: r}
+func NewProductUsecase(q query.ProductQuery, c command.ProductCommand) *ProductUsecase {
+	return &ProductUsecase{Query: q, Command: c}
 }

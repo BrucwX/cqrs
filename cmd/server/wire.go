@@ -10,7 +10,7 @@ import (
 
 	"cqrs/internal/conf"
 	"cqrs/internal/core/product"
-	"cqrs/internal/core/teaching"
+	"cqrs/internal/core/course_scheduling"
 	"cqrs/internal/server"
 	"cqrs/internal/support/commerce"
 
@@ -21,7 +21,7 @@ import (
 // wireApp init kratos application.
 func wireApp(*conf.Server, *conf.Data, *slog.Logger) (*kratos.App, func(), error) {
 	panic(wire.Build(
-		teaching.ProviderSet,
+		course_scheduling.ProviderSet,
 		product.ProviderSet,
 		commerce.ProviderSet,
 		server.ProviderSet,

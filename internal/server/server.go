@@ -2,7 +2,7 @@ package server
 
 import (
 	"cqrs/internal/core/product"
-	"cqrs/internal/core/teaching"
+	"cqrs/internal/core/course_scheduling"
 	"cqrs/internal/support/commerce"
 
 	"github.com/go-kratos/kratos/v3/transport"
@@ -16,18 +16,18 @@ type Servers struct {
 
 // NewServers creates a Servers that aggregates all bounded context servers.
 func NewServers(
-	teaching *teaching.Servers,
+	courseScheduling *course_scheduling.Servers,
 	product *product.Servers,
 	commerce *commerce.Servers,
 ) *Servers {
 	return &Servers{
 		HTTP: []transport.Server{
-			teaching.HTTP,
+			courseScheduling.HTTP,
 			product.HTTP,
 			commerce.HTTP,
 		},
 		GRPC: []transport.Server{
-			teaching.GRPC,
+			courseScheduling.GRPC,
 			product.GRPC,
 			commerce.GRPC,
 		},

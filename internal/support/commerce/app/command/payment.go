@@ -1,13 +1,17 @@
 package command
 
-import "cqrs/internal/support/commerce/domain/repo"
+import (
+	"cqrs/internal/support/commerce/domain/repo/command"
+	"cqrs/internal/support/commerce/domain/repo/query"
+)
 
 // PaymentUsecase is the payment usecase.
 type PaymentUsecase struct {
-	Repo repo.PaymentRepo
+	Query   query.PaymentQuery
+	Command command.PaymentCommand
 }
 
 // NewPaymentUsecase creates a new PaymentUsecase.
-func NewPaymentUsecase(r repo.PaymentRepo) *PaymentUsecase {
-	return &PaymentUsecase{Repo: r}
+func NewPaymentUsecase(q query.PaymentQuery, c command.PaymentCommand) *PaymentUsecase {
+	return &PaymentUsecase{Query: q, Command: c}
 }

@@ -5,6 +5,7 @@ import (
 
 	"cqrs/internal/support/commerce/adapters/memory"
 	memorycmd "cqrs/internal/support/commerce/adapters/memory/command"
+	memoryquery "cqrs/internal/support/commerce/adapters/memory/query"
 	"cqrs/internal/support/commerce/app/command"
 	"cqrs/internal/support/commerce/ports"
 	"cqrs/internal/support/commerce/service"
@@ -14,11 +15,21 @@ import (
 var ProviderSet = wire.NewSet(
 	// adapter
 	memory.NewData,
-	memorycmd.NewPaymentRepo,
-	memorycmd.NewDiscountRepo,
+	// query adapters
+	memoryquery.NewDiscountQuery,
+	memoryquery.NewPaymentQuery,
+	memoryquery.NewEnrollmentQuery,
+	memoryquery.NewOrderQuery,
+	// command adapters
+	memorycmd.NewDiscountCommand,
+	memorycmd.NewPaymentCommand,
+	memorycmd.NewEnrollmentCommand,
+	memorycmd.NewOrderCommand,
 	// app
 	command.NewPaymentUsecase,
 	command.NewDiscountUsecase,
+	command.NewEnrollmentUsecase,
+	command.NewOrderUsecase,
 	// service
 	service.NewPaymentService,
 	service.NewDiscountService,

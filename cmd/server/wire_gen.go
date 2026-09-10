@@ -9,15 +9,17 @@ package main
 import (
 	"cqrs/internal/conf"
 	"cqrs/internal/core/product/adapters/memory"
-	"cqrs/internal/core/product/adapters/memory/command"
+	memorycmd2 "cqrs/internal/core/product/adapters/memory/command"
+	memoryquery "cqrs/internal/core/product/adapters/memory/query"
 	command2 "cqrs/internal/core/product/app/command"
 	ports2 "cqrs/internal/core/product/ports"
 	service2 "cqrs/internal/core/product/service"
-	"cqrs/internal/core/teaching/ports"
-	"cqrs/internal/core/teaching/service"
+	"cqrs/internal/core/course_scheduling/ports"
+	"cqrs/internal/core/course_scheduling/service"
 	"cqrs/internal/server"
 	memory2 "cqrs/internal/support/commerce/adapters/memory"
 	command3 "cqrs/internal/support/commerce/adapters/memory/command"
+	query2 "cqrs/internal/support/commerce/adapters/memory/query"
 	command4 "cqrs/internal/support/commerce/app/command"
 	ports3 "cqrs/internal/support/commerce/ports"
 	service3 "cqrs/internal/support/commerce/service"
@@ -43,8 +45,9 @@ func wireApp(confServer *conf.Server, data *conf.Data, logger *slog.Logger) (*kr
 	if err != nil {
 		return nil, nil, err
 	}
-	productRepo := command.NewProductRepo(memoryData)
-	productUsecase := command2.NewProductUsecase(productRepo)
+	productQuery := memoryquery.NewProductQuery(memoryData)
+	productCommand := memorycmd2.NewProductCommand(memoryData)
+	productUsecase := command2.NewProductUsecase(productQuery, productCommand)
 	productService := service2.NewProductService(productUsecase)
 	portsHTTPServer := ports2.NewHTTPServer(confServer, productService)
 	portsGRPCServer := ports2.NewGRPCServer(confServer, productService)
@@ -54,11 +57,13 @@ func wireApp(confServer *conf.Server, data *conf.Data, logger *slog.Logger) (*kr
 		cleanup()
 		return nil, nil, err
 	}
-	paymentRepo := command3.NewPaymentRepo(data2)
-	paymentUsecase := command4.NewPaymentUsecase(paymentRepo)
+	paymentQuery := query2.NewPaymentQuery(data2)
+	paymentCommand := command3.NewPaymentCommand(data2)
+	paymentUsecase := command4.NewPaymentUsecase(paymentQuery, paymentCommand)
 	paymentService := service3.NewPaymentService(paymentUsecase)
-	discountRepo := command3.NewDiscountRepo(data2)
-	discountUsecase := command4.NewDiscountUsecase(discountRepo)
+	discountQuery := query2.NewDiscountQuery(data2)
+	discountCommand := command3.NewDiscountCommand(data2)
+	discountUsecase := command4.NewDiscountUsecase(discountQuery, discountCommand)
 	discountService := service3.NewDiscountService(discountUsecase)
 	httpServer2 := ports3.NewHTTPServer(confServer, paymentService, discountService)
 	grpcServer2 := ports3.NewGRPCServer(confServer, paymentService, discountService)

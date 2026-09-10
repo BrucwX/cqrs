@@ -5,6 +5,7 @@ import (
 
 	"cqrs/internal/core/product/adapters/memory"
 	memorycmd "cqrs/internal/core/product/adapters/memory/command"
+	memoryquery "cqrs/internal/core/product/adapters/memory/query"
 	"cqrs/internal/core/product/app/command"
 	"cqrs/internal/core/product/ports"
 	"cqrs/internal/core/product/service"
@@ -14,7 +15,10 @@ import (
 var ProviderSet = wire.NewSet(
 	// adapter
 	memory.NewData,
-	memorycmd.NewProductRepo,
+	// query adapters
+	memoryquery.NewProductQuery,
+	// command adapters
+	memorycmd.NewProductCommand,
 	// app
 	command.NewProductUsecase,
 	// service
