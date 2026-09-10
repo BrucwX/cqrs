@@ -7,28 +7,6 @@ import (
 	"github.com/google/uuid"
 )
 
-// ProductStatus is the lifecycle state of a product.
-type ProductStatus int32
-
-const (
-	ProductStatusUnspecified  ProductStatus = 0
-	ProductStatusActive       ProductStatus = 1 // 在售
-	ProductStatusOutOfStock   ProductStatus = 2 // 缺货
-	ProductStatusDiscontinued ProductStatus = 3 // 下架
-	ProductStatusDeleted      ProductStatus = 4
-)
-
-// ProductCategory is the category of a product.
-type ProductCategory int32
-
-const (
-	ProductCategoryUnspecified ProductCategory = 0
-	ProductCategoryEquipment   ProductCategory = 1 // 器材
-	ProductCategoryClothing    ProductCategory = 2 // 服装
-	ProductCategoryAccessory   ProductCategory = 3 // 配件
-	ProductCategoryConsumable  ProductCategory = 4 // 消耗品
-)
-
 // Product is a product domain object (teaching supplies).
 type Product struct {
 	ID          string
