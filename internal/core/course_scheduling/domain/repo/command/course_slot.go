@@ -49,8 +49,8 @@ type CourseSlotCommand interface {
 	// Delete 删除课表槽位
 	Delete(id string) error
 
-	// checkConflictFn 由调用方注入，仓库会把 TeacherAssignContext 装好传进去；
-	// 传 nil 表示不做检查。冲突时整批中止，不写入任何槽位。
+	// checkConflictFn 由调用方注入，仓库会把「本次要排的槽位 + 该讲师聚合」
+	// 一并传进去；传 nil 表示不做检查。冲突时整批中止，不写入任何槽位。
 	AssignTeacher(ctx context.Context, slotIDs []string, teacherID int64,
 		checkConflictFn func(ctx context.Context, slots []courseSlot.CourseSlot, t teacher.Teacher) (bool, error)) error
 

@@ -8,8 +8,7 @@ import (
 	"cqrs/internal/core/course_scheduling/domain/aggregate/classroom"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/course"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlot"
-	"cqrs/internal/core/course_scheduling/domain/aggregate/courseType"
-	"cqrs/internal/core/course_scheduling/domain/aggregate/qualification"
+	"cqrs/internal/core/course_scheduling/domain/aggregate/teacher"
 	repo "cqrs/internal/core/course_scheduling/domain/repo/command"
 )
 
@@ -45,23 +44,23 @@ func (c *CourseSlotCommand) Delete(id string) error {
 	return nil
 }
 
-// Update 给指定课表槽位们配置老师（不做冲突检查）
-func (c *CourseSlotCommand) Update(ctx context.Context, slotIDs []string, teacherID int64) error {
-	return c.AssignTeacher(ctx, slotIDs, teacherID, nil)
-}
-
 // AssignTeacher 给指定课表槽位们配置老师
 //
-// 先把 checkTeacher 需要的上下文装好交给调用方判定；传 nil 表示不做冲突检查。
+// 先把该讲师聚合取出来交给调用方判定；传 nil 表示不做冲突检查。
 // 冲突时整批中止，不写入任何槽位。
-func (c *CourseSlotCommand) AssignTeacher(ctx context.Context, slotIDs []string, teacherID int64, checkConflictFn func(ctx context.Context, ac repo.TeacherAssignContext) (bool, error)) error {
+func (c *CourseSlotCommand) AssignTeacher(ctx context.Context, slotIDs []string, teacherID int64, checkConflictFn func(ctx context.Context, slots []courseSlot.CourseSlot, t teacher.Teacher) (bool, error)) error {
 	slots, err := c.loadSlots(slotIDs)
 	if err != nil {
 		return err
 	}
 
 	if checkConflictFn != nil {
-		conflict, err := checkConflictFn(ctx, c.teacherAssignContext(slots, teacherID))
+		teacher, err := c.teacherByID(teacherID)
+		if err != nil {
+			return err
+		}
+
+		conflict, err := checkConflictFn(ctx, slotValues(slots), teacher)
 		if err != nil {
 			return err
 		}
@@ -133,6 +132,16 @@ func (c *CourseSlotCommand) AssignClassroom(ctx context.Context, slotIDs []strin
 
 // --- 内部实现 ---
 
+// teacherByID 取讲师聚合，取不到报 not found。
+func (c *CourseSlotCommand) teacherByID(id int64) (teacher.Teacher, error) {
+	for _, item := range c.data.Teachers() {
+		if item.ID() == id {
+			return *item, nil
+		}
+	}
+	return teacher.Teacher{}, fmt.Errorf("%w: %d", repo.ErrTeacherNotFound, id)
+}
+
 // loadSlots 按 ID 取出槽位指针；任何一个不存在就整体失败（不做部分写入）。
 func (c *CourseSlotCommand) loadSlots(slotIDs []string) ([]*courseSlot.CourseSlot, error) {
 	slots := make([]*courseSlot.CourseSlot, 0, len(slotIDs))
@@ -144,62 +153,6 @@ func (c *CourseSlotCommand) loadSlots(slotIDs []string) ([]*courseSlot.CourseSlo
 		slots = append(slots, cs)
 	}
 	return slots, nil
-}
-
-// teacherAssignContext 组装排讲师时冲突检查所需的上下文。
-func (c *CourseSlotCommand) teacherAssignContext(targetSlots []*courseSlot.CourseSlot, teacherID int64) repo.TeacherAssignContext {
-	teacherSlots := make([]courseSlot.CourseSlot, 0)
-	for _, cs := range c.data.CourseSlots() {
-		if cs.TeacherID() == teacherID {
-			teacherSlots = append(teacherSlots, *cs)
-		}
-	}
-
-	return repo.TeacherAssignContext{
-		TargetSlots:    slotValues(targetSlots),
-		TeacherSlots:   teacherSlots,
-		CourseType:     c.courseTypeOfSlots(targetSlots),
-		Qualifications: c.qualificationsOfTeacher(teacherID),
-	}
-}
-
-// courseTypeOfSlots 取目标槽位所属课程的类型。
-//
-// 目标槽位跨多个不同类型的课程时，取第一个能查到类型的槽位。
-func (c *CourseSlotCommand) courseTypeOfSlots(slots []*courseSlot.CourseSlot) courseType.CourseType {
-	courses := indexBy(c.data.Courses(), func(item *course.Course) string { return item.ID() })
-	types := indexBy(c.data.CourseTypes(), func(item *courseType.CourseType) string { return item.ID() })
-
-	for _, cs := range slots {
-		item, ok := courses[cs.CourseID()]
-		if !ok {
-			continue
-		}
-		if ct, ok := types[item.CourseTypeID()]; ok {
-			return *ct
-		}
-	}
-	return courseType.CourseType{}
-}
-
-// qualificationsOfTeacher 取该讲师的全部资质。
-func (c *CourseSlotCommand) qualificationsOfTeacher(teacherID int64) []qualification.Qualification {
-	out := make([]qualification.Qualification, 0)
-	for _, q := range c.data.Qualifications() {
-		if q.TeacherID() == teacherID {
-			out = append(out, *q)
-		}
-	}
-	return out
-}
-
-// slotValues 把槽位指针切片转成值拷贝切片，避免调用方误改聚合。
-func slotValues(slots []*courseSlot.CourseSlot) []courseSlot.CourseSlot {
-	out := make([]courseSlot.CourseSlot, 0, len(slots))
-	for _, cs := range slots {
-		out = append(out, *cs)
-	}
-	return out
 }
 
 // classroomAssignContext 组装排教室时冲突检查所需的上下文。
@@ -243,6 +196,15 @@ func (c *CourseSlotCommand) courseOfSlots(slots []*courseSlot.CourseSlot) course
 		}
 	}
 	return course.Course{}
+}
+
+// slotValues 把槽位指针切片转成值拷贝切片，避免调用方误改聚合。
+func slotValues(slots []*courseSlot.CourseSlot) []courseSlot.CourseSlot {
+	out := make([]courseSlot.CourseSlot, 0, len(slots))
+	for _, cs := range slots {
+		out = append(out, *cs)
+	}
+	return out
 }
 
 // classroomByID 取教室，取不到返回零值。
