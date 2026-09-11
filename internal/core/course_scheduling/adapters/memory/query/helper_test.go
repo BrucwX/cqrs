@@ -9,6 +9,7 @@ import (
 	"cqrs/internal/core/course_scheduling/domain/aggregate/course"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlot"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlotChange"
+	"cqrs/internal/core/course_scheduling/domain/aggregate/courseType"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/enrollment"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/makeup"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/qualification"
@@ -40,6 +41,14 @@ func assertIDs[T comparable](t *testing.T, got, want []T) {
 }
 
 func courseIDs(items []*course.Course) []string {
+	out := make([]string, 0, len(items))
+	for _, item := range items {
+		out = append(out, item.ID())
+	}
+	return out
+}
+
+func courseTypeIDs(items []*courseType.CourseType) []string {
 	out := make([]string, 0, len(items))
 	for _, item := range items {
 		out = append(out, item.ID())

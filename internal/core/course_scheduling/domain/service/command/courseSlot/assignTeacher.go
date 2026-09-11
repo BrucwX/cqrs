@@ -14,3 +14,5 @@ type AssignTeacher struct {
 func (h *Handler) AssignTeacher(ctx context.Context, cmd AssignTeacher) error {
 	return h.SlotCmd.AssignTeacher(ctx, cmd.SlotIDs, cmd.TeacherID, checkScheduleConflict)
 }
+
+

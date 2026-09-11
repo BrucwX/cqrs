@@ -9,6 +9,7 @@ import (
 	"cqrs/internal/core/course_scheduling/domain/aggregate/course"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlot"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlotChange"
+	"cqrs/internal/core/course_scheduling/domain/aggregate/courseType"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/enrollment"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/makeup"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/qualification"
@@ -19,6 +20,12 @@ import (
 // 演示数据固定使用 2026 年秋季学期，保证每次 SeedDemo 结果完全一致
 // （分页顺序、冲突判定都可复现）。
 const demoYear = 2026
+
+// 演示用课程类型 ID（固定值，便于测试直接断言）。
+const (
+	demoCourseTypeProgramming = "ct-0001" // 少儿编程
+	demoCourseTypeEnglish     = "ct-0002" // 成人英语
+)
 
 var (
 	demoNow        = time.Date(demoYear, time.September, 1, 10, 0, 0, 0, time.Local)
@@ -51,6 +58,13 @@ func demoDateTime(month time.Month, day, hour, minute int) time.Time {
 //	AvailableForClassroom(R101)     -> C002, C004        // R101 在周一/周三 09:00-11:00 被占用
 //	AvailableForClassroom(R102)     -> 空                // R102 的周一/周二/周三/周五都被占
 //
+// 资质绑定课程类型（ct-0001 少儿编程 / ct-0002 成人英语）：
+//
+//	CourseTypesByTeacherID(1 张伟)  -> ct-0001, ct-0002
+//	CourseTypesByTeacherID(3 王强)  -> ct-0002, ct-0001   // ct-0001 那条已吊销，仍会返回
+//	TeachersByCourseTypeID(ct-0001) -> 1, 2, 3
+//	TeachersByCourseTypeID(ct-0002) -> 3, 1
+//
 // 反复调用会按相同 ID 覆盖，不会产生重复数据。
 func (d *Data) SeedDemo() error {
 	steps := []struct {
@@ -60,6 +74,7 @@ func (d *Data) SeedDemo() error {
 		{"teachers", d.seedDemoTeachers},
 		{"students", d.seedDemoStudents},
 		{"classrooms", d.seedDemoClassrooms},
+		{"course types", d.seedDemoCourseTypes},
 		{"courses", d.seedDemoCourses},
 		{"course slots", d.seedDemoCourseSlots},
 		{"enrollments", d.seedDemoEnrollments},
@@ -130,22 +145,40 @@ func (d *Data) seedDemoClassrooms() error {
 	return nil
 }
 
+// --- 课程类型：ct-0001 少儿编程 / ct-0002 成人英语 ---
+//
+// C001/C002 属于少儿编程，C003/C004 属于成人英语。
+// 讲师资质绑定到这里，而不是绑定到具体课程。
+func (d *Data) seedDemoCourseTypes() error {
+	programming := courseType.Reconstitute(
+		demoCourseTypeProgramming, "少儿编程", "面向 6-12 岁的图形化编程入门",
+		demoTermStart, demoTermStart,
+	)
+	english := courseType.Reconstitute(
+		demoCourseTypeEnglish, "成人英语", "成人口语与商务英语",
+		demoTermStart, demoTermStart,
+	)
+
+	d.SeedCourseType(programming, english)
+	return nil
+}
+
 // --- 课程：C001..C004 ---
 
 func (d *Data) seedDemoCourses() error {
-	c001, err := demoCourse("C001", 30, 2)
+	c001, err := demoCourse("C001", demoCourseTypeProgramming, 30, 2)
 	if err != nil {
 		return err
 	}
-	c002, err := demoCourse("C002", 20, 1)
+	c002, err := demoCourse("C002", demoCourseTypeProgramming, 20, 1)
 	if err != nil {
 		return err
 	}
-	c003, err := demoCourse("C003", 15, 0)
+	c003, err := demoCourse("C003", demoCourseTypeEnglish, 15, 0)
 	if err != nil {
 		return err
 	}
-	c004, err := demoCourse("C004", 12, 0)
+	c004, err := demoCourse("C004", demoCourseTypeEnglish, 12, 0)
 	if err != nil {
 		return err
 	}
@@ -206,29 +239,29 @@ func (d *Data) seedDemoEnrollments() error {
 	return nil
 }
 
-// --- 资质：其中 1-张伟-C004 被吊销，用来验证查询侧不过滤状态 ---
+// --- 资质：绑定课程类型；其中 3-王强-少儿编程 被吊销，用来验证查询侧不过滤状态 ---
 func (d *Data) seedDemoQualifications() error {
-	q1, err := demoQualification(1, 1, "C001")
+	q1, err := demoQualification(1, 1, demoCourseTypeProgramming) // 张伟 · 少儿编程
 	if err != nil {
 		return err
 	}
-	q2, err := demoQualification(2, 2, "C002")
+	q2, err := demoQualification(2, 2, demoCourseTypeProgramming) // 李娜 · 少儿编程
 	if err != nil {
 		return err
 	}
-	q3, err := demoQualification(3, 3, "C003")
+	q3, err := demoQualification(3, 3, demoCourseTypeEnglish) // 王强 · 成人英语
 	if err != nil {
 		return err
 	}
-	q4, err := demoQualification(4, 3, "C004")
+	q4, err := demoQualification(4, 1, demoCourseTypeEnglish) // 张伟 · 成人英语
 	if err != nil {
 		return err
 	}
-	q5, err := demoQualification(5, 1, "C004")
+	q5, err := demoQualification(5, 3, demoCourseTypeProgramming) // 王强 · 少儿编程
 	if err != nil {
 		return err
 	}
-	q5.Revoke() // CoursesByTeacherID(1) 仍会返回 C004
+	q5.Revoke() // CourseTypesByTeacherID(3) 仍会返回少儿编程
 
 	d.SeedQualification(q1, q2, q3, q4, q5)
 	return nil
@@ -341,7 +374,7 @@ func demoClassroom(id, building string, floor int, room string, capacity int) (*
 	return classroom.NewClassroom(id, location, capacity)
 }
 
-func demoCourse(id string, maxSeats, enrolled int) (*course.Course, error) {
+func demoCourse(id string, courseTypeID string, maxSeats, enrolled int) (*course.Course, error) {
 	capacity, err := course.NewCapacity(maxSeats, enrolled)
 	if err != nil {
 		return nil, err
@@ -351,7 +384,7 @@ func demoCourse(id string, maxSeats, enrolled int) (*course.Course, error) {
 		return nil, err
 	}
 	window := course.NewEnrollmentWindow(demoEnrollFrom, demoEnrollTo, demoDropBy)
-	return course.NewCourse(id, capacity, window, period), nil
+	return course.NewCourse(id, courseTypeID, capacity, window, period), nil
 }
 
 func demoSlot(
@@ -378,7 +411,7 @@ func demoSlot(
 	return courseSlot.Reconstitute(id, courseID, weekday, span, teacherID, classroomID, now, now), nil
 }
 
-func demoQualification(id, teacherID int64, courseID string) (*qualification.Qualification, error) {
+func demoQualification(id, teacherID int64, courseTypeID string) (*qualification.Qualification, error) {
 	// 使用 Reconstitute 恢复固定 ID 的种子数据
-	return qualification.Reconstitute(id, teacherID, courseID, demoTermStart, demoTermEnd.AddDate(1, 0, 0), qualification.StatusActive, time.Now()), nil
+	return qualification.Reconstitute(id, teacherID, courseTypeID, demoTermStart, demoTermEnd.AddDate(1, 0, 0), qualification.StatusActive, time.Now()), nil
 }

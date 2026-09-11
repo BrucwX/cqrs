@@ -19,6 +19,7 @@ func TestSeedDemoPopulatesEveryTable(t *testing.T) {
 		want int
 	}{
 		{"courses", len(d.Courses()), 4},
+		{"course types", len(d.CourseTypes()), 2},
 		{"classrooms", len(d.Classrooms()), 2},
 		{"students", len(d.Students()), 3},
 		{"teachers", len(d.Teachers()), 3},

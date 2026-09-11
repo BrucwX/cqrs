@@ -18,53 +18,52 @@ func TestQualificationQueryPage(t *testing.T) {
 	assertIDs(t, qualificationIDs(got), []int64{1, 2, 3, 4, 5})
 }
 
-func TestQualificationQueryCoursesByTeacherID(t *testing.T) {
+func TestQualificationQueryCourseTypesByTeacherID(t *testing.T) {
 	q := NewQualificationQuery(newSeededData(t))
 	ctx := context.Background()
 
+	// 演示数据：ct-0001 少儿编程、ct-0002 成人英语；C001/C002 属前者，C003/C004 属后者。
 	tests := []struct {
 		name      string
 		teacherID int64
 		want      []string
 	}{
-		{"张伟：C001 有效 + C004 已吊销", 1, []string{"C001", "C004"}},
-		{"李娜：C002", 2, []string{"C002"}},
-		{"王强：C003 + C004", 3, []string{"C003", "C004"}},
+		{"张伟：少儿编程 + 成人英语", 1, []string{"ct-0001", "ct-0002"}},
+		{"李娜：只有少儿编程", 2, []string{"ct-0001"}},
+		{"王强：成人英语 + 少儿编程（后者已吊销，仍返回）", 3, []string{"ct-0002", "ct-0001"}},
 		{"没录过资质的讲师", 999, []string{}},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := q.CoursesByTeacherID(ctx, tt.teacherID)
+			got, err := q.CourseTypesByTeacherID(ctx, tt.teacherID)
 			if err != nil {
-				t.Fatalf("CoursesByTeacherID() error = %v", err)
+				t.Fatalf("CourseTypesByTeacherID() error = %v", err)
 			}
-			assertIDs(t, courseIDs(got), tt.want)
+			assertIDs(t, courseTypeIDs(got), tt.want)
 		})
 	}
 }
 
-func TestQualificationQueryTeachersByCourseID(t *testing.T) {
+func TestQualificationQueryTeachersByCourseTypeID(t *testing.T) {
 	q := NewQualificationQuery(newSeededData(t))
 	ctx := context.Background()
 
 	tests := []struct {
-		name     string
-		courseID string
-		want     []int64
+		name         string
+		courseTypeID string
+		want         []int64
 	}{
-		{"C001 只有张伟", "C001", []int64{1}},
-		{"C002 只有李娜", "C002", []int64{2}},
-		{"C003 只有王强", "C003", []int64{3}},
-		{"C004 有王强与张伟（按资质 ID 顺序）", "C004", []int64{3, 1}},
-		{"没录过资质的课程", "C999", []int64{}},
+		{"少儿编程：张伟、李娜、王强（按资质 ID 顺序）", "ct-0001", []int64{1, 2, 3}},
+		{"成人英语：王强、张伟", "ct-0002", []int64{3, 1}},
+		{"没录过资质的课程类型", "ct-9999", []int64{}},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := q.TeachersByCourseID(ctx, tt.courseID)
+			got, err := q.TeachersByCourseTypeID(ctx, tt.courseTypeID)
 			if err != nil {
-				t.Fatalf("TeachersByCourseID() error = %v", err)
+				t.Fatalf("TeachersByCourseTypeID() error = %v", err)
 			}
 			assertIDs(t, teacherIDs(got), tt.want)
 		})
@@ -89,19 +88,19 @@ func TestQualificationQueryDoesNotFilterStatus(t *testing.T) {
 	}
 
 	q := NewQualificationQuery(d)
-	got, err := q.CoursesByTeacherID(context.Background(), 1)
+	got, err := q.CourseTypesByTeacherID(context.Background(), 3)
 	if err != nil {
-		t.Fatalf("CoursesByTeacherID() error = %v", err)
+		t.Fatalf("CourseTypesByTeacherID() error = %v", err)
 	}
-	assertIDs(t, courseIDs(got), []string{"C001", "C004"})
+	assertIDs(t, courseTypeIDs(got), []string{"ct-0002", "ct-0001"})
 }
 
-// 同一个 (teacher, course) 只应出现一次，即使有多条资质记录。
-func TestQualificationQueryDeduplicatesCourses(t *testing.T) {
+// 同一个 (teacher, courseType) 只应出现一次，即使有多条资质记录。
+func TestQualificationQueryDeduplicatesCourseTypes(t *testing.T) {
 	d := newSeededData(t)
 
 	extra, err := qualification.NewQualification(
-		2, "C002", time.Now(), time.Now().AddDate(1, 0, 0),
+		2, "ct-0001", time.Now(), time.Now().AddDate(1, 0, 0),
 	)
 	if err != nil {
 		t.Fatalf("NewQualification() error = %v", err)
@@ -109,9 +108,9 @@ func TestQualificationQueryDeduplicatesCourses(t *testing.T) {
 	d.SeedQualification(extra)
 
 	q := NewQualificationQuery(d)
-	got, err := q.CoursesByTeacherID(context.Background(), 2)
+	got, err := q.CourseTypesByTeacherID(context.Background(), 2)
 	if err != nil {
-		t.Fatalf("CoursesByTeacherID() error = %v", err)
+		t.Fatalf("CourseTypesByTeacherID() error = %v", err)
 	}
-	assertIDs(t, courseIDs(got), []string{"C002"})
+	assertIDs(t, courseTypeIDs(got), []string{"ct-0001"})
 }

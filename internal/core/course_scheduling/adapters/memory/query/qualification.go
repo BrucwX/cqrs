@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"cqrs/internal/core/course_scheduling/adapters/memory"
-	"cqrs/internal/core/course_scheduling/domain/aggregate/course"
+	"cqrs/internal/core/course_scheduling/domain/aggregate/courseType"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/qualification"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/teacher"
 	repoquery "cqrs/internal/core/course_scheduling/domain/repo/query"
@@ -25,40 +25,40 @@ func (q *qualificationQuery) Page(_ context.Context, page, pageSize int) ([]*qua
 	return paginate(q.data.Qualifications(), page, pageSize), nil
 }
 
-// CoursesByTeacherID 根据讲师 ID 获取其有资质的课程列表。
+// CourseTypesByTeacherID 根据讲师 ID 获取其有资质的课程类型列表。
 //
 // 不按资质状态过滤（已吊销/已过期也会返回）；结果去重。
-// 若只要「当前有效」的资质，改用 q.IsEligible(time.Now()) == nil 判断。
-func (q *qualificationQuery) CoursesByTeacherID(_ context.Context, teacherID int64) ([]*course.Course, error) {
-	byID := indexBy(q.data.Courses(), func(c *course.Course) string { return c.ID() })
+// 若只要「当前有效」的资质，改用 item.IsEligible(time.Now()) == nil 判断。
+func (q *qualificationQuery) CourseTypesByTeacherID(_ context.Context, teacherID int64) ([]*courseType.CourseType, error) {
+	byID := indexBy(q.data.CourseTypes(), func(ct *courseType.CourseType) string { return ct.ID() })
 
-	out := make([]*course.Course, 0)
+	out := make([]*courseType.CourseType, 0)
 	seen := make(map[string]struct{})
 	for _, item := range q.data.Qualifications() {
 		if item.TeacherID() != teacherID {
 			continue
 		}
-		if _, ok := seen[item.CourseID()]; ok {
+		if _, ok := seen[item.CourseTypeID()]; ok {
 			continue
 		}
-		seen[item.CourseID()] = struct{}{}
-		if c, ok := byID[item.CourseID()]; ok {
-			out = append(out, c)
+		seen[item.CourseTypeID()] = struct{}{}
+		if ct, ok := byID[item.CourseTypeID()]; ok {
+			out = append(out, ct)
 		}
 	}
 	return out, nil
 }
 
-// TeachersByCourseID 根据课程 ID 获取有授课资质的讲师列表。
+// TeachersByCourseTypeID 根据课程类型 ID 获取有授课资质的讲师列表。
 //
 // 同样不按资质状态过滤；结果去重。
-func (q *qualificationQuery) TeachersByCourseID(_ context.Context, courseID string) ([]*teacher.Teacher, error) {
+func (q *qualificationQuery) TeachersByCourseTypeID(_ context.Context, courseTypeID string) ([]*teacher.Teacher, error) {
 	byID := indexBy(q.data.Teachers(), func(t *teacher.Teacher) int64 { return t.ID() })
 
 	out := make([]*teacher.Teacher, 0)
 	seen := make(map[int64]struct{})
 	for _, item := range q.data.Qualifications() {
-		if item.CourseID() != courseID {
+		if item.CourseTypeID() != courseTypeID {
 			continue
 		}
 		if _, ok := seen[item.TeacherID()]; ok {

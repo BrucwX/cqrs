@@ -2,12 +2,12 @@ package courseSlot
 
 import (
 	"context"
-	"time"
 
+	"cqrs/internal/core/course_scheduling/domain/aggregate/classroom"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/course"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlot"
+	"cqrs/internal/core/course_scheduling/domain/aggregate/courseType"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/qualification"
-	"cqrs/internal/core/course_scheduling/domain/aggregate/teacher"
 )
 
 // ConflictChecker 冲突检查函数类型
@@ -35,21 +35,24 @@ func checkScheduleConflict(ctx context.Context, targetSlots []courseSlot.CourseS
 
 // checkTeacherQualification 检查老师是否有能力上这门课
 // 返回 true 表示老师没有资质（有冲突），false 表示老师有资质（没有冲突）
-func checkTeacherQualification(ctx context.Context, course course.Course, teacher teacher.Teacher, qualification qualification.Qualification) (bool, error) {
+func checkTeacherQualification(ctx context.Context, cty courseType.CourseType, t_q []qualification.Qualification) (bool, error) {
 	// 检查老师 ID是否匹配
-	if qualification.TeacherID() != teacher.ID() {
-		return true, nil // 老师 ID不匹配，有冲突
+	for _, q := range t_q {
+		if q.CourseTypeID() == cty.ID() {
+			return false, nil // 老师有资质，没有冲突
+		}
 	}
 
-	// 检查课程 ID是否匹配
-	if qualification.CourseID() != course.ID() {
-		return true, nil // 课程 ID不匹配，有冲突
-	}
+	return true, nil // 老师没有资质，有冲突
+}
 
-	// 检查资质是否有效
-	if err := qualification.IsEligible(time.Now()); err != nil {
-		return true, nil // 资质无效（过期或被吊销），有冲突
+// checkClassroomCapacity 检查教室容量是否能容纳这门课
+// 返回 true 表示教室容量不足（有冲突），false 表示教室容量足够（没有冲突）
+func checkClassroomCapacity(ctx context.Context, c course.Course, cl classroom.Classroom) (bool, error) {
+	// 课程最大人数 <= 教室容量，教室足够大，没有冲突
+	if c.Capacity().Max() < cl.Capacity() {
+		return false, nil
 	}
-
-	return false, nil // 老师有资质，没有冲突
+	// 教室容量不足以容纳课程，有冲突
+	return true, nil
 }

@@ -10,6 +10,7 @@ import (
 	"cqrs/internal/core/course_scheduling/domain/aggregate/course"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlot"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlotChange"
+	"cqrs/internal/core/course_scheduling/domain/aggregate/courseType"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/enrollment"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/makeup"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/qualification"
@@ -28,6 +29,7 @@ type Data struct {
 	mu sync.RWMutex
 
 	courses           map[string]*course.Course
+	courseTypes       map[string]*courseType.CourseType
 	classrooms        map[string]*classroom.Classroom
 	students          map[int64]*student.Student
 	teachers          map[int64]*teacher.Teacher
@@ -43,6 +45,7 @@ type Data struct {
 func NewData(_ *conf.Data) (*Data, func(), error) {
 	d := &Data{
 		courses:           make(map[string]*course.Course),
+		courseTypes:       make(map[string]*courseType.CourseType),
 		classrooms:        make(map[string]*classroom.Classroom),
 		students:          make(map[int64]*student.Student),
 		teachers:          make(map[int64]*teacher.Teacher),
@@ -69,6 +72,17 @@ func (d *Data) SeedCourse(items ...*course.Course) {
 	for _, item := range items {
 		if item != nil {
 			d.courses[item.ID()] = item
+		}
+	}
+}
+
+// SeedCourseType 写入或覆盖课程类型。
+func (d *Data) SeedCourseType(items ...*courseType.CourseType) {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	for _, item := range items {
+		if item != nil {
+			d.courseTypes[item.ID()] = item
 		}
 	}
 }
@@ -180,6 +194,18 @@ func (d *Data) Courses() []*course.Course {
 	defer d.mu.RUnlock()
 	out := make([]*course.Course, 0, len(d.courses))
 	for _, item := range d.courses {
+		out = append(out, item)
+	}
+	sort.Slice(out, func(i, j int) bool { return out[i].ID() < out[j].ID() })
+	return out
+}
+
+// CourseTypes 返回全部课程类型快照（按类型 ID 升序）。
+func (d *Data) CourseTypes() []*courseType.CourseType {
+	d.mu.RLock()
+	defer d.mu.RUnlock()
+	out := make([]*courseType.CourseType, 0, len(d.courseTypes))
+	for _, item := range d.courseTypes {
 		out = append(out, item)
 	}
 	sort.Slice(out, func(i, j int) bool { return out[i].ID() < out[j].ID() })

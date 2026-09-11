@@ -5,24 +5,27 @@ import "time"
 // --- 聚合根 (Aggregate Root) ---
 
 type Course struct {
-	id         string
-	capacity   Capacity
-	enrollment EnrollmentWindow
-	period     CoursePeriod
+	id           string
+	courseTypeID string // 所属课程类型（courseType.CourseType）
+	capacity     Capacity
+	enrollment   EnrollmentWindow
+	period       CoursePeriod
 }
 
 // 工厂方法创建 Course 聚合根
 func NewCourse(
 	id string,
+	courseTypeID string,
 	capacity Capacity,
 	enrollment EnrollmentWindow,
 	period CoursePeriod,
 ) *Course {
 	return &Course{
-		id:         id,
-		capacity:   capacity,
-		enrollment: enrollment,
-		period:     period,
+		id:           id,
+		courseTypeID: courseTypeID,
+		capacity:     capacity,
+		enrollment:   enrollment,
+		period:       period,
 	}
 }
 
@@ -64,6 +67,7 @@ func (c *Course) RecordCompletedHours(hours int) error {
 // --- Getter（仅读，无 Setter）---
 
 func (c *Course) ID() string                   { return c.id }
+func (c *Course) CourseTypeID() string         { return c.courseTypeID }
 func (c *Course) Capacity() Capacity           { return c.capacity }
 func (c *Course) Enrollment() EnrollmentWindow { return c.enrollment }
 func (c *Course) Period() CoursePeriod         { return c.period }
