@@ -68,7 +68,7 @@ func TestStudentMakeupQueryStudentsByCourseID(t *testing.T) {
 	}
 }
 
-// 当前实现不过滤申请状态：待审批的申请也算「有补课记录」。
+// 当前实现不按补课状态过滤：已预约但还没去补的也算「有补课记录」。
 func TestStudentMakeupQueryDoesNotFilterStatus(t *testing.T) {
 	d := newSeededData(t)
 
@@ -76,8 +76,8 @@ func TestStudentMakeupQueryDoesNotFilterStatus(t *testing.T) {
 		if m.ID() != 2 {
 			continue
 		}
-		if m.Status() != makeup.StatusPending {
-			t.Fatalf("makeup 2 status = %v, want %v", m.Status(), makeup.StatusPending)
+		if m.Status() != makeup.StatusBooked {
+			t.Fatalf("makeup 2 status = %v, want %v", m.Status(), makeup.StatusBooked)
 		}
 
 		q := NewStudentMakeupQuery(d)

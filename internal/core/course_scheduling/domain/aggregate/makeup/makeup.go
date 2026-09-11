@@ -7,11 +7,12 @@ import (
 
 // --- 聚合根 (Aggregate Root) ---
 
+// StudentMakeup 补课预约：约好了到时候去上，不需要审批。
 type StudentMakeup struct {
 	id              int64
-	studentID       int64     // 学员 ID
-	courseID        string    // 课程 ID (原课与目标课必须同一门)
-	absenceRecordID int64     // 关联需要冲销的原缺勤记录 ID
+	studentID       int64  // 学员 ID
+	courseID        string // 课程 ID (原课与目标课必须同一门)
+	absenceRecordID int64  // 关联的原缺勤记录 ID
 
 	// 原定缺席信息快照
 	originalSlotID int64     // 原排课模板 ID
@@ -20,14 +21,12 @@ type StudentMakeup struct {
 	// 目标补课信息
 	targetSlotID int64     // 目标去蹭课/补课的 CourseSlot ID
 	targetDate   time.Time // 目标补课的具体日期
-	makeupHours  int       // 补课冲销课时数
+	makeupHours  int       // 补课课时数
 
-	status       Status    // 补课履约状态
-	reviewerID   int64     // 审批人/准入确认人 (教务或目标班讲师)
-	reviewRemark string    // 审批或驳回说明
-	completedAt  time.Time // 实际完成核销时间
-	createdAt    time.Time
-	updatedAt    time.Time
+	status      Status    // 补课状态
+	completedAt time.Time // 实际完成核销时间
+	createdAt   time.Time
+	updatedAt   time.Time
 }
 
 // generateID 生成唯一的 int64 ID
@@ -35,7 +34,7 @@ func generateID() int64 {
 	return time.Now().UnixNano()
 }
 
-// NewStudentMakeup 学员申请去其他课位自主补课
+// NewStudentMakeup 学员预约补课
 func NewStudentMakeup(
 	studentID int64,
 	courseID string,
@@ -70,7 +69,7 @@ func NewStudentMakeup(
 		targetSlotID:    targetSlotID,
 		targetDate:      targetDate,
 		makeupHours:     makeupHours,
-		status:          StatusPending,
+		status:          StatusBooked,
 		createdAt:       now,
 		updatedAt:       now,
 	}, nil
@@ -88,8 +87,6 @@ func Reconstitute(
 	targetDate time.Time,
 	makeupHours int,
 	status Status,
-	reviewerID int64,
-	reviewRemark string,
 	completedAt time.Time,
 	createdAt, updatedAt time.Time,
 ) *StudentMakeup {
@@ -104,8 +101,6 @@ func Reconstitute(
 		targetDate:      targetDate,
 		makeupHours:     makeupHours,
 		status:          status,
-		reviewerID:      reviewerID,
-		reviewRemark:    reviewRemark,
 		completedAt:     completedAt,
 		createdAt:       createdAt,
 		updatedAt:       updatedAt,
@@ -114,42 +109,10 @@ func Reconstitute(
 
 // --- 核心领域行为 (Domain Behaviors) ---
 
-// Approve 准许插班补课（目标班级有空位，教务或老师同意）
-func (m *StudentMakeup) Approve(reviewerID int64, remark string, now time.Time) error {
-	if m.status != StatusPending {
-		return ErrAlreadyReviewed
-	}
-	if reviewerID <= 0 {
-		return errors.New("invalid reviewer ID")
-	}
-
-	m.status = StatusApproved
-	m.reviewerID = reviewerID
-	m.reviewRemark = remark
-	m.updatedAt = now
-	return nil
-}
-
-// Reject 驳回插班补课申请（例如目标班级人数已超载、进度不匹配）
-func (m *StudentMakeup) Reject(reviewerID int64, remark string, now time.Time) error {
-	if m.status != StatusPending {
-		return ErrAlreadyReviewed
-	}
-	if reviewerID <= 0 {
-		return errors.New("invalid reviewer ID")
-	}
-
-	m.status = StatusRejected
-	m.reviewerID = reviewerID
-	m.reviewRemark = remark
-	m.updatedAt = now
-	return nil
-}
-
 // CompleteAttendance 补课当天现场签到核销成功
 func (m *StudentMakeup) CompleteAttendance(now time.Time) error {
-	if m.status != StatusApproved {
-		return ErrCannotCompleteNotApp
+	if m.status != StatusBooked {
+		return ErrAlreadyFinalized
 	}
 
 	m.status = StatusCompleted
@@ -160,7 +123,7 @@ func (m *StudentMakeup) CompleteAttendance(now time.Time) error {
 
 // Cancel 学员主动取消补课预约
 func (m *StudentMakeup) Cancel(operatorID int64, now time.Time) error {
-	if m.status == StatusCompleted || m.status == StatusCancelled {
+	if m.status != StatusBooked {
 		return ErrAlreadyFinalized
 	}
 	if m.studentID != operatorID {
@@ -174,14 +137,14 @@ func (m *StudentMakeup) Cancel(operatorID int64, now time.Time) error {
 
 // --- 只读属性访问器 (Getters) ---
 
-func (m *StudentMakeup) ID() int64              { return m.id }
-func (m *StudentMakeup) StudentID() int64       { return m.studentID }
-func (m *StudentMakeup) CourseID() string       { return m.courseID }
-func (m *StudentMakeup) AbsenceRecordID() int64 { return m.absenceRecordID }
-func (m *StudentMakeup) OriginalSlotID() int64  { return m.originalSlotID }
+func (m *StudentMakeup) ID() int64               { return m.id }
+func (m *StudentMakeup) StudentID() int64        { return m.studentID }
+func (m *StudentMakeup) CourseID() string        { return m.courseID }
+func (m *StudentMakeup) AbsenceRecordID() int64  { return m.absenceRecordID }
+func (m *StudentMakeup) OriginalSlotID() int64   { return m.originalSlotID }
 func (m *StudentMakeup) OriginalDate() time.Time { return m.originalDate }
-func (m *StudentMakeup) TargetSlotID() int64    { return m.targetSlotID }
-func (m *StudentMakeup) TargetDate() time.Time  { return m.targetDate }
-func (m *StudentMakeup) MakeupHours() int       { return m.makeupHours }
-func (m *StudentMakeup) Status() Status         { return m.status }
-func (m *StudentMakeup) CompletedAt() time.Time { return m.completedAt }
+func (m *StudentMakeup) TargetSlotID() int64     { return m.targetSlotID }
+func (m *StudentMakeup) TargetDate() time.Time   { return m.targetDate }
+func (m *StudentMakeup) MakeupHours() int        { return m.makeupHours }
+func (m *StudentMakeup) Status() Status          { return m.status }
+func (m *StudentMakeup) CompletedAt() time.Time  { return m.completedAt }

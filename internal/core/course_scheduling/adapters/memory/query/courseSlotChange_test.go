@@ -49,16 +49,10 @@ func TestCourseSlotChangeQueryReturnsSeededFields(t *testing.T) {
 		t.Fatalf("ListByCourseID() error = %v", err)
 	}
 
-	// 第 1 条：已审批的调课，目标改到 2026-09-15 14:00 由张伟在 R102 上。
+	// 第 1 条：调课，目标改到 2026-09-15 14:00 由张伟在 R102 上。
 	reschedule := got[0]
 	if reschedule.ChangeType() != courseSlotChange.TypeReschedule {
 		t.Errorf("changeType = %v, want %v", reschedule.ChangeType(), courseSlotChange.TypeReschedule)
-	}
-	if reschedule.ReviewStatus() != courseSlotChange.StatusApproved {
-		t.Errorf("reviewStatus = %v, want %v", reschedule.ReviewStatus(), courseSlotChange.StatusApproved)
-	}
-	if !reschedule.IsEffective() {
-		t.Error("IsEffective() = false, want true for an approved change")
 	}
 
 	expectedStart := time.Date(2026, time.September, 15, 14, 0, 0, 0, time.Local)
@@ -69,16 +63,10 @@ func TestCourseSlotChangeQueryReturnsSeededFields(t *testing.T) {
 		t.Errorf("target classroom = %q, want %q", got, "R102")
 	}
 
-	// 第 2 条：待审批的代课，原计划快照应保留原讲师与教室。
+	// 第 2 条：代课，原计划快照应保留原讲师与教室。
 	substitute := got[1]
 	if substitute.ChangeType() != courseSlotChange.TypeSubstitute {
 		t.Errorf("changeType = %v, want %v", substitute.ChangeType(), courseSlotChange.TypeSubstitute)
-	}
-	if substitute.ReviewStatus() != courseSlotChange.StatusPending {
-		t.Errorf("reviewStatus = %v, want %v", substitute.ReviewStatus(), courseSlotChange.StatusPending)
-	}
-	if substitute.IsEffective() {
-		t.Error("IsEffective() = true, want false for a pending change")
 	}
 	if got := substitute.OriginalPlan().TeacherID(); got != 1 {
 		t.Errorf("original teacher = %d, want 1", got)

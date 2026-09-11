@@ -267,30 +267,28 @@ func (d *Data) seedDemoQualifications() error {
 	return nil
 }
 
-// --- 缺勤：1 条待审批事假 + 1 条已生效旷课 ---
+// --- 缺勤：1 条事假 + 1 条旷课 ---
 func (d *Data) seedDemoAbsences() error {
 	now := time.Now()
 	// 使用 Reconstitute 恢复固定 ID的种子数据
 	a1 := absence.Reconstitute(
 		1, 101, "C001", 2, demoDate(time.September, 16), 2,
-		absence.TypePersonalLeave, "家中急事",
-		absence.StatusPending, 0, "", false, now, now,
+		absence.TypePersonalLeave, "家中急事", now, now,
 	)
 	a2 := absence.Reconstitute(
 		2, 102, "C002", 3, demoDate(time.September, 14), 2,
-		absence.TypeUnexcused, "未请假缺席",
-		absence.StatusApproved, 0, "", false, now, now,
+		absence.TypeUnexcused, "未请假缺席", now, now,
 	)
 	d.SeedAbsence(a1, a2)
 	return nil
 }
 
-// --- 补课：1 条已核销（走完 审批->完成），1 条待审批 ---
+// --- 补课：1 条已补课，1 条已预约 ---
 func (d *Data) seedDemoMakeups() error {
 	// 使用 Reconstitute 恢复固定 ID的种子数据
 	m1 := makeup.Reconstitute(
 		1, 101, "C001", 1, 1, demoDate(time.September, 14), 2, demoDate(time.September, 16), 2,
-		makeup.StatusApproved, 9, "同意补课", demoNow, demoNow, demoNow,
+		makeup.StatusBooked, time.Time{}, demoNow, demoNow,
 	)
 	if err := m1.CompleteAttendance(demoNow); err != nil {
 		return err
@@ -298,14 +296,14 @@ func (d *Data) seedDemoMakeups() error {
 
 	m2 := makeup.Reconstitute(
 		2, 102, "C002", 2, 3, demoDate(time.September, 14), 3, demoDate(time.September, 21), 2,
-		makeup.StatusPending, 0, "", time.Time{}, demoNow, demoNow,
+		makeup.StatusBooked, time.Time{}, demoNow, demoNow,
 	)
 
 	d.SeedMakeup(m1, m2)
 	return nil
 }
 
-// --- 课表变更：1 条已审批的调课 + 1 条待审批的代课 ---
+// --- 课表变更：1 条调课 + 1 条代课 ---
 func (d *Data) seedDemoCourseSlotChanges() error {
 	original1 := courseSlotChange.NewOriginalPlan(
 		1, demoDate(time.September, 14), 1, "R101", "09:00", "11:00",
@@ -322,7 +320,7 @@ func (d *Data) seedDemoCourseSlotChanges() error {
 	change1 := courseSlotChange.Reconstitute(
 		1, "C001", 1, courseSlotChange.TypeReschedule,
 		original1, target1, "场地检修，临时调至周二下午",
-		courseSlotChange.StatusApproved, 9, "同意调课", demoNow, demoNow,
+		demoNow, demoNow,
 	)
 
 	original2 := courseSlotChange.NewOriginalPlan(
@@ -339,7 +337,7 @@ func (d *Data) seedDemoCourseSlotChanges() error {
 	change2 := courseSlotChange.Reconstitute(
 		2, "C001", 1, courseSlotChange.TypeSubstitute,
 		original2, target2, "讲师出差，由李娜代课",
-		courseSlotChange.StatusPending, 0, "", demoNow, demoNow,
+		demoNow, demoNow,
 	)
 
 	d.SeedCourseSlotChange(change1, change2)

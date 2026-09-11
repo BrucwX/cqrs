@@ -27,7 +27,7 @@ func (q *studentMakeupQuery) Page(_ context.Context, page, pageSize int) ([]*mak
 
 // CoursesByStudentID 根据学员 ID 获取其有补课记录的课程列表。
 //
-// 不按申请状态过滤（待审批/已驳回也会返回）；结果去重。
+// 不按补课状态过滤（已预约未补/已取消也会返回）；结果去重。
 // 若只想统计「确实补上了」的课程，把 status == StatusCompleted 加回来即可。
 func (q *studentMakeupQuery) CoursesByStudentID(_ context.Context, studentID int64) ([]*course.Course, error) {
 	byID := indexBy(q.data.Courses(), func(c *course.Course) string { return c.ID() })
