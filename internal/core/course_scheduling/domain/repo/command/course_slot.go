@@ -19,29 +19,11 @@ var (
 	ErrCourseSlotConflict = errors.New("course slot conflicts with an existing schedule")
 )
 
-// ClassroomAssignContext 是仓库侧在排教室时一并交给冲突检查的上下文。
-type ClassroomAssignContext struct {
-	// TargetSlots 本次要排的槽位（值拷贝，改动不会回写）
-	TargetSlots courseSlot.CourseSlots
-	// ClassroomSlots 该教室现有的槽位
-	ClassroomSlots courseSlot.CourseSlots
-	// Course 目标槽位所属课程（用于比对容量）；取不到时为零值
-	Course course.Course
-	// Classroom 目标教室（用于比对容量）；取不到时为零值
-	Classroom classroom.Classroom
-}
-
-// CourseAssignContext 是仓库侧在给槽位配课程时一并交给冲突检查的上下文。
-type CourseAssignContext struct {
-	// TargetSlots 本次要配的槽位（值拷贝，改动不会回写）
-	TargetSlots courseSlot.CourseSlots
-	// CourseSlots 该课程现有的其他槽位
-	CourseSlots courseSlot.CourseSlots
-}
-
 // CourseSlotCommand 课表槽位命令接口
 //
 // 槽位 ID 是聚合生成的 UUID（string），所以 slotIDs 用 []string。
+// 三个 AssignXxx 都把「本次要排的槽位 + 目标聚合」交给调用方注入的
+// checkConflictFn 判定，仓库自己不认识业务规则。
 type CourseSlotCommand interface {
 	// Save 保存课表槽位（新增或更新）
 	Save(cs *courseSlot.CourseSlot) error
@@ -49,16 +31,21 @@ type CourseSlotCommand interface {
 	// Delete 删除课表槽位
 	Delete(id string) error
 
-	// checkConflictFn 由调用方注入，仓库会把「本次要排的槽位 + 该讲师聚合」
-	// 一并传进去；传 nil 表示不做检查。冲突时整批中止，不写入任何槽位。
+	// AssignTeacher 给指定课表槽位们配置老师
+	//
+	// 传 nil 表示不做检查。冲突时整批中止，不写入任何槽位。
 	AssignTeacher(ctx context.Context, slotIDs []string, teacherID int64,
 		checkConflictFn func(ctx context.Context, slots []courseSlot.CourseSlot, t teacher.Teacher) (bool, error)) error
 
-	// checkConflictFn 由调用方注入，仓库会把 CourseAssignContext 装好传进去；
-	// 传 nil 表示不做检查。
-	AssignCourse(ctx context.Context, slotIDs []string, courseID string, checkConflictFn func(ctx context.Context, ac CourseAssignContext) (bool, error)) error
+	// AssignCourse 给指定课表槽位们配置课程
+	//
+	// 传 nil 表示不做检查。冲突时整批中止，不写入任何槽位。
+	AssignCourse(ctx context.Context, slotIDs []string, courseID string,
+		checkConflictFn func(ctx context.Context, slots []courseSlot.CourseSlot, c course.Course) (bool, error)) error
 
-	// checkConflictFn 由调用方注入，仓库会把 ClassroomAssignContext 装好传进去；
-	// 传 nil 表示不做检查。
-	AssignClassroom(ctx context.Context, slotIDs []string, classroomID string, checkConflictFn func(ctx context.Context, ac ClassroomAssignContext) (bool, error)) error
+	// AssignClassroom 给指定课表槽位们配置教室
+	//
+	// 传 nil 表示不做检查。冲突时整批中止，不写入任何槽位。
+	AssignClassroom(ctx context.Context, slotIDs []string, classroomID string,
+		checkConflictFn func(ctx context.Context, slots []courseSlot.CourseSlot, c classroom.Classroom) (bool, error)) error
 }
