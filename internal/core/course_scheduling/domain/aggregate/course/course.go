@@ -31,13 +31,21 @@ func NewCourse(
 
 // --- 核心业务行为 (Domain Behaviors) ---
 
-// Enroll 选课行为：校验时间窗口与库存容量
-func (c *Course) Enroll(now time.Time) error {
+// CanEnroll 选课准入检查（只读，不改状态）：是否在选课窗口内、是否还有名额。
+func (c *Course) CanEnroll(now time.Time) error {
 	if !c.enrollment.CanEnroll(now) {
 		return ErrNotInEnrollmentStage
 	}
 	if c.capacity.IsFull() {
 		return ErrCourseFull
+	}
+	return nil
+}
+
+// Enroll 选课行为：校验时间窗口与库存容量
+func (c *Course) Enroll(now time.Time) error {
+	if err := c.CanEnroll(now); err != nil {
+		return err
 	}
 	c.capacity.enrolled++
 	return nil

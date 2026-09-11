@@ -90,6 +90,13 @@ func (cs *CourseSlot) IsConflictingWith(other *CourseSlot) bool {
 	return cs.teacherID == other.teacherID || cs.classroomID == other.classroomID
 }
 
+// OverlapsWith 判断两个槽位是否撞时间：星期几相同 且 日内时间段重叠。
+//
+// 只看时间，不看讲师/教室 —— 需要判"同人/同教室撞车"请用 IsConflictingWith。
+func (cs *CourseSlot) OverlapsWith(other CourseSlot) bool {
+	return cs.weekday == other.weekday && cs.timeRange.Overlaps(other.timeRange)
+}
+
 // UpdateSchedule 调整排课模板的时间与场地
 func (cs *CourseSlot) UpdateSchedule(weekday time.Weekday, timeRange DayTimeRange, classroomID string) error {
 	if classroomID == "" {
@@ -108,6 +115,26 @@ func (cs *CourseSlot) ChangeTeacher(teacherID int64) error {
 		return errors.New("invalid teacher ID")
 	}
 	cs.teacherID = teacherID
+	cs.updatedAt = time.Now()
+	return nil
+}
+
+// ChangeClassroom 更换该槽位的上课教室
+func (cs *CourseSlot) ChangeClassroom(classroomID string) error {
+	if classroomID == "" {
+		return errors.New("classroom ID cannot be empty")
+	}
+	cs.classroomID = classroomID
+	cs.updatedAt = time.Now()
+	return nil
+}
+
+// ChangeCourse 更换该槽位所属的课程
+func (cs *CourseSlot) ChangeCourse(courseID string) error {
+	if courseID == "" {
+		return errors.New("course ID cannot be empty")
+	}
+	cs.courseID = courseID
 	cs.updatedAt = time.Now()
 	return nil
 }
@@ -148,9 +175,9 @@ func (cs *CourseSlot) InstantiateForDate(date time.Time, loc *time.Location) (ti
 
 // --- 只读属性访问器 (Getters) ---
 
-func (cs *CourseSlot) ID() string            { return cs.id }
-func (cs *CourseSlot) CourseID() string       { return cs.courseID }
-func (cs *CourseSlot) Weekday() time.Weekday  { return cs.weekday }
+func (cs *CourseSlot) ID() string              { return cs.id }
+func (cs *CourseSlot) CourseID() string        { return cs.courseID }
+func (cs *CourseSlot) Weekday() time.Weekday   { return cs.weekday }
 func (cs *CourseSlot) TimeRange() DayTimeRange { return cs.timeRange }
-func (cs *CourseSlot) TeacherID() int64       { return cs.teacherID }
-func (cs *CourseSlot) ClassroomID() string    { return cs.classroomID }
+func (cs *CourseSlot) TeacherID() int64        { return cs.teacherID }
+func (cs *CourseSlot) ClassroomID() string     { return cs.classroomID }

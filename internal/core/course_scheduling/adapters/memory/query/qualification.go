@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"cqrs/internal/core/course_scheduling/adapters/memory"
+	"cqrs/internal/core/course_scheduling/domain/aggregate/course"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseType"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/qualification"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/teacher"
@@ -70,4 +71,27 @@ func (q *qualificationQuery) TeachersByCourseTypeID(_ context.Context, courseTyp
 		}
 	}
 	return out, nil
+}
+
+// IsTeacherQualifiedForCourse 判断讲师是否有教指定课程的资质。
+//
+// 先把课程换回它所属的课程类型，再看该讲师有没有这个类型的资质。
+// 与其它资质查询一致：不按资质状态过滤（已吊销/已过期也算「有」）。
+func (q *qualificationQuery) IsTeacherQualifiedForCourse(ctx context.Context, teacherID int64, courseID string) (bool, error) {
+	courses := indexBy(q.data.Courses(), func(c *course.Course) string { return c.ID() })
+	item, ok := courses[courseID]
+	if !ok {
+		return false, nil // 课程不存在，谈不上有资质
+	}
+
+	types, err := q.CourseTypesByTeacherID(ctx, teacherID)
+	if err != nil {
+		return false, err
+	}
+	for _, ct := range types {
+		if ct.ID() == item.CourseTypeID() {
+			return true, nil
+		}
+	}
+	return false, nil
 }

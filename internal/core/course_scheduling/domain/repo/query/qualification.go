@@ -18,4 +18,8 @@ type QualificationQuery interface {
 	CourseTypesByTeacherID(ctx context.Context, teacherID int64) ([]*courseType.CourseType, error)
 	// TeachersByCourseTypeID 根据课程类型 ID 获取有资质的讲师列表
 	TeachersByCourseTypeID(ctx context.Context, courseTypeID string) ([]*teacher.Teacher, error)
+	// IsTeacherQualifiedForCourse 判断讲师是否有教指定课程的资质
+	//
+	// 链路：课程 → 所属课程类型 → 该讲师是否有该类型的资质。
+	IsTeacherQualifiedForCourse(ctx context.Context, teacherID int64, courseID string) (bool, error)
 }
