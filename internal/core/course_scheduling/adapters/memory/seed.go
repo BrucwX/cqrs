@@ -369,7 +369,8 @@ func demoClassroom(id, building string, floor int, room string, capacity int) (*
 	if err != nil {
 		return nil, err
 	}
-	return classroom.NewClassroom(id, location, capacity)
+	// 使用 Reconstitute 恢复固定 ID 的种子数据
+	return classroom.Reconstitute(id, location, capacity, 0, classroom.StatusAvailable), nil
 }
 
 func demoCourse(id string, courseTypeID string, maxSeats, enrolled int) (*course.Course, error) {

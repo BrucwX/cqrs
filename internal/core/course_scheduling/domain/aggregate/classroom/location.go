@@ -24,7 +24,7 @@ func NewLocation(building string, floor int, room string) (Location, error) {
 }
 
 func (l Location) Building() string { return l.building }
-func (l Location) Floor() int      { return l.floor }
+func (l Location) Floor() int       { return l.floor }
 func (l Location) Room() string     { return l.room }
 func (l Location) FullName() string {
 	return fmt.Sprintf("%s-%dF-%s", l.building, l.floor, l.room)

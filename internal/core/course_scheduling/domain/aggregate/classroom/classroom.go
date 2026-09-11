@@ -1,6 +1,10 @@
 package classroom
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/google/uuid"
+)
 
 // --- 聚合根 (Aggregate Root) ---
 
@@ -12,22 +16,48 @@ type Classroom struct {
 	status    Status
 }
 
-// 创建教室聚合根
-func NewClassroom(id string, location Location, capacity int) (*Classroom, error) {
-	if id == "" {
-		return nil, errors.New("classroom ID is required")
+// NewClassroom 新建教室（ID 由聚合自己生成）
+//
+// location 与 capacity 必填；status 传 nil 就默认「可用」，
+// 报废的教室不能直接建出来。
+func NewClassroom(location *Location, capacity *int, status *Status) (*Classroom, error) {
+	if location == nil || location.building == "" || location.room == "" {
+		return nil, ErrInvalidLocation
 	}
-	if capacity <= 0 {
+	if capacity == nil || *capacity <= 0 {
 		return nil, ErrInvalidCapacity
 	}
 
+	created := &Classroom{
+		id:       uuid.New().String(),
+		location: *location,
+		capacity: *capacity,
+		status:   StatusAvailable,
+	}
+
+	if status != nil {
+		if err := created.ChangeStatus(*status); err != nil {
+			return nil, err
+		}
+	}
+	return created, nil
+}
+
+// Reconstitute 仓储/种子数据恢复：ID、已分配座位与状态都由外部给定。
+func Reconstitute(
+	id string,
+	location Location,
+	capacity int,
+	allocated int,
+	status Status,
+) *Classroom {
 	return &Classroom{
 		id:        id,
 		location:  location,
 		capacity:  capacity,
-		allocated: 0,
-		status:    StatusAvailable,
-	}, nil
+		allocated: allocated,
+		status:    status,
+	}
 }
 
 // --- 核心业务行为 (Domain Behaviors) ---
@@ -86,12 +116,57 @@ func (c *Classroom) UpdateCapacity(newCapacity int) error {
 	return nil
 }
 
+// UpdateLocation 调整教室位置
+func (c *Classroom) UpdateLocation(location Location) error {
+	if location.building == "" || location.room == "" {
+		return ErrInvalidLocation
+	}
+	c.location = location
+	return nil
+}
+
+// ChangeStatus 切换教室状态
+//
+// 只支持在「可用 / 维护中」之间切；报废（StatusDecommissioned）
+// 要经过专门的废弃流程，这里直接拒绝。
+func (c *Classroom) ChangeStatus(status Status) error {
+	switch status {
+	case StatusAvailable:
+		c.FinishMaintenance()
+	case StatusUnderMaintenance:
+		c.StartMaintenance()
+	default:
+		return ErrUnsupportedStatusChange
+	}
+	return nil
+}
+
+// Update 按非 nil 的字段更新教室，nil 的字段保持原值。
+func (c *Classroom) Update(location *Location, capacity *int, status *Status) error {
+	if location != nil {
+		if err := c.UpdateLocation(*location); err != nil {
+			return err
+		}
+	}
+	if capacity != nil {
+		if err := c.UpdateCapacity(*capacity); err != nil {
+			return err
+		}
+	}
+	if status != nil {
+		if err := c.ChangeStatus(*status); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // --- 属性只读访问器 (Getters) ---
 
-func (c *Classroom) ID() string            { return c.id }
-func (c *Classroom) Location() Location    { return c.location }
-func (c *Classroom) Capacity() int         { return c.capacity }
-func (c *Classroom) AllocatedSeats() int   { return c.allocated }
-func (c *Classroom) AvailableSeats() int   { return c.capacity - c.allocated }
-func (c *Classroom) Status() Status        { return c.status }
-func (c *Classroom) IsAvailable() bool     { return c.status == StatusAvailable }
+func (c *Classroom) ID() string          { return c.id }
+func (c *Classroom) Location() Location  { return c.location }
+func (c *Classroom) Capacity() int       { return c.capacity }
+func (c *Classroom) AllocatedSeats() int { return c.allocated }
+func (c *Classroom) AvailableSeats() int { return c.capacity - c.allocated }
+func (c *Classroom) Status() Status      { return c.status }
+func (c *Classroom) IsAvailable() bool   { return c.status == StatusAvailable }

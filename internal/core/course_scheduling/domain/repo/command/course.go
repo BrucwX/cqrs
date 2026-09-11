@@ -1,6 +1,17 @@
 package command
 
-import "cqrs/internal/core/course_scheduling/domain/aggregate/course"
+import (
+	"errors"
+
+	"cqrs/internal/core/course_scheduling/domain/aggregate/course"
+)
+
+var (
+	// ErrCourseRequired 传入的课程为空。
+	ErrCourseRequired = errors.New("course is required")
+	// ErrCourseNotFound 指定的课程不存在。
+	ErrCourseNotFound = errors.New("course not found")
+)
 
 // CourseCommand 课程命令接口
 type CourseCommand interface {

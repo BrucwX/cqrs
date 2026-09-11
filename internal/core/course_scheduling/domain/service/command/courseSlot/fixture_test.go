@@ -121,7 +121,7 @@ func newFixture(t *testing.T, withQualification bool) *fixture {
 	}
 }
 
-// newClassroom 造一间教室，location 用 ID 拼出来。
+// newClassroom 造一间教室，location 用 ID 拼出来；ID 固定所以走 Reconstitute。
 func newClassroom(t *testing.T, id string, seats int) (*classroom.Classroom, error) {
 	t.Helper()
 
@@ -129,7 +129,7 @@ func newClassroom(t *testing.T, id string, seats int) (*classroom.Classroom, err
 	if err != nil {
 		t.Fatalf("new location: %v", err)
 	}
-	return classroom.NewClassroom(id, loc, seats)
+	return classroom.Reconstitute(id, loc, seats, 0, classroom.StatusAvailable), nil
 }
 
 // newSlot 造一条待排的槽位（还没排教室）并塞进存储。

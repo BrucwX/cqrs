@@ -1,15 +1,8 @@
 package command
 
 import (
-	"errors"
-
 	"cqrs/internal/core/course_scheduling/domain/aggregate/course"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlot"
-)
-
-var (
-	// ErrClassroomNotFound 指定的教室不存在。
-	ErrClassroomNotFound = errors.New("classroom not found")
 )
 
 // AssignClassroomRepo 是排教室做冲突检查所需的数据来源。

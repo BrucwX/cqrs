@@ -1,6 +1,17 @@
 package command
 
-import "cqrs/internal/core/course_scheduling/domain/aggregate/qualification"
+import (
+	"errors"
+
+	"cqrs/internal/core/course_scheduling/domain/aggregate/qualification"
+)
+
+var (
+	// ErrQualificationRequired 传入的授课资质为空。
+	ErrQualificationRequired = errors.New("qualification is required")
+	// ErrQualificationNotFound 指定的授课资质不存在。
+	ErrQualificationNotFound = errors.New("qualification not found")
+)
 
 // QualificationCommand 授课资质命令接口
 type QualificationCommand interface {

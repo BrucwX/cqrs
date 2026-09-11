@@ -98,6 +98,22 @@ func (d *Data) SeedCourse(items ...*course.Course) {
 	}
 }
 
+// SaveCourse 写入或覆盖单门课程（写侧适配器使用）。
+func (d *Data) SaveCourse(c *course.Course) {
+	d.SeedCourse(c)
+}
+
+// DeleteCourse 按 ID 删除课程，返回是否真的删掉了。
+func (d *Data) DeleteCourse(id string) bool {
+	d.coursesMu.Lock()
+	defer d.coursesMu.Unlock()
+	if _, ok := d.courses[id]; !ok {
+		return false
+	}
+	delete(d.courses, id)
+	return true
+}
+
 // SeedCourseType 写入或覆盖课程类型。
 func (d *Data) SeedCourseType(items ...*courseType.CourseType) {
 	d.courseTypesMu.Lock()
@@ -120,6 +136,22 @@ func (d *Data) SeedClassroom(items ...*classroom.Classroom) {
 	}
 }
 
+// SaveClassroom 写入或覆盖单间教室（写侧适配器使用）。
+func (d *Data) SaveClassroom(c *classroom.Classroom) {
+	d.SeedClassroom(c)
+}
+
+// DeleteClassroom 按 ID 删除教室，返回是否真的删掉了。
+func (d *Data) DeleteClassroom(id string) bool {
+	d.classroomsMu.Lock()
+	defer d.classroomsMu.Unlock()
+	if _, ok := d.classrooms[id]; !ok {
+		return false
+	}
+	delete(d.classrooms, id)
+	return true
+}
+
 // SeedStudent 写入或覆盖学员。
 func (d *Data) SeedStudent(items ...*student.Student) {
 	d.studentsMu.Lock()
@@ -131,6 +163,22 @@ func (d *Data) SeedStudent(items ...*student.Student) {
 	}
 }
 
+// SaveStudent 写入或覆盖单个学员（写侧适配器使用）。
+func (d *Data) SaveStudent(s *student.Student) {
+	d.SeedStudent(s)
+}
+
+// DeleteStudent 按 ID 删除学员，返回是否真的删掉了。
+func (d *Data) DeleteStudent(id int64) bool {
+	d.studentsMu.Lock()
+	defer d.studentsMu.Unlock()
+	if _, ok := d.students[id]; !ok {
+		return false
+	}
+	delete(d.students, id)
+	return true
+}
+
 // SeedTeacher 写入或覆盖讲师。
 func (d *Data) SeedTeacher(items ...*teacher.Teacher) {
 	d.teachersMu.Lock()
@@ -140,6 +188,22 @@ func (d *Data) SeedTeacher(items ...*teacher.Teacher) {
 			d.teachers[item.ID()] = item
 		}
 	}
+}
+
+// SaveTeacher 写入或覆盖单个讲师（写侧适配器使用）。
+func (d *Data) SaveTeacher(t *teacher.Teacher) {
+	d.SeedTeacher(t)
+}
+
+// DeleteTeacher 按 ID 删除讲师，返回是否真的删掉了。
+func (d *Data) DeleteTeacher(id int64) bool {
+	d.teachersMu.Lock()
+	defer d.teachersMu.Unlock()
+	if _, ok := d.teachers[id]; !ok {
+		return false
+	}
+	delete(d.teachers, id)
+	return true
 }
 
 // SeedCourseSlot 写入或覆盖课表槽位。
@@ -296,6 +360,22 @@ func (d *Data) SeedQualification(items ...*qualification.Qualification) {
 	}
 }
 
+// SaveQualification 写入或覆盖单条授课资质（写侧适配器使用）。
+func (d *Data) SaveQualification(q *qualification.Qualification) {
+	d.SeedQualification(q)
+}
+
+// DeleteQualification 按 ID 删除授课资质，返回是否真的删掉了。
+func (d *Data) DeleteQualification(id int64) bool {
+	d.qualificationsMu.Lock()
+	defer d.qualificationsMu.Unlock()
+	if _, ok := d.qualifications[id]; !ok {
+		return false
+	}
+	delete(d.qualifications, id)
+	return true
+}
+
 // --- 读取：返回按 ID 升序的快照，调用方拿到的是新切片 ---
 
 // Courses 返回全部课程快照（按课程 ID 升序）。
@@ -332,6 +412,14 @@ func (d *Data) Classrooms() []*classroom.Classroom {
 	}
 	sort.Slice(out, func(i, j int) bool { return out[i].ID() < out[j].ID() })
 	return out
+}
+
+// ClassroomByID 按 ID 取教室。
+func (d *Data) ClassroomByID(id string) (*classroom.Classroom, bool) {
+	d.classroomsMu.RLock()
+	defer d.classroomsMu.RUnlock()
+	item, ok := d.classrooms[id]
+	return item, ok
 }
 
 // Students 返回全部学员快照（按学员 ID 升序）。

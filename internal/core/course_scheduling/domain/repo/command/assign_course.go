@@ -1,14 +1,7 @@
 package command
 
 import (
-	"errors"
-
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlot"
-)
-
-var (
-	// ErrCourseNotFound 指定的课程不存在。
-	ErrCourseNotFound = errors.New("course not found")
 )
 
 // AssignCourseRepo 是给槽位配课程做冲突检查所需的数据来源。
