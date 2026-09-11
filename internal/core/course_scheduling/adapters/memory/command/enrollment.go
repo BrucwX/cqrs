@@ -6,7 +6,6 @@ import (
 
 	"cqrs/internal/core/course_scheduling/adapters/memory"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/course"
-	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlot"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/enrollment"
 	repo "cqrs/internal/core/course_scheduling/domain/repo/command"
 )
@@ -45,15 +44,20 @@ func (c *EnrollmentCommand) Delete(id int64) error {
 
 // Enroll 学员选课
 //
-// 先把 checkEnrollment 需要的上下文装好交给调用方判定（选课窗口 + 容量 + 时间冲突），
+// 先把该课程聚合取出来交给调用方判定（选课窗口 + 容量 + 时间冲突），
 // 通过后才写入；传 nil 表示不做检查。
-func (c *EnrollmentCommand) Enroll(ctx context.Context, e *enrollment.CourseEnrollment, checkConflictFn func(ctx context.Context, ec repo.EnrollmentContext) (bool, error)) error {
+func (c *EnrollmentCommand) Enroll(ctx context.Context, e *enrollment.CourseEnrollment, checkConflictFn func(ctx context.Context, e *enrollment.CourseEnrollment, crs course.Course) (bool, error)) error {
 	if e == nil {
 		return repo.ErrEnrollmentRequired
 	}
 
 	if checkConflictFn != nil {
-		conflict, err := checkConflictFn(ctx, c.enrollmentContext(e))
+		crs, err := c.courseByID(e.CourseID())
+		if err != nil {
+			return err
+		}
+
+		conflict, err := checkConflictFn(ctx, e, crs)
 		if err != nil {
 			return err
 		}
@@ -65,52 +69,12 @@ func (c *EnrollmentCommand) Enroll(ctx context.Context, e *enrollment.CourseEnro
 	return c.Save(e)
 }
 
-// --- 内部实现 ---
-
-// enrollmentContext 组装选课时冲突检查所需的上下文。
-func (c *EnrollmentCommand) enrollmentContext(e *enrollment.CourseEnrollment) repo.EnrollmentContext {
-	return repo.EnrollmentContext{
-		Course:       c.courseByID(e.CourseID()),
-		TargetSlots:  c.slotsOfCourses(e.CourseID()),
-		StudentSlots: c.slotsOfStudent(e.StudentID()),
-	}
-}
-
-// courseByID 取课程，取不到返回零值。
-func (c *EnrollmentCommand) courseByID(id string) course.Course {
+// courseByID 取课程聚合，取不到报 not found。
+func (c *EnrollmentCommand) courseByID(id string) (course.Course, error) {
 	for _, item := range c.data.Courses() {
 		if item.ID() == id {
-			return *item
+			return *item, nil
 		}
 	}
-	return course.Course{}
-}
-
-// slotsOfCourses 取若干门课程的全部排期。
-func (c *EnrollmentCommand) slotsOfCourses(courseIDs ...string) courseSlot.CourseSlots {
-	want := make(map[string]struct{}, len(courseIDs))
-	for _, id := range courseIDs {
-		want[id] = struct{}{}
-	}
-
-	out := make(courseSlot.CourseSlots, 0)
-	for _, cs := range c.data.CourseSlots() {
-		if _, ok := want[cs.CourseID()]; ok {
-			out = append(out, *cs)
-		}
-	}
-	return out
-}
-
-// slotsOfStudent 取该学员「在学」课程的全部排期（含目标课程本身，
-// 因此重复选课会表现为与自身槽位重叠）。
-// 已退课 / 已结业的记录不计入。
-func (c *EnrollmentCommand) slotsOfStudent(studentID int64) courseSlot.CourseSlots {
-	courseIDs := make([]string, 0)
-	for _, e := range c.data.Enrollments() {
-		if e.StudentID() == studentID && e.IsActive() {
-			courseIDs = append(courseIDs, e.CourseID())
-		}
-	}
-	return c.slotsOfCourses(courseIDs...)
+	return course.Course{}, fmt.Errorf("%w: %s", repo.ErrCourseNotFound, id)
 }

@@ -134,12 +134,14 @@ func TestStudentEnroll_Rejected(t *testing.T) {
 	cases := []struct {
 		name     string
 		courseID string
+		wantErr  error
 	}{
-		{"重复选课", courseDupe},
-		{"窗口已关闭", courseClosed},
-		{"课程已满", courseFull},
-		{"与在学课程撞时间", courseClash},
-		{"课程不存在", "c-not-exist"},
+		{"重复选课", courseDupe, repo.ErrEnrollmentConflict},
+		{"窗口已关闭", courseClosed, repo.ErrEnrollmentConflict},
+		{"课程已满", courseFull, repo.ErrEnrollmentConflict},
+		{"与在学课程撞时间", courseClash, repo.ErrEnrollmentConflict},
+		// 课程取不到时仓库会直接报 not found，不再当成冲突
+		{"课程不存在", "c-not-exist", repo.ErrCourseNotFound},
 	}
 
 	for _, tc := range cases {
@@ -156,8 +158,8 @@ func TestStudentEnroll_Rejected(t *testing.T) {
 			if err == nil {
 				t.Fatalf("期望被拒绝，实际选课成功: %+v", got)
 			}
-			if !errors.Is(err, repo.ErrEnrollmentConflict) {
-				t.Errorf("err = %v, want 包含 %v", err, repo.ErrEnrollmentConflict)
+			if !errors.Is(err, tc.wantErr) {
+				t.Errorf("err = %v, want 包含 %v", err, tc.wantErr)
 			}
 			if after := len(d.Enrollments()); after != before {
 				t.Errorf("被拒绝时不应写入，记录数 = %d, want %d", after, before)
@@ -174,6 +176,7 @@ func newHandler(d *memory.Data) *Handler {
 		memoryquery.NewCourseEnrollmentQuery(d),
 		memoryquery.NewStudentQuery(d),
 		memoryquery.NewCourseQuery(d),
+		memorycmd.NewEnrollRepo(d),
 	)
 }
 

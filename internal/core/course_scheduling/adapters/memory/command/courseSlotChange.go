@@ -43,15 +43,15 @@ func (c *CourseSlotChangeCommand) Delete(id int64) error {
 
 // Change 登记一次临时换课
 //
-// 先把 checkSlotChange 需要的上下文装好交给调用方判定（目标讲师/教室在目标时段
-// 是否已被占用），通过后才写入；传 nil 表示不做检查。
-func (c *CourseSlotChangeCommand) Change(ctx context.Context, csc *courseSlotChange.CourseSlotChange, checkConflictFn func(ctx context.Context, sc repo.SlotChangeContext) (bool, error)) error {
+// 把本次换课交给调用方判定（目标讲师/教室在目标时段是否已被占用），
+// 通过后才写入；传 nil 表示不做检查。
+func (c *CourseSlotChangeCommand) Change(ctx context.Context, csc *courseSlotChange.CourseSlotChange, checkConflictFn func(ctx context.Context, csc *courseSlotChange.CourseSlotChange) (bool, error)) error {
 	if csc == nil {
 		return repo.ErrSlotChangeRequired
 	}
 
 	if checkConflictFn != nil {
-		conflict, err := checkConflictFn(ctx, c.slotChangeContext(csc))
+		conflict, err := checkConflictFn(ctx, csc)
 		if err != nil {
 			return err
 		}
@@ -59,45 +59,5 @@ func (c *CourseSlotChangeCommand) Change(ctx context.Context, csc *courseSlotCha
 			return fmt.Errorf("%w: course %s", repo.ErrSlotChangeConflict, csc.CourseID())
 		}
 	}
-
 	return c.Save(csc)
-}
-
-// --- 内部实现 ---
-
-// slotChangeContext 组装换课时冲突检查所需的上下文。
-func (c *CourseSlotChangeCommand) slotChangeContext(csc *courseSlotChange.CourseSlotChange) repo.SlotChangeContext {
-	target := csc.TargetPlan()
-
-	ctx := repo.SlotChangeContext{
-		Change:       *csc,
-		OtherChanges: c.otherChanges(csc.ID()),
-	}
-
-	for _, cs := range c.data.CourseSlots() {
-		// 本门课自己的排期就是被换掉的那节课，不算占用
-		if cs.CourseID() == csc.CourseID() {
-			continue
-		}
-		if cs.TeacherID() == target.TeacherID() {
-			ctx.TeacherSlots = append(ctx.TeacherSlots, *cs)
-		}
-		if cs.ClassroomID() == target.ClassroomID() {
-			ctx.ClassroomSlots = append(ctx.ClassroomSlots, *cs)
-		}
-	}
-
-	return ctx
-}
-
-// otherChanges 取除自己以外的全部换课记录。
-func (c *CourseSlotChangeCommand) otherChanges(id int64) []*courseSlotChange.CourseSlotChange {
-	all := c.data.CourseSlotChanges()
-	out := make([]*courseSlotChange.CourseSlotChange, 0, len(all))
-	for _, item := range all {
-		if item.ID() != id {
-			out = append(out, item)
-		}
-	}
-	return out
 }

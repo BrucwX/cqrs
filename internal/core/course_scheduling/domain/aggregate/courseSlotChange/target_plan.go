@@ -21,6 +21,9 @@ func NewTargetPlan(
 	if !start.Before(end) {
 		return TargetPlan{}, ErrInvalidTimeRange
 	}
+	if !sameDay(start, end) {
+		return TargetPlan{}, ErrTargetCrossDay
+	}
 	if teacherID <= 0 {
 		return TargetPlan{}, errors.New("target teacher ID is required")
 	}
@@ -34,6 +37,13 @@ func NewTargetPlan(
 		teacherID:     teacherID,
 		classroomID:   classroomID,
 	}, nil
+}
+
+// sameDay 判断两个时间点是否落在同一自然日。
+func sameDay(a, b time.Time) bool {
+	ay, am, ad := a.Date()
+	by, bm, bd := b.Date()
+	return ay == by && am == bm && ad == bd
 }
 
 func (tp TargetPlan) TargetStartAt() time.Time { return tp.targetStartAt }

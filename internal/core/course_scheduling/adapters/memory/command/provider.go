@@ -8,8 +8,10 @@ var ProviderSet = wire.NewSet(
 	NewAssignClassroomRepo,
 	NewAssignCourseRepo,
 	NewAssignTeacherRepo,
-	NewCourseSlotCommand,
 	NewCourseSlotChangeCommand,
+	NewCourseSlotCommand,
+	NewEnrollRepo,
 	NewEnrollmentCommand,
 	NewMakeupCommand,
+	NewSlotChangeRepo,
 )

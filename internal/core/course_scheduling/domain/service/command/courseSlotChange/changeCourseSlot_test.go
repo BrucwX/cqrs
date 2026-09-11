@@ -31,7 +31,10 @@ func newHandler(t *testing.T) (*Handler, *memory.Data) {
 	}
 	t.Cleanup(cleanup)
 
-	return NewHandler(memorycmd.NewCourseSlotChangeCommand(d)), d
+	return NewHandler(
+		memorycmd.NewCourseSlotChangeCommand(d),
+		memorycmd.NewSlotChangeRepo(d),
+	), d
 }
 
 // nextMonday 返回下一个周一（严格晚于今天），避免目标时间落到过去。
