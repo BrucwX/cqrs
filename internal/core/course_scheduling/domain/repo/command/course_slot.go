@@ -17,8 +17,9 @@ type CourseSlotCommand interface {
 	Update(ctx context.Context, slotIDs []int64, teacherID int64) error
 
 	// AssignTeacher 给指定课表槽位们配置老师
-	AssignTeacher(ctx context.Context, slotIDs []int64, teacherID int64, checkConflictFn func(ctx context.Context, cs *courseSlot.CourseSlot) (bool, error)) error
-
+	AssignTeacher(ctx context.Context, slotIDs []int64, teacherID int64, checkConflictFn func(ctx context.Context, cs []courseSlot.CourseSlot, t_cs []courseSlot.CourseSlot) (bool, error)) error
+	// AssignCourse 给指定课表槽位们配置课程
+	AssignCourse(ctx context.Context, slotIDs []string, courseId string, checkConflictFn func(ctx context.Context, cs []courseSlot.CourseSlot, c_cs []courseSlot.CourseSlot) (bool, error)) error
 	// AssignClassroom 给指定课表槽位们配置教室
-	AssignClassroom(ctx context.Context, slotIDs []int64, classroomID string, checkConflictFn func(ctx context.Context, cs *courseSlot.CourseSlot) (bool, error)) error
+	AssignClassroom(ctx context.Context, slotIDs []int64, classroomID string, checkConflictFn func(ctx context.Context, cs []courseSlot.CourseSlot, cl_cs []courseSlot.CourseSlot) (bool, error)) error
 }
