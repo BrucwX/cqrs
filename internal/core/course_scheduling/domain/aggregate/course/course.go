@@ -1,6 +1,10 @@
 package course
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 // --- 聚合根 (Aggregate Root) ---
 
@@ -12,8 +16,39 @@ type Course struct {
 	period       CoursePeriod
 }
 
-// 工厂方法创建 Course 聚合根
+// NewCourse 创建课程（ID 由聚合自己生成）
+//
+// courseTypeID / capacity / enrollment / period 必填（指针为 nil 表示没给）。
 func NewCourse(
+	courseTypeID *string,
+	capacity *Capacity,
+	enrollment *EnrollmentWindow,
+	period *CoursePeriod,
+) (*Course, error) {
+	if courseTypeID == nil || *courseTypeID == "" {
+		return nil, ErrCourseTypeRequired
+	}
+	if capacity == nil {
+		return nil, ErrCapacityRequired
+	}
+	if enrollment == nil {
+		return nil, ErrEnrollmentRequired
+	}
+	if period == nil {
+		return nil, ErrPeriodRequired
+	}
+
+	return &Course{
+		id:           uuid.New().String(),
+		courseTypeID: *courseTypeID,
+		capacity:     *capacity,
+		enrollment:   *enrollment,
+		period:       *period,
+	}, nil
+}
+
+// Reconstitute 仓储/种子数据恢复：ID 由外部给定。
+func Reconstitute(
 	id string,
 	courseTypeID string,
 	capacity Capacity,
@@ -69,6 +104,31 @@ func (c *Course) RecordCompletedHours(hours int) error {
 		return ErrInvalidHours
 	}
 	c.period.completedHours = newCompleted
+	return nil
+}
+
+// Update 按非 nil 的字段更新课程，nil 的字段保持原值。
+func (c *Course) Update(
+	courseTypeID *string,
+	capacity *Capacity,
+	enrollment *EnrollmentWindow,
+	period *CoursePeriod,
+) error {
+	if courseTypeID != nil {
+		if *courseTypeID == "" {
+			return ErrCourseTypeRequired
+		}
+		c.courseTypeID = *courseTypeID
+	}
+	if capacity != nil {
+		c.capacity = *capacity
+	}
+	if enrollment != nil {
+		c.enrollment = *enrollment
+	}
+	if period != nil {
+		c.period = *period
+	}
 	return nil
 }
 

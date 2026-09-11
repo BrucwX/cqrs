@@ -1,6 +1,7 @@
 package command
 
 import (
+	"context"
 	"fmt"
 
 	"cqrs/internal/core/course_scheduling/adapters/memory"
@@ -23,12 +24,34 @@ func NewStudentCommand(d *memory.Data) repo.StudentCommand {
 	return &StudentCommand{data: d}
 }
 
-// Save 保存学员（新增或更新）
-func (c *StudentCommand) Save(s *student.Student) error {
+// Create 新增学员
+func (c *StudentCommand) Create(s *student.Student) error {
 	if s == nil {
 		return repo.ErrStudentRequired
 	}
 	c.data.SaveStudent(s)
+	return nil
+}
+
+// Update 按 ID 取出学员交给 updateFn 改，改完写回
+func (c *StudentCommand) Update(ctx context.Context, id int64, updateFn func(ctx context.Context, s *student.Student) (*student.Student, error)) error {
+	current, err := c.Get(id)
+	if err != nil {
+		return err
+	}
+	if current == nil {
+		return fmt.Errorf("%w: %d", repo.ErrStudentNotFound, id)
+	}
+
+	updated, err := updateFn(ctx, current)
+	if err != nil {
+		return err
+	}
+	if updated == nil {
+		return repo.ErrStudentRequired
+	}
+
+	c.data.SaveStudent(updated)
 	return nil
 }
 
@@ -38,4 +61,13 @@ func (c *StudentCommand) Delete(id int64) error {
 		return fmt.Errorf("%w: %d", repo.ErrStudentNotFound, id)
 	}
 	return nil
+}
+
+// Get 取学员；不存在时返回 (nil, nil)。
+func (c *StudentCommand) Get(id int64) (*student.Student, error) {
+	item, ok := c.data.StudentByID(id)
+	if !ok {
+		return nil, nil
+	}
+	return item, nil
 }

@@ -10,4 +10,5 @@ var (
 	ErrAlreadyOnLeave    = errors.New("teacher is already on leave")
 	ErrAlreadyActive     = errors.New("teacher is already in active status")
 	ErrAlreadyTerminated = errors.New("teacher has already been terminated")
+	ErrUnknownStatus     = errors.New("unknown teacher status")
 )

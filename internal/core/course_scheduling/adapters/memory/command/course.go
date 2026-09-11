@@ -1,6 +1,7 @@
 package command
 
 import (
+	"context"
 	"fmt"
 
 	"cqrs/internal/core/course_scheduling/adapters/memory"
@@ -23,12 +24,34 @@ func NewCourseCommand(d *memory.Data) repo.CourseCommand {
 	return &CourseCommand{data: d}
 }
 
-// Save 保存课程（新增或更新）
-func (c *CourseCommand) Save(crs *course.Course) error {
+// Create 新增课程
+func (c *CourseCommand) Create(crs *course.Course) error {
 	if crs == nil {
 		return repo.ErrCourseRequired
 	}
 	c.data.SaveCourse(crs)
+	return nil
+}
+
+// Update 按 ID 取出课程交给 updateFn 改，改完写回
+func (c *CourseCommand) Update(ctx context.Context, id string, updateFn func(ctx context.Context, crs *course.Course) (*course.Course, error)) error {
+	current, err := c.Get(id)
+	if err != nil {
+		return err
+	}
+	if current == nil {
+		return fmt.Errorf("%w: %s", repo.ErrCourseNotFound, id)
+	}
+
+	updated, err := updateFn(ctx, current)
+	if err != nil {
+		return err
+	}
+	if updated == nil {
+		return repo.ErrCourseRequired
+	}
+
+	c.data.SaveCourse(updated)
 	return nil
 }
 
@@ -38,4 +61,13 @@ func (c *CourseCommand) Delete(id string) error {
 		return fmt.Errorf("%w: %s", repo.ErrCourseNotFound, id)
 	}
 	return nil
+}
+
+// Get 取课程；不存在时返回 (nil, nil)。
+func (c *CourseCommand) Get(id string) (*course.Course, error) {
+	item, ok := c.data.CourseByID(id)
+	if !ok {
+		return nil, nil
+	}
+	return item, nil
 }

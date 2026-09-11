@@ -17,26 +17,45 @@ type Student struct {
 	updatedAt   time.Time
 }
 
-// NewStudent 录入学员档案
+// NewStudent 录入学员档案（ID 由聚合自己生成）
+//
+// name 必填；studentType / contact 不给就取零值；status 不给默认「正常」。
 func NewStudent(
-	name string,
-	studentType StudentType,
-	contact ContactInfo,
+	name *string,
+	studentType *StudentType,
+	contact *ContactInfo,
+	status *Status,
 ) (*Student, error) {
-	if name == "" {
+	if name == nil || *name == "" {
 		return nil, errors.New("student name is required")
 	}
 
 	now := time.Now()
-	return &Student{
+	created := &Student{
 		id:          generateID(),
-		name:        name,
-		studentType: studentType,
-		contact:     contact,
+		name:        *name,
+		studentType: orZero(studentType),
+		contact:     orZero(contact),
 		status:      StatusActive,
 		createdAt:   now,
 		updatedAt:   now,
-	}, nil
+	}
+
+	if status != nil {
+		if err := created.ChangeStatus(*status); err != nil {
+			return nil, err
+		}
+	}
+	return created, nil
+}
+
+// orZero 解引用可选字段；nil 时取零值。
+func orZero[T any](p *T) T {
+	if p == nil {
+		var zero T
+		return zero
+	}
+	return *p
 }
 
 // generateID 生成唯一的 int64 ID
@@ -111,6 +130,32 @@ func (s *Student) Unblock() {
 func (s *Student) Cancel() {
 	s.status = StatusCancelled
 	s.updatedAt = time.Now()
+}
+
+// ChangeStatus 切换学员状态
+func (s *Student) ChangeStatus(status Status) error {
+	switch status {
+	case StatusActive:
+		s.Unblock()
+	case StatusBlocked:
+		s.Block()
+	case StatusCancelled:
+		s.Cancel()
+	default:
+		return ErrUnknownStatus
+	}
+	return nil
+}
+
+// Update 按非 nil 的字段更新学员，nil 的字段保持原值。
+func (s *Student) Update(contact *ContactInfo, status *Status) error {
+	if contact != nil {
+		s.UpdateContact(*contact)
+	}
+	if status != nil {
+		return s.ChangeStatus(*status)
+	}
+	return nil
 }
 
 // --- 只读属性访问器 (Getters) ---

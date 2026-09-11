@@ -16,6 +16,7 @@ var ProviderSet = wire.NewSet(
 	NewEnrollmentCommand,
 	NewMakeupCommand,
 	NewQualificationCommand,
+	NewQualifyRepo,
 	NewSlotChangeRepo,
 	NewStudentCommand,
 	NewTeacherCommand,

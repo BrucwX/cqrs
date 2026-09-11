@@ -9,6 +9,7 @@ import (
 
 type Teacher struct {
 	id        int64
+	studentID int64 // 讲师作为学员上课时的 ID（报名/缺勤记录挂在它上面）
 	name      string
 	title     string      // 职衔（如 "特级培训师"、"金牌讲师"）
 	contact   ContactInfo // 联系方式
@@ -17,26 +18,55 @@ type Teacher struct {
 	updatedAt time.Time
 }
 
-// NewTeacher 录入新全职讲师（初始化默认为正常在职状态）
+// NewTeacher 录入新讲师（ID 由聚合自己生成）
+//
+// name 必填；title / contact 不给就取零值；status 不给默认「在职」。
+//
+// studentID 是讲师作为学员上课时的 ID（报名、缺勤记录都挂在它上面）。
+// 学员系统已经给他建过档就传进来，不给（nil 或 <=0）就由聚合自己发一个。
 func NewTeacher(
-	name string,
-	title string,
-	contact ContactInfo,
+	studentID *int64,
+	name *string,
+	title *string,
+	contact *ContactInfo,
+	status *Status,
 ) (*Teacher, error) {
-	if name == "" {
+	if name == nil || *name == "" {
 		return nil, errors.New("teacher name is required")
 	}
 
+	sid := orZero(studentID)
+	if sid <= 0 {
+		sid = generateID()
+	}
+
 	now := time.Now()
-	return &Teacher{
+	created := &Teacher{
 		id:        generateID(),
-		name:      name,
-		title:     title,
-		contact:   contact,
+		studentID: sid,
+		name:      *name,
+		title:     orZero(title),
+		contact:   orZero(contact),
 		status:    StatusActive,
 		createdAt: now,
 		updatedAt: now,
-	}, nil
+	}
+
+	if status != nil {
+		if err := created.ChangeStatus(*status); err != nil {
+			return nil, err
+		}
+	}
+	return created, nil
+}
+
+// orZero 解引用可选字段；nil 时取零值。
+func orZero[T any](p *T) T {
+	if p == nil {
+		var zero T
+		return zero
+	}
+	return *p
 }
 
 // generateID 生成唯一的 int64 ID
@@ -47,6 +77,7 @@ func generateID() int64 {
 // Reconstitute 从仓储层/数据库还原聚合根
 func Reconstitute(
 	id int64,
+	studentID int64,
 	name string,
 	title string,
 	contact ContactInfo,
@@ -55,6 +86,7 @@ func Reconstitute(
 ) *Teacher {
 	return &Teacher{
 		id:        id,
+		studentID: studentID,
 		name:      name,
 		title:     title,
 		contact:   contact,
@@ -123,9 +155,55 @@ func (t *Teacher) UpdateProfile(title string, contact ContactInfo) {
 	t.updatedAt = time.Now()
 }
 
+// ChangeStatus 切换任职状态
+//
+// 已经是目标状态时直接返回，保证重复调用幂等；
+// 离职后不可再改（Terminate 的守卫仍然生效）。
+func (t *Teacher) ChangeStatus(status Status) error {
+	if t.status == status {
+		return nil
+	}
+
+	switch status {
+	case StatusActive:
+		return t.ResumeWork()
+	case StatusOnLeave:
+		return t.TakeLeave()
+	case StatusTerminated:
+		return t.Terminate()
+	default:
+		return ErrUnknownStatus
+	}
+}
+
+// Update 按非 nil 的字段更新讲师，nil 的字段保持原值。
+//
+// 先切状态（唯一可能失败的一步），再改资料，避免失败时留下改了一半的对象。
+func (t *Teacher) Update(title *string, contact *ContactInfo, status *Status) error {
+	if status != nil {
+		if err := t.ChangeStatus(*status); err != nil {
+			return err
+		}
+	}
+
+	if title != nil || contact != nil {
+		newTitle := t.title
+		if title != nil {
+			newTitle = *title
+		}
+		newContact := t.contact
+		if contact != nil {
+			newContact = *contact
+		}
+		t.UpdateProfile(newTitle, newContact)
+	}
+	return nil
+}
+
 // --- 只读属性访问器 (Getters) ---
 
 func (t *Teacher) ID() int64            { return t.id }
+func (t *Teacher) StudentID() int64     { return t.studentID }
 func (t *Teacher) Name() string         { return t.name }
 func (t *Teacher) Title() string        { return t.title }
 func (t *Teacher) Contact() ContactInfo { return t.contact }

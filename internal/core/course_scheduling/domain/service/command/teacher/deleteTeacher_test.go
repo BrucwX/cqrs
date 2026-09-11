@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"testing"
+	"time"
 
 	"cqrs/internal/core/course_scheduling/adapters/memory"
 	memorycmd "cqrs/internal/core/course_scheduling/adapters/memory/command"
@@ -30,11 +31,8 @@ func newTeacher(t *testing.T) *teacher.Teacher {
 	if err != nil {
 		t.Fatalf("new contact: %v", err)
 	}
-	tt, err := teacher.NewTeacher("李娜", "讲师", contact)
-	if err != nil {
-		t.Fatalf("new teacher: %v", err)
-	}
-	return tt
+	// ID 固定，所以走 Reconstitute 而不是会自己生成 ID 的 NewTeacher
+	return teacher.Reconstitute(1, 201, "李娜", "讲师", contact, teacher.StatusActive, time.Now(), time.Now())
 }
 
 // TestDeleteTeacher 删除存在的讲师成功，再删报 not found。

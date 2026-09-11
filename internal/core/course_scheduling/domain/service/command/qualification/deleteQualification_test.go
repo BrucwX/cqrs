@@ -21,18 +21,17 @@ func newHandler(t *testing.T) (*Handler, *memory.Data) {
 	}
 	t.Cleanup(cleanup)
 
-	return NewHandler(memorycmd.NewQualificationCommand(d)), d
+	return NewHandler(memorycmd.NewQualificationCommand(d), memorycmd.NewQualifyRepo(d)), d
 }
 
 func newQualification(t *testing.T) *qualification.Qualification {
 	t.Helper()
 
 	now := time.Now()
-	q, err := qualification.NewQualification(1, "ct-demo", now, now.AddDate(1, 0, 0))
-	if err != nil {
-		t.Fatalf("new qualification: %v", err)
-	}
-	return q
+	// ID 固定，所以走 Reconstitute 而不是会自己生成 ID 的 NewQualification
+	return qualification.Reconstitute(
+		1, 1, "ct-demo", now, qualification.StatusActive, now,
+	)
 }
 
 // TestDeleteQualification 删除存在的资质成功，再删报 not found。

@@ -99,12 +99,10 @@ func TestQualificationQueryDoesNotFilterStatus(t *testing.T) {
 func TestQualificationQueryDeduplicatesCourseTypes(t *testing.T) {
 	d := newSeededData(t)
 
-	extra, err := qualification.NewQualification(
-		2, "ct-0001", time.Now(), time.Now().AddDate(1, 0, 0),
+	extra := qualification.Reconstitute(
+		999, 2, "ct-0001", time.Now(),
+		qualification.StatusActive, time.Now(),
 	)
-	if err != nil {
-		t.Fatalf("NewQualification() error = %v", err)
-	}
 	d.SeedQualification(extra)
 
 	q := NewQualificationQuery(d)

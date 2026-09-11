@@ -1,6 +1,7 @@
 package command
 
 import (
+	"context"
 	"errors"
 
 	"cqrs/internal/core/course_scheduling/domain/aggregate/teacher"
@@ -15,8 +16,18 @@ var (
 
 // TeacherCommand 讲师命令接口
 type TeacherCommand interface {
-	// Save 保存讲师（新增或更新）
-	Save(t *teacher.Teacher) error
+	// Create 新增讲师
+	Create(t *teacher.Teacher) error
+	// Update 更新讲师：按 ID 取出已有讲师交给 updateFn 改，改完写回
+	//
+	// 讲师不存在时报 ErrTeacherNotFound。
+	Update(
+		ctx context.Context,
+		id int64,
+		updateFn func(ctx context.Context, t *teacher.Teacher) (*teacher.Teacher, error),
+	) error
 	// Delete 删除讲师
 	Delete(id int64) error
+	// Get 取讲师；不存在时返回 (nil, nil)
+	Get(id int64) (*teacher.Teacher, error)
 }

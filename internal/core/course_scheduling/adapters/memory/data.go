@@ -422,6 +422,38 @@ func (d *Data) ClassroomByID(id string) (*classroom.Classroom, bool) {
 	return item, ok
 }
 
+// CourseByID 按 ID 取课程。
+func (d *Data) CourseByID(id string) (*course.Course, bool) {
+	d.coursesMu.RLock()
+	defer d.coursesMu.RUnlock()
+	item, ok := d.courses[id]
+	return item, ok
+}
+
+// TeacherByID 按 ID 取讲师。
+func (d *Data) TeacherByID(id int64) (*teacher.Teacher, bool) {
+	d.teachersMu.RLock()
+	defer d.teachersMu.RUnlock()
+	item, ok := d.teachers[id]
+	return item, ok
+}
+
+// StudentByID 按 ID 取学员。
+func (d *Data) StudentByID(id int64) (*student.Student, bool) {
+	d.studentsMu.RLock()
+	defer d.studentsMu.RUnlock()
+	item, ok := d.students[id]
+	return item, ok
+}
+
+// QualificationByID 按 ID 取授课资质。
+func (d *Data) QualificationByID(id int64) (*qualification.Qualification, bool) {
+	d.qualificationsMu.RLock()
+	defer d.qualificationsMu.RUnlock()
+	item, ok := d.qualifications[id]
+	return item, ok
+}
+
 // Students 返回全部学员快照（按学员 ID 升序）。
 func (d *Data) Students() []*student.Student {
 	d.studentsMu.RLock()

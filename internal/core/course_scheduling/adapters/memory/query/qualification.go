@@ -28,8 +28,8 @@ func (q *qualificationQuery) Page(_ context.Context, page, pageSize int) ([]*qua
 
 // CourseTypesByTeacherID 根据讲师 ID 获取其有资质的课程类型列表。
 //
-// 不按资质状态过滤（已吊销/已过期也会返回）；结果去重。
-// 若只要「当前有效」的资质，改用 item.IsEligible(time.Now()) == nil 判断。
+// 不按资质状态过滤（已吊销也会返回）；结果去重。
+// 若只要「当前有效」的资质，改用 item.IsEligible() == nil 判断。
 func (q *qualificationQuery) CourseTypesByTeacherID(_ context.Context, teacherID int64) ([]*courseType.CourseType, error) {
 	byID := indexBy(q.data.CourseTypes(), func(ct *courseType.CourseType) string { return ct.ID() })
 

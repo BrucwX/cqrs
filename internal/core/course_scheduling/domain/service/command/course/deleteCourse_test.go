@@ -40,7 +40,7 @@ func newCourse(t *testing.T, id string) *course.Course {
 		now.AddDate(0, 0, -1), now.AddDate(0, 0, 7), now.AddDate(0, 0, 14),
 	)
 
-	return course.NewCourse(id, "ct-demo", capacity, enrollment, period)
+	return course.Reconstitute(id, "ct-demo", capacity, enrollment, period)
 }
 
 // TestDeleteCourse 删除存在的课程成功，再删报 not found。

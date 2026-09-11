@@ -58,10 +58,8 @@ func newFixture(t *testing.T, withQualification bool) *fixture {
 	if err != nil {
 		t.Fatalf("new contact: %v", err)
 	}
-	teach, err := teacher.NewTeacher("李娜", "讲师", contact)
-	if err != nil {
-		t.Fatalf("new teacher: %v", err)
-	}
+	// ID 固定，所以走 Reconstitute 而不是会自己生成 ID 的 NewTeacher
+	teach := teacher.Reconstitute(1, 201, "李娜", "讲师", contact, teacher.StatusActive, time.Now(), time.Now())
 
 	ct, err := courseType.NewCourseType("少儿编程", "")
 	if err != nil {
@@ -80,7 +78,7 @@ func newFixture(t *testing.T, withQualification bool) *fixture {
 	enrollment := course.NewEnrollmentWindow(
 		now.AddDate(0, 0, -1), now.AddDate(0, 0, 7), now.AddDate(0, 0, 14),
 	)
-	crs := course.NewCourse(ownCourse, ct.ID(), capacity, enrollment, period)
+	crs := course.Reconstitute(ownCourse, ct.ID(), capacity, enrollment, period)
 
 	big, err := newClassroom(t, room, roomSeats)
 	if err != nil {
@@ -97,12 +95,11 @@ func newFixture(t *testing.T, withQualification bool) *fixture {
 	d.SeedClassroom(big, small)
 
 	if withQualification {
-		q, err := qualification.NewQualification(
-			teach.ID(), ct.ID(), now.AddDate(0, 0, -30), now.AddDate(0, 12, 0),
+		q := qualification.Reconstitute(
+			1, teach.ID(), ct.ID(),
+			now.AddDate(0, 0, -30),
+			qualification.StatusActive, now,
 		)
-		if err != nil {
-			t.Fatalf("new qualification: %v", err)
-		}
 		d.SeedQualification(q)
 	}
 

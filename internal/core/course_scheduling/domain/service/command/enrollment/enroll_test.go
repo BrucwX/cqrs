@@ -202,7 +202,7 @@ func newCourse(
 		t.Fatalf("new period: %v", err)
 	}
 
-	return course.NewCourse(id, "ct-demo", capacity, window, period)
+	return course.Reconstitute(id, "ct-demo", capacity, window, period)
 }
 
 func newSlot(

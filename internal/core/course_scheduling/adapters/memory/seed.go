@@ -352,7 +352,8 @@ func demoTeacher(id int64, name, title, phone, email string) (*teacher.Teacher, 
 		return nil, err
 	}
 	// 使用 Reconstitute 恢复固定 ID 的种子数据
-	return teacher.Reconstitute(id, name, title, contact, teacher.StatusActive, time.Now(), time.Now()), nil
+	// 学员 ID 用 2xx 段：站在「学员」这一侧时用的是它，不是讲师 ID
+	return teacher.Reconstitute(id, 200+id, name, title, contact, teacher.StatusActive, time.Now(), time.Now()), nil
 }
 
 func demoStudent(id int64, name string, typ student.StudentType, phone, email string) (*student.Student, error) {
@@ -383,7 +384,8 @@ func demoCourse(id string, courseTypeID string, maxSeats, enrolled int) (*course
 		return nil, err
 	}
 	window := course.NewEnrollmentWindow(demoEnrollFrom, demoEnrollTo, demoDropBy)
-	return course.NewCourse(id, courseTypeID, capacity, window, period), nil
+	// 使用 Reconstitute 恢复固定 ID 的种子数据
+	return course.Reconstitute(id, courseTypeID, capacity, window, period), nil
 }
 
 func demoSlot(
@@ -412,5 +414,5 @@ func demoSlot(
 
 func demoQualification(id, teacherID int64, courseTypeID string) (*qualification.Qualification, error) {
 	// 使用 Reconstitute 恢复固定 ID 的种子数据
-	return qualification.Reconstitute(id, teacherID, courseTypeID, demoTermStart, demoTermEnd.AddDate(1, 0, 0), qualification.StatusActive, time.Now()), nil
+	return qualification.Reconstitute(id, teacherID, courseTypeID, demoTermStart, qualification.StatusActive, time.Now()), nil
 }
