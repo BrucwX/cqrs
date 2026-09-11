@@ -24,9 +24,13 @@ type AbsenceRecord struct {
 	updatedAt    time.Time
 }
 
+// generateID 生成唯一的 int64 ID
+func generateID() int64 {
+	return time.Now().UnixNano()
+}
+
 // NewLeaveRequest 学员发起请假申请（待审批）
 func NewLeaveRequest(
-	id int64,
 	studentID int64,
 	courseID string,
 	courseSlotID int64,
@@ -47,7 +51,7 @@ func NewLeaveRequest(
 
 	now := time.Now()
 	return &AbsenceRecord{
-		id:           id,
+		id:           generateID(),
 		studentID:    studentID,
 		courseID:     courseID,
 		courseSlotID: courseSlotID,
@@ -64,7 +68,6 @@ func NewLeaveRequest(
 
 // NewUnexcusedRecord 考勤点名录入旷课（无需审核，直接生效）
 func NewUnexcusedRecord(
-	id int64,
 	studentID int64,
 	courseID string,
 	courseSlotID int64,
@@ -81,7 +84,7 @@ func NewUnexcusedRecord(
 
 	now := time.Now()
 	return &AbsenceRecord{
-		id:           id,
+		id:           generateID(),
 		studentID:    studentID,
 		courseID:     courseID,
 		courseSlotID: courseSlotID,

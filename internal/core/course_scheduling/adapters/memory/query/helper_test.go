@@ -63,8 +63,8 @@ func teacherIDs(items []*teacher.Teacher) []int64 {
 	return out
 }
 
-func slotIDs(items []*courseSlot.CourseSlot) []int64 {
-	out := make([]int64, 0, len(items))
+func slotIDs(items []*courseSlot.CourseSlot) []string {
+	out := make([]string, 0, len(items))
 	for _, item := range items {
 		out = append(out, item.ID())
 	}

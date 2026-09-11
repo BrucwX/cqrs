@@ -4,46 +4,46 @@ import (
 	"errors"
 	"fmt"
 	"time"
+
+	"github.com/google/uuid"
+)
+
+// 待分配常量
+const (
+	// PendingTeacherID 待分配的讲师 ID
+	PendingTeacherID int64 = -1
+	// PendingClassroomID 待分配的教室 ID
+	PendingClassroomID string = ""
 )
 
 // --- 聚合根 (Aggregate Root) ---
 
 type CourseSlot struct {
-	id          int64
+	id          string       // UUID
 	courseID    string       // 关联的课程 ID
 	weekday     time.Weekday // 星期几（time.Sunday = 0, time.Monday = 1 ... time.Wednesday = 3）
 	timeRange   DayTimeRange // 当天的上课时间区间（如 16:00 - 18:00）
-	teacherID   int64        // 默认授课讲师 ID
-	classroomID string       // 默认上课教室 ID
+	teacherID   int64        // 默认授课讲师 ID（PendingTeacherID 表示待分配）
+	classroomID string       // 默认上课教室 ID（PendingClassroomID 表示待分配）
 	createdAt   time.Time
 	updatedAt   time.Time
 }
 
 // NewCourseSlot 创建每周重复的课表排课模板
 func NewCourseSlot(
-	id int64,
 	courseID string,
 	weekday time.Weekday,
 	timeRange DayTimeRange,
 	teacherID int64,
 	classroomID string,
 ) (*CourseSlot, error) {
-	if id <= 0 {
-		return nil, errors.New("invalid slot ID")
-	}
 	if courseID == "" {
 		return nil, errors.New("course ID is required")
-	}
-	if teacherID <= 0 {
-		return nil, errors.New("teacher ID is required")
-	}
-	if classroomID == "" {
-		return nil, errors.New("classroom ID is required")
 	}
 
 	now := time.Now()
 	return &CourseSlot{
-		id:          id,
+		id:          uuid.New().String(),
 		courseID:    courseID,
 		weekday:     weekday,
 		timeRange:   timeRange,
@@ -56,7 +56,7 @@ func NewCourseSlot(
 
 // Reconstitute 仓储恢复
 func Reconstitute(
-	id int64,
+	id string,
 	courseID string,
 	weekday time.Weekday,
 	timeRange DayTimeRange,
@@ -112,6 +112,21 @@ func (cs *CourseSlot) ChangeTeacher(teacherID int64) error {
 	return nil
 }
 
+// IsPendingTeacher 检查讲师是否待分配
+func (cs *CourseSlot) IsPendingTeacher() bool {
+	return cs.teacherID == PendingTeacherID
+}
+
+// IsPendingClassroom 检查教室是否待分配
+func (cs *CourseSlot) IsPendingClassroom() bool {
+	return cs.classroomID == PendingClassroomID
+}
+
+// IsFullyAssigned 检查是否已完全分配（讲师和教室都已分配）
+func (cs *CourseSlot) IsFullyAssigned() bool {
+	return !cs.IsPendingTeacher() && !cs.IsPendingClassroom()
+}
+
 // InstantiateForDate 核心行为：将模板按具体的日期实例化为具体的实际时间区间
 // 例如：给定某周三的具体日期 2026-09-16，生成对应的 start: 2026-09-16 16:00, end: 2026-09-16 18:00
 func (cs *CourseSlot) InstantiateForDate(date time.Time, loc *time.Location) (time.Time, time.Time, error) {
@@ -133,9 +148,9 @@ func (cs *CourseSlot) InstantiateForDate(date time.Time, loc *time.Location) (ti
 
 // --- 只读属性访问器 (Getters) ---
 
-func (cs *CourseSlot) ID() int64               { return cs.id }
-func (cs *CourseSlot) CourseID() string        { return cs.courseID }
-func (cs *CourseSlot) Weekday() time.Weekday   { return cs.weekday }
+func (cs *CourseSlot) ID() string            { return cs.id }
+func (cs *CourseSlot) CourseID() string       { return cs.courseID }
+func (cs *CourseSlot) Weekday() time.Weekday  { return cs.weekday }
 func (cs *CourseSlot) TimeRange() DayTimeRange { return cs.timeRange }
-func (cs *CourseSlot) TeacherID() int64        { return cs.teacherID }
-func (cs *CourseSlot) ClassroomID() string     { return cs.classroomID }
+func (cs *CourseSlot) TeacherID() int64       { return cs.teacherID }
+func (cs *CourseSlot) ClassroomID() string    { return cs.classroomID }

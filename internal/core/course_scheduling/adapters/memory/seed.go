@@ -162,27 +162,27 @@ func (d *Data) seedDemoCourses() error {
 //	5 C003 周五 09:00-11:00 王强 R102
 //	6 C004 周二 09:00-11:00 王强 R102
 func (d *Data) seedDemoCourseSlots() error {
-	slot1, err := demoSlot(1, "C001", time.Monday, 9, 0, 11, 0, 1, "R101")
+	slot1, err := demoSlot("550e8400-e29b-41d4-a716-446655440001", "C001", time.Monday, 9, 0, 11, 0, 1, "R101")
 	if err != nil {
 		return err
 	}
-	slot2, err := demoSlot(2, "C001", time.Wednesday, 9, 0, 11, 0, 1, "R101")
+	slot2, err := demoSlot("550e8400-e29b-41d4-a716-446655440002", "C001", time.Wednesday, 9, 0, 11, 0, 1, "R101")
 	if err != nil {
 		return err
 	}
-	slot3, err := demoSlot(3, "C002", time.Monday, 14, 0, 16, 0, 2, "R102")
+	slot3, err := demoSlot("550e8400-e29b-41d4-a716-446655440003", "C002", time.Monday, 14, 0, 16, 0, 2, "R102")
 	if err != nil {
 		return err
 	}
-	slot4, err := demoSlot(4, "C003", time.Wednesday, 9, 0, 11, 0, 3, "R102")
+	slot4, err := demoSlot("550e8400-e29b-41d4-a716-446655440004", "C003", time.Wednesday, 9, 0, 11, 0, 3, "R102")
 	if err != nil {
 		return err
 	}
-	slot5, err := demoSlot(5, "C003", time.Friday, 9, 0, 11, 0, 3, "R102")
+	slot5, err := demoSlot("550e8400-e29b-41d4-a716-446655440005", "C003", time.Friday, 9, 0, 11, 0, 3, "R102")
 	if err != nil {
 		return err
 	}
-	slot6, err := demoSlot(6, "C004", time.Tuesday, 9, 0, 11, 0, 3, "R102")
+	slot6, err := demoSlot("550e8400-e29b-41d4-a716-446655440006", "C004", time.Tuesday, 9, 0, 11, 0, 3, "R102")
 	if err != nil {
 		return err
 	}
@@ -192,22 +192,12 @@ func (d *Data) seedDemoCourseSlots() error {
 
 // --- 注册：103 有一条「已结业」记录，用来验证查询侧不过滤状态 ---
 func (d *Data) seedDemoEnrollments() error {
-	e1, err := enrollment.NewCourseEnrollment(1, 101, "C001")
-	if err != nil {
-		return err
-	}
-	e2, err := enrollment.NewCourseEnrollment(2, 102, "C002")
-	if err != nil {
-		return err
-	}
-	e3, err := enrollment.NewCourseEnrollment(3, 103, "C001")
-	if err != nil {
-		return err
-	}
-	e4, err := enrollment.NewCourseEnrollment(4, 103, "C002")
-	if err != nil {
-		return err
-	}
+	now := time.Now()
+	// 使用 Reconstitute 恢复固定 ID的种子数据
+	e1 := enrollment.Reconstitute(1, 101, "C001", enrollment.StatusEnrolled, now, time.Time{}, time.Time{}, now)
+	e2 := enrollment.Reconstitute(2, 102, "C002", enrollment.StatusEnrolled, now, time.Time{}, time.Time{}, now)
+	e3 := enrollment.Reconstitute(3, 103, "C001", enrollment.StatusEnrolled, now, time.Time{}, time.Time{}, now)
+	e4 := enrollment.Reconstitute(4, 103, "C002", enrollment.StatusEnrolled, now, time.Time{}, time.Time{}, now)
 	// 已结业：CoursesByStudentID(103) 仍会返回 C002（不过滤状态）
 	if err := e4.Complete(demoNow); err != nil {
 		return err
@@ -246,46 +236,37 @@ func (d *Data) seedDemoQualifications() error {
 
 // --- 缺勤：1 条待审批事假 + 1 条已生效旷课 ---
 func (d *Data) seedDemoAbsences() error {
-	a1, err := absence.NewLeaveRequest(
+	now := time.Now()
+	// 使用 Reconstitute 恢复固定 ID的种子数据
+	a1 := absence.Reconstitute(
 		1, 101, "C001", 2, demoDate(time.September, 16), 2,
 		absence.TypePersonalLeave, "家中急事",
+		absence.StatusPending, 0, "", false, now, now,
 	)
-	if err != nil {
-		return err
-	}
-	a2, err := absence.NewUnexcusedRecord(
-		2, 102, "C002", 3, demoDate(time.September, 14), 2, "未请假缺席",
+	a2 := absence.Reconstitute(
+		2, 102, "C002", 3, demoDate(time.September, 14), 2,
+		absence.TypeUnexcused, "未请假缺席",
+		absence.StatusApproved, 0, "", false, now, now,
 	)
-	if err != nil {
-		return err
-	}
 	d.SeedAbsence(a1, a2)
 	return nil
 }
 
 // --- 补课：1 条已核销（走完 审批->完成），1 条待审批 ---
 func (d *Data) seedDemoMakeups() error {
-	m1, err := makeup.NewStudentMakeup(
+	// 使用 Reconstitute 恢复固定 ID的种子数据
+	m1 := makeup.Reconstitute(
 		1, 101, "C001", 1, 1, demoDate(time.September, 14), 2, demoDate(time.September, 16), 2,
-		demoNow,
+		makeup.StatusApproved, 9, "同意补课", demoNow, demoNow, demoNow,
 	)
-	if err != nil {
-		return err
-	}
-	if err := m1.Approve(9, "同意补课", demoNow); err != nil {
-		return err
-	}
 	if err := m1.CompleteAttendance(demoNow); err != nil {
 		return err
 	}
 
-	m2, err := makeup.NewStudentMakeup(
+	m2 := makeup.Reconstitute(
 		2, 102, "C002", 2, 3, demoDate(time.September, 14), 3, demoDate(time.September, 21), 2,
-		demoNow,
+		makeup.StatusPending, 0, "", time.Time{}, demoNow, demoNow,
 	)
-	if err != nil {
-		return err
-	}
 
 	d.SeedMakeup(m1, m2)
 	return nil
@@ -304,16 +285,12 @@ func (d *Data) seedDemoCourseSlotChanges() error {
 	if err != nil {
 		return err
 	}
-	change1, err := courseSlotChange.NewCourseSlotChange(
+	// 使用 Reconstitute 恢复固定 ID的种子数据
+	change1 := courseSlotChange.Reconstitute(
 		1, "C001", 1, courseSlotChange.TypeReschedule,
-		original1, target1, "场地检修，临时调至周二下午", demoNow,
+		original1, target1, "场地检修，临时调至周二下午",
+		courseSlotChange.StatusApproved, 9, "同意调课", demoNow, demoNow,
 	)
-	if err != nil {
-		return err
-	}
-	if err := change1.Approve(9, "同意调课", demoNow); err != nil {
-		return err
-	}
 
 	original2 := courseSlotChange.NewOriginalPlan(
 		2, demoDate(time.September, 16), 1, "R101", "09:00", "11:00",
@@ -326,13 +303,11 @@ func (d *Data) seedDemoCourseSlotChanges() error {
 	if err != nil {
 		return err
 	}
-	change2, err := courseSlotChange.NewCourseSlotChange(
+	change2 := courseSlotChange.Reconstitute(
 		2, "C001", 1, courseSlotChange.TypeSubstitute,
-		original2, target2, "讲师出差，由李娜代课", demoNow,
+		original2, target2, "讲师出差，由李娜代课",
+		courseSlotChange.StatusPending, 0, "", demoNow, demoNow,
 	)
-	if err != nil {
-		return err
-	}
 
 	d.SeedCourseSlotChange(change1, change2)
 	return nil
@@ -345,7 +320,8 @@ func demoTeacher(id int64, name, title, phone, email string) (*teacher.Teacher, 
 	if err != nil {
 		return nil, err
 	}
-	return teacher.NewTeacher(id, name, title, contact)
+	// 使用 Reconstitute 恢复固定 ID 的种子数据
+	return teacher.Reconstitute(id, name, title, contact, teacher.StatusActive, time.Now(), time.Now()), nil
 }
 
 func demoStudent(id int64, name string, typ student.StudentType, phone, email string) (*student.Student, error) {
@@ -353,7 +329,8 @@ func demoStudent(id int64, name string, typ student.StudentType, phone, email st
 	if err != nil {
 		return nil, err
 	}
-	return student.NewStudent(id, name, typ, contact)
+	// 使用 Reconstitute 恢复固定 ID 的种子数据
+	return student.Reconstitute(id, name, typ, contact, student.StatusActive, time.Now(), time.Now()), nil
 }
 
 func demoClassroom(id, building string, floor int, room string, capacity int) (*classroom.Classroom, error) {
@@ -378,7 +355,7 @@ func demoCourse(id string, maxSeats, enrolled int) (*course.Course, error) {
 }
 
 func demoSlot(
-	id int64,
+	id string,
 	courseID string,
 	weekday time.Weekday,
 	fromHour, fromMinute, toHour, toMinute int,
@@ -397,9 +374,11 @@ func demoSlot(
 	if err != nil {
 		return nil, err
 	}
-	return courseSlot.NewCourseSlot(id, courseID, weekday, span, teacherID, classroomID)
+	now := time.Now()
+	return courseSlot.Reconstitute(id, courseID, weekday, span, teacherID, classroomID, now, now), nil
 }
 
 func demoQualification(id, teacherID int64, courseID string) (*qualification.Qualification, error) {
-	return qualification.NewQualification(id, teacherID, courseID, demoTermStart, demoTermEnd.AddDate(1, 0, 0))
+	// 使用 Reconstitute 恢复固定 ID 的种子数据
+	return qualification.Reconstitute(id, teacherID, courseID, demoTermStart, demoTermEnd.AddDate(1, 0, 0), qualification.StatusActive, time.Now()), nil
 }

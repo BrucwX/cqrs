@@ -17,9 +17,13 @@ type Qualification struct {
 	updatedAt   time.Time
 }
 
+// generateID 生成唯一的 int64 ID
+func generateID() int64 {
+	return time.Now().UnixNano()
+}
+
 // NewQualification 颁发/授予授课资质
 func NewQualification(
-	id int64,
 	teacherID int64,
 	courseID string,
 	certifiedAt time.Time,
@@ -33,7 +37,7 @@ func NewQualification(
 	}
 
 	return &Qualification{
-		id:          id,
+		id:          generateID(),
 		teacherID:   teacherID,
 		courseID:    courseID,
 		certifiedAt: certifiedAt,

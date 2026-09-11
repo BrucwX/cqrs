@@ -81,7 +81,7 @@ func TestSnapshotsAreSortedByID(t *testing.T) {
 	slots := d.CourseSlots()
 	for i := 1; i < len(slots); i++ {
 		if slots[i-1].ID() >= slots[i].ID() {
-			t.Fatalf("course slots not sorted: %d before %d", slots[i-1].ID(), slots[i].ID())
+			t.Fatalf("course slots not sorted: %s before %s", slots[i-1].ID(), slots[i].ID())
 		}
 	}
 }

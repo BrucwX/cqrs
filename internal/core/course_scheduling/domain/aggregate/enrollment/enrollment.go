@@ -18,9 +18,13 @@ type CourseEnrollment struct {
 	updatedAt   time.Time
 }
 
+// generateID 生成唯一的 int64 ID
+func generateID() int64 {
+	return time.Now().UnixNano()
+}
+
 // NewCourseEnrollment 报班注册构造
 func NewCourseEnrollment(
-	id int64,
 	studentID int64,
 	courseID string,
 ) (*CourseEnrollment, error) {
@@ -33,7 +37,7 @@ func NewCourseEnrollment(
 
 	now := time.Now()
 	return &CourseEnrollment{
-		id:         id,
+		id:         generateID(),
 		studentID:  studentID,
 		courseID:   courseID,
 		status:     StatusEnrolled,

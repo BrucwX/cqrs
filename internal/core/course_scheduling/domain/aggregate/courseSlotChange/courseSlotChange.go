@@ -22,9 +22,13 @@ type CourseSlotChange struct {
 	updatedAt    time.Time
 }
 
+// generateID 生成唯一的 int64 ID
+func generateID() int64 {
+	return time.Now().UnixNano()
+}
+
 // NewCourseSlotChange 发起临时换课申请
 func NewCourseSlotChange(
-	id int64,
 	courseID string,
 	applicantID int64,
 	changeType ChangeType,
@@ -33,9 +37,6 @@ func NewCourseSlotChange(
 	reason string,
 	now time.Time,
 ) (*CourseSlotChange, error) {
-	if id <= 0 {
-		return nil, errors.New("invalid change ID")
-	}
 	if courseID == "" {
 		return nil, errors.New("course ID is required")
 	}
@@ -50,7 +51,7 @@ func NewCourseSlotChange(
 	}
 
 	return &CourseSlotChange{
-		id:           id,
+		id:           generateID(),
 		courseID:     courseID,
 		applicantID:  applicantID,
 		changeType:   changeType,

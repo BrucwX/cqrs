@@ -13,7 +13,14 @@ func TestCourseSlotQueryPage(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Page() error = %v", err)
 	}
-	assertIDs(t, slotIDs(got), []int64{1, 2, 3, 4, 5, 6})
+	assertIDs(t, slotIDs(got), []string{
+		"550e8400-e29b-41d4-a716-446655440001",
+		"550e8400-e29b-41d4-a716-446655440002",
+		"550e8400-e29b-41d4-a716-446655440003",
+		"550e8400-e29b-41d4-a716-446655440004",
+		"550e8400-e29b-41d4-a716-446655440005",
+		"550e8400-e29b-41d4-a716-446655440006",
+	})
 }
 
 func TestCourseSlotQueryListByCourseID(t *testing.T) {
@@ -22,13 +29,23 @@ func TestCourseSlotQueryListByCourseID(t *testing.T) {
 	tests := []struct {
 		name     string
 		courseID string
-		want     []int64
+		want     []string
 	}{
-		{"C001 两次课", "C001", []int64{1, 2}},
-		{"C002 一次课", "C002", []int64{3}},
-		{"C003 两次课", "C003", []int64{4, 5}},
-		{"C004 一次课", "C004", []int64{6}},
-		{"不存在的课程", "C999", []int64{}},
+		{"C001 两次课", "C001", []string{
+			"550e8400-e29b-41d4-a716-446655440001",
+			"550e8400-e29b-41d4-a716-446655440002",
+		}},
+		{"C002 一次课", "C002", []string{
+			"550e8400-e29b-41d4-a716-446655440003",
+		}},
+		{"C003 两次课", "C003", []string{
+			"550e8400-e29b-41d4-a716-446655440004",
+			"550e8400-e29b-41d4-a716-446655440005",
+		}},
+		{"C004 一次课", "C004", []string{
+			"550e8400-e29b-41d4-a716-446655440006",
+		}},
+		{"不存在的课程", "C999", []string{}},
 	}
 
 	for _, tt := range tests {

@@ -101,7 +101,7 @@ func TestQualificationQueryDeduplicatesCourses(t *testing.T) {
 	d := newSeededData(t)
 
 	extra, err := qualification.NewQualification(
-		6, 2, "C002", time.Now(), time.Now().AddDate(1, 0, 0),
+		2, "C002", time.Now(), time.Now().AddDate(1, 0, 0),
 	)
 	if err != nil {
 		t.Fatalf("NewQualification() error = %v", err)

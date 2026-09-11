@@ -19,7 +19,6 @@ type Teacher struct {
 
 // NewTeacher 录入新全职讲师（初始化默认为正常在职状态）
 func NewTeacher(
-	id int64,
 	name string,
 	title string,
 	contact ContactInfo,
@@ -30,7 +29,7 @@ func NewTeacher(
 
 	now := time.Now()
 	return &Teacher{
-		id:        id,
+		id:        generateID(),
 		name:      name,
 		title:     title,
 		contact:   contact,
@@ -38,6 +37,11 @@ func NewTeacher(
 		createdAt: now,
 		updatedAt: now,
 	}, nil
+}
+
+// generateID 生成唯一的 int64 ID
+func generateID() int64 {
+	return time.Now().UnixNano()
 }
 
 // Reconstitute 从仓储层/数据库还原聚合根

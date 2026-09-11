@@ -19,21 +19,17 @@ type Student struct {
 
 // NewStudent 录入学员档案
 func NewStudent(
-	id int64,
 	name string,
 	studentType StudentType,
 	contact ContactInfo,
 ) (*Student, error) {
-	if id <= 0 {
-		return nil, errors.New("invalid student ID")
-	}
 	if name == "" {
 		return nil, errors.New("student name is required")
 	}
 
 	now := time.Now()
 	return &Student{
-		id:          id,
+		id:          generateID(),
 		name:        name,
 		studentType: studentType,
 		contact:     contact,
@@ -41,6 +37,11 @@ func NewStudent(
 		createdAt:   now,
 		updatedAt:   now,
 	}, nil
+}
+
+// generateID 生成唯一的 int64 ID
+func generateID() int64 {
+	return time.Now().UnixNano()
 }
 
 // Reconstitute 仓储恢复聚合根

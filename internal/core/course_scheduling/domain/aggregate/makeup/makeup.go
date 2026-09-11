@@ -30,9 +30,13 @@ type StudentMakeup struct {
 	updatedAt    time.Time
 }
 
+// generateID 生成唯一的 int64 ID
+func generateID() int64 {
+	return time.Now().UnixNano()
+}
+
 // NewStudentMakeup 学员申请去其他课位自主补课
 func NewStudentMakeup(
-	id int64,
 	studentID int64,
 	courseID string,
 	absenceRecordID int64,
@@ -43,7 +47,7 @@ func NewStudentMakeup(
 	makeupHours int,
 	now time.Time,
 ) (*StudentMakeup, error) {
-	if id <= 0 || studentID <= 0 || absenceRecordID <= 0 {
+	if studentID <= 0 || absenceRecordID <= 0 {
 		return nil, errors.New("invalid identifier")
 	}
 	if courseID == "" {
@@ -57,7 +61,7 @@ func NewStudentMakeup(
 	}
 
 	return &StudentMakeup{
-		id:              id,
+		id:              generateID(),
 		studentID:       studentID,
 		courseID:        courseID,
 		absenceRecordID: absenceRecordID,

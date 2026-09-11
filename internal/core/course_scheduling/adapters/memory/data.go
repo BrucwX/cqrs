@@ -31,7 +31,7 @@ type Data struct {
 	classrooms        map[string]*classroom.Classroom
 	students          map[int64]*student.Student
 	teachers          map[int64]*teacher.Teacher
-	courseSlots       map[int64]*courseSlot.CourseSlot
+	courseSlots       map[string]*courseSlot.CourseSlot
 	courseSlotChanges map[int64]*courseSlotChange.CourseSlotChange
 	absences          map[int64]*absence.AbsenceRecord
 	enrollments       map[int64]*enrollment.CourseEnrollment
@@ -46,7 +46,7 @@ func NewData(_ *conf.Data) (*Data, func(), error) {
 		classrooms:        make(map[string]*classroom.Classroom),
 		students:          make(map[int64]*student.Student),
 		teachers:          make(map[int64]*teacher.Teacher),
-		courseSlots:       make(map[int64]*courseSlot.CourseSlot),
+		courseSlots:       make(map[string]*courseSlot.CourseSlot),
 		courseSlotChanges: make(map[int64]*courseSlotChange.CourseSlotChange),
 		absences:          make(map[int64]*absence.AbsenceRecord),
 		enrollments:       make(map[int64]*enrollment.CourseEnrollment),
