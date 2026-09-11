@@ -9,10 +9,9 @@ import (
 
 // StudentMakeup 补课预约：约好了到时候去上，不需要审批。
 type StudentMakeup struct {
-	id              int64
-	studentID       int64  // 学员 ID
-	courseID        string // 课程 ID (原课与目标课必须同一门)
-	absenceRecordID int64  // 关联的原缺勤记录 ID
+	id        int64
+	studentID int64  // 学员 ID
+	courseID  string // 课程 ID（补课不跨课程）
 
 	// 原定缺席信息快照
 	originalSlotID int64     // 原排课模板 ID
@@ -38,7 +37,6 @@ func generateID() int64 {
 func NewStudentMakeup(
 	studentID int64,
 	courseID string,
-	absenceRecordID int64,
 	originalSlotID int64,
 	originalDate time.Time,
 	targetSlotID int64,
@@ -46,8 +44,8 @@ func NewStudentMakeup(
 	makeupHours int,
 	now time.Time,
 ) (*StudentMakeup, error) {
-	if studentID <= 0 || absenceRecordID <= 0 {
-		return nil, errors.New("invalid identifier")
+	if studentID <= 0 {
+		return nil, errors.New("invalid student ID")
 	}
 	if courseID == "" {
 		return nil, errors.New("course ID is required")
@@ -60,18 +58,17 @@ func NewStudentMakeup(
 	}
 
 	return &StudentMakeup{
-		id:              generateID(),
-		studentID:       studentID,
-		courseID:        courseID,
-		absenceRecordID: absenceRecordID,
-		originalSlotID:  originalSlotID,
-		originalDate:    originalDate,
-		targetSlotID:    targetSlotID,
-		targetDate:      targetDate,
-		makeupHours:     makeupHours,
-		status:          StatusBooked,
-		createdAt:       now,
-		updatedAt:       now,
+		id:             generateID(),
+		studentID:      studentID,
+		courseID:       courseID,
+		originalSlotID: originalSlotID,
+		originalDate:   originalDate,
+		targetSlotID:   targetSlotID,
+		targetDate:     targetDate,
+		makeupHours:    makeupHours,
+		status:         StatusBooked,
+		createdAt:      now,
+		updatedAt:      now,
 	}, nil
 }
 
@@ -80,7 +77,6 @@ func Reconstitute(
 	id int64,
 	studentID int64,
 	courseID string,
-	absenceRecordID int64,
 	originalSlotID int64,
 	originalDate time.Time,
 	targetSlotID int64,
@@ -91,19 +87,18 @@ func Reconstitute(
 	createdAt, updatedAt time.Time,
 ) *StudentMakeup {
 	return &StudentMakeup{
-		id:              id,
-		studentID:       studentID,
-		courseID:        courseID,
-		absenceRecordID: absenceRecordID,
-		originalSlotID:  originalSlotID,
-		originalDate:    originalDate,
-		targetSlotID:    targetSlotID,
-		targetDate:      targetDate,
-		makeupHours:     makeupHours,
-		status:          status,
-		completedAt:     completedAt,
-		createdAt:       createdAt,
-		updatedAt:       updatedAt,
+		id:             id,
+		studentID:      studentID,
+		courseID:       courseID,
+		originalSlotID: originalSlotID,
+		originalDate:   originalDate,
+		targetSlotID:   targetSlotID,
+		targetDate:     targetDate,
+		makeupHours:    makeupHours,
+		status:         status,
+		completedAt:    completedAt,
+		createdAt:      createdAt,
+		updatedAt:      updatedAt,
 	}
 }
 
@@ -140,7 +135,6 @@ func (m *StudentMakeup) Cancel(operatorID int64, now time.Time) error {
 func (m *StudentMakeup) ID() int64               { return m.id }
 func (m *StudentMakeup) StudentID() int64        { return m.studentID }
 func (m *StudentMakeup) CourseID() string        { return m.courseID }
-func (m *StudentMakeup) AbsenceRecordID() int64  { return m.absenceRecordID }
 func (m *StudentMakeup) OriginalSlotID() int64   { return m.originalSlotID }
 func (m *StudentMakeup) OriginalDate() time.Time { return m.originalDate }
 func (m *StudentMakeup) TargetSlotID() int64     { return m.targetSlotID }

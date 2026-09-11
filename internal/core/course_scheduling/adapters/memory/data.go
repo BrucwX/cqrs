@@ -188,6 +188,22 @@ func (d *Data) SeedCourseSlotChange(items ...*courseSlotChange.CourseSlotChange)
 	}
 }
 
+// SaveCourseSlotChange 写入或覆盖单张课表变更单（写侧适配器使用）。
+func (d *Data) SaveCourseSlotChange(csc *courseSlotChange.CourseSlotChange) {
+	d.SeedCourseSlotChange(csc)
+}
+
+// DeleteCourseSlotChange 按 ID 删除课表变更单，返回是否真的删掉了。
+func (d *Data) DeleteCourseSlotChange(id int64) bool {
+	d.courseSlotChangesMu.Lock()
+	defer d.courseSlotChangesMu.Unlock()
+	if _, ok := d.courseSlotChanges[id]; !ok {
+		return false
+	}
+	delete(d.courseSlotChanges, id)
+	return true
+}
+
 // SeedAbsence 写入或覆盖缺勤记录。
 func (d *Data) SeedAbsence(items ...*absence.AbsenceRecord) {
 	d.absencesMu.Lock()
@@ -197,6 +213,22 @@ func (d *Data) SeedAbsence(items ...*absence.AbsenceRecord) {
 			d.absences[item.ID()] = item
 		}
 	}
+}
+
+// SaveAbsence 写入或覆盖单条缺勤记录（写侧适配器使用）。
+func (d *Data) SaveAbsence(a *absence.AbsenceRecord) {
+	d.SeedAbsence(a)
+}
+
+// DeleteAbsence 按 ID 删除缺勤记录，返回是否真的删掉了。
+func (d *Data) DeleteAbsence(id int64) bool {
+	d.absencesMu.Lock()
+	defer d.absencesMu.Unlock()
+	if _, ok := d.absences[id]; !ok {
+		return false
+	}
+	delete(d.absences, id)
+	return true
 }
 
 // SeedEnrollment 写入或覆盖课程注册记录。
@@ -235,6 +267,22 @@ func (d *Data) SeedMakeup(items ...*makeup.StudentMakeup) {
 			d.makeups[item.ID()] = item
 		}
 	}
+}
+
+// SaveMakeup 写入或覆盖单条补课预约（写侧适配器使用）。
+func (d *Data) SaveMakeup(m *makeup.StudentMakeup) {
+	d.SeedMakeup(m)
+}
+
+// DeleteMakeup 按 ID 删除补课预约，返回是否真的删掉了。
+func (d *Data) DeleteMakeup(id int64) bool {
+	d.makeupsMu.Lock()
+	defer d.makeupsMu.Unlock()
+	if _, ok := d.makeups[id]; !ok {
+		return false
+	}
+	delete(d.makeups, id)
+	return true
 }
 
 // SeedQualification 写入或覆盖授课资质。

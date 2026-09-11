@@ -1,6 +1,17 @@
 package command
 
-import "cqrs/internal/core/course_scheduling/domain/aggregate/absence"
+import (
+	"errors"
+
+	"cqrs/internal/core/course_scheduling/domain/aggregate/absence"
+)
+
+var (
+	// ErrAbsenceRequired 传入的缺勤记录为空。
+	ErrAbsenceRequired = errors.New("absence record is required")
+	// ErrAbsenceNotFound 指定的缺勤记录不存在。
+	ErrAbsenceNotFound = errors.New("absence record not found")
+)
 
 // AbsenceRecordCommand 缺勤记录命令接口
 type AbsenceRecordCommand interface {

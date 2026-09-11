@@ -287,7 +287,7 @@ func (d *Data) seedDemoAbsences() error {
 func (d *Data) seedDemoMakeups() error {
 	// 使用 Reconstitute 恢复固定 ID的种子数据
 	m1 := makeup.Reconstitute(
-		1, 101, "C001", 1, 1, demoDate(time.September, 14), 2, demoDate(time.September, 16), 2,
+		1, 101, "C001", 1, demoDate(time.September, 14), 2, demoDate(time.September, 16), 2,
 		makeup.StatusBooked, time.Time{}, demoNow, demoNow,
 	)
 	if err := m1.CompleteAttendance(demoNow); err != nil {
@@ -295,7 +295,7 @@ func (d *Data) seedDemoMakeups() error {
 	}
 
 	m2 := makeup.Reconstitute(
-		2, 102, "C002", 2, 3, demoDate(time.September, 14), 3, demoDate(time.September, 21), 2,
+		2, 102, "C002", 3, demoDate(time.September, 14), 3, demoDate(time.September, 21), 2,
 		makeup.StatusBooked, time.Time{}, demoNow, demoNow,
 	)
 

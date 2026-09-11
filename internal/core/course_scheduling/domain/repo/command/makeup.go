@@ -1,6 +1,17 @@
 package command
 
-import "cqrs/internal/core/course_scheduling/domain/aggregate/makeup"
+import (
+	"errors"
+
+	"cqrs/internal/core/course_scheduling/domain/aggregate/makeup"
+)
+
+var (
+	// ErrMakeupRequired 传入的补课预约为空。
+	ErrMakeupRequired = errors.New("student makeup is required")
+	// ErrMakeupNotFound 指定的补课预约不存在。
+	ErrMakeupNotFound = errors.New("student makeup not found")
+)
 
 // StudentMakeupCommand 补课申请命令接口
 type StudentMakeupCommand interface {
