@@ -87,3 +87,4 @@ func (q *Qualification) TeacherID() int64       { return q.teacherID }
 func (q *Qualification) CourseTypeID() string   { return q.courseTypeID }
 func (q *Qualification) CertifiedAt() time.Time { return q.certifiedAt }
 func (q *Qualification) Status() Status         { return q.status }
+func (q *Qualification) UpdatedAt() time.Time   { return q.updatedAt }

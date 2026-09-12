@@ -20,3 +20,9 @@ func (w EnrollmentWindow) CanEnroll(now time.Time) bool {
 func (w EnrollmentWindow) CanDrop(now time.Time) bool {
 	return now.Before(w.dropDeadline) || now.Equal(w.dropDeadline)
 }
+
+// --- 只读属性访问器 (Getters) ---
+
+func (w EnrollmentWindow) StartAt() time.Time      { return w.startAt }
+func (w EnrollmentWindow) EndAt() time.Time        { return w.endAt }
+func (w EnrollmentWindow) DropDeadline() time.Time { return w.dropDeadline }

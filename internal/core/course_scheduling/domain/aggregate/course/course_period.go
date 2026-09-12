@@ -24,3 +24,10 @@ func NewCoursePeriod(start, end time.Time, total int, completed int) (CoursePeri
 		completedHours: completed,
 	}, nil
 }
+
+// --- 只读属性访问器 (Getters) ---
+
+func (p CoursePeriod) StartAt() time.Time  { return p.startAt }
+func (p CoursePeriod) EndAt() time.Time    { return p.endAt }
+func (p CoursePeriod) TotalHours() int     { return p.totalHours }
+func (p CoursePeriod) CompletedHours() int { return p.completedHours }

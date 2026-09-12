@@ -181,3 +181,5 @@ func (cs *CourseSlot) Weekday() time.Weekday   { return cs.weekday }
 func (cs *CourseSlot) TimeRange() DayTimeRange { return cs.timeRange }
 func (cs *CourseSlot) TeacherID() int64        { return cs.teacherID }
 func (cs *CourseSlot) ClassroomID() string     { return cs.classroomID }
+func (cs *CourseSlot) CreatedAt() time.Time    { return cs.createdAt }
+func (cs *CourseSlot) UpdatedAt() time.Time    { return cs.updatedAt }

@@ -97,3 +97,6 @@ func (a *AbsenceRecord) CourseSlotID() int64      { return a.courseSlotID }
 func (a *AbsenceRecord) ScheduleDate() time.Time  { return a.scheduleDate }
 func (a *AbsenceRecord) MissedHours() int         { return a.missedHours }
 func (a *AbsenceRecord) AbsenceType() AbsenceType { return a.absenceType }
+func (a *AbsenceRecord) Reason() string           { return a.reason }
+func (a *AbsenceRecord) CreatedAt() time.Time     { return a.createdAt }
+func (a *AbsenceRecord) UpdatedAt() time.Time     { return a.updatedAt }

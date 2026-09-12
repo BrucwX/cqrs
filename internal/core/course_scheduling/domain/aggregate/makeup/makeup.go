@@ -142,3 +142,5 @@ func (m *StudentMakeup) TargetDate() time.Time   { return m.targetDate }
 func (m *StudentMakeup) MakeupHours() int        { return m.makeupHours }
 func (m *StudentMakeup) Status() Status          { return m.status }
 func (m *StudentMakeup) CompletedAt() time.Time  { return m.completedAt }
+func (m *StudentMakeup) CreatedAt() time.Time    { return m.createdAt }
+func (m *StudentMakeup) UpdatedAt() time.Time    { return m.updatedAt }

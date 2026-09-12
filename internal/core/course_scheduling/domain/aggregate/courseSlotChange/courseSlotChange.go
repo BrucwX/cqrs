@@ -103,3 +103,5 @@ func (c *CourseSlotChange) ChangeType() ChangeType     { return c.changeType }
 func (c *CourseSlotChange) OriginalPlan() OriginalPlan { return c.originalPlan }
 func (c *CourseSlotChange) TargetPlan() TargetPlan     { return c.targetPlan }
 func (c *CourseSlotChange) Reason() string             { return c.reason }
+func (c *CourseSlotChange) CreatedAt() time.Time       { return c.createdAt }
+func (c *CourseSlotChange) UpdatedAt() time.Time       { return c.updatedAt }

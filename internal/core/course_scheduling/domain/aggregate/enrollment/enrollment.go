@@ -106,5 +106,6 @@ func (e *CourseEnrollment) Status() Status         { return e.status }
 func (e *CourseEnrollment) EnrolledAt() time.Time  { return e.enrolledAt }
 func (e *CourseEnrollment) CompletedAt() time.Time { return e.completedAt }
 func (e *CourseEnrollment) DroppedAt() time.Time   { return e.droppedAt }
+func (e *CourseEnrollment) UpdatedAt() time.Time   { return e.updatedAt }
 func (e *CourseEnrollment) IsActive() bool         { return e.status == StatusEnrolled }
 func (e *CourseEnrollment) IsCompleted() bool      { return e.status == StatusCompleted }
