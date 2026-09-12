@@ -18,14 +18,14 @@ func NewQualificationImp(d *mysql.Data) repo.QualificationCommand {
 	return &QualificationImp{data: d}
 }
 
-func (c *QualificationImp) GrantQualification(
-	ctx context.Context,
-	q *qualification.Qualification,
-	checkQualifiedFn func(ctx context.Context, q *qualification.Qualification) (bool, error),
-) error {
+func (c *QualificationImp) GrantQualification(ctx context.Context, q *qualification.Qualification) error {
 	panic("implement me")
 }
 
 func (c *QualificationImp) Delete(id int64) error {
+	panic("implement me")
+}
+
+func (c *QualificationImp) GetQualifications(teacherID int64) ([]qualification.Qualification, error) {
 	panic("implement me")
 }

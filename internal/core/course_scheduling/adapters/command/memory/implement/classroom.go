@@ -34,16 +34,15 @@ func (c *ClassroomCommand) Create(cl *classroom.Classroom) error {
 }
 
 // Update 按 ID 取出教室交给 updateFn 改，改完写回
+//
+// 教室不存在时由 MustGet 报 ErrClassroomNotFound。
 func (c *ClassroomCommand) Update(ctx context.Context, id string, updateFn func(ctx context.Context, cl *classroom.Classroom) (*classroom.Classroom, error)) error {
-	current, err := c.Get(id)
+	current, err := c.MustGet(id)
 	if err != nil {
 		return err
 	}
-	if current == nil {
-		return fmt.Errorf("%w: %s", repo.ErrClassroomNotFound, id)
-	}
 
-	updated, err := updateFn(ctx, current)
+	updated, err := updateFn(ctx, &current)
 	if err != nil {
 		return err
 	}
@@ -63,11 +62,11 @@ func (c *ClassroomCommand) Delete(id string) error {
 	return nil
 }
 
-// Get 取教室；不存在时返回 (nil, nil)，由调用方决定怎么处理。
-func (c *ClassroomCommand) Get(id string) (*classroom.Classroom, error) {
+// MustGet 取教室聚合本身；不存在时报 ErrClassroomNotFound。
+func (c *ClassroomCommand) MustGet(id string) (classroom.Classroom, error) {
 	item, ok := c.data.ClassroomByID(id)
 	if !ok {
-		return nil, nil
+		return classroom.Classroom{}, fmt.Errorf("%w: %s", repo.ErrClassroomNotFound, id)
 	}
-	return item, nil
+	return *item, nil
 }

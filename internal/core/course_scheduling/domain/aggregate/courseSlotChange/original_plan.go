@@ -4,7 +4,7 @@ import "time"
 
 // OriginalPlan 原始计划快照（用于溯源核对）
 type OriginalPlan struct {
-	slotID       int64     // 引用的课表模板 ID
+	slotID       string    // 引用的课表槽位 ID（course_slot.id）
 	date         time.Time // 原定上课日期
 	teacherID    int64     // 原讲师 ID
 	classroomID  string    // 原教室 ID
@@ -13,7 +13,7 @@ type OriginalPlan struct {
 }
 
 func NewOriginalPlan(
-	slotID int64,
+	slotID string,
 	date time.Time,
 	teacherID int64,
 	classroomID string,
@@ -29,7 +29,7 @@ func NewOriginalPlan(
 	}
 }
 
-func (op OriginalPlan) SlotID() int64        { return op.slotID }
+func (op OriginalPlan) SlotID() string       { return op.slotID }
 func (op OriginalPlan) Date() time.Time      { return op.date }
 func (op OriginalPlan) TeacherID() int64     { return op.teacherID }
 func (op OriginalPlan) ClassroomID() string  { return op.classroomID }

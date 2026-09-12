@@ -4,8 +4,6 @@ import (
 	"context"
 	"errors"
 
-	"cqrs/internal/core/course_scheduling/domain/aggregate/classroom"
-	"cqrs/internal/core/course_scheduling/domain/aggregate/course"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlot"
 )
 
@@ -21,10 +19,10 @@ var (
 // CourseSlotCommand 课表槽位命令接口
 //
 // 槽位 ID 是聚合生成的 UUID（string），所以 slotIDs 用 []string。
-// AssignTeacher 只把「本次要排的槽位 ID + 讲师 ID」交给调用方注入的
-// checkConflictFn 判定：仓库既不认识业务规则，也不替调用方查数据 ——
-// 判定要用的聚合由调用方自己按 ID 取（见 AssignTeacherRepo）。
-// AssignCourse / AssignClassroom 暂时还是把「槽位 + 目标聚合」传进去。
+//
+// 三个 AssignXxx 只管写：把目标 ID 写进这批槽位。冲突判定不在仓库里 ——
+// 那是调用方的事（见 domain/service 的 schedule.Conflict / qualification.Check），
+// 判定通过才调过来。所以这里没有回调，也没有「传 nil 表示不检查」这类分支。
 type CourseSlotCommand interface {
 	// Save 保存课表槽位（新增或更新）
 	Save(cs *courseSlot.CourseSlot) error
@@ -33,20 +31,24 @@ type CourseSlotCommand interface {
 	Delete(id string) error
 
 	// AssignTeacher 给指定课表槽位们配置老师
-	//
-	// 传 nil 表示不做检查。冲突时整批中止，不写入任何槽位。
-	AssignTeacher(ctx context.Context, slotIDs []string, teacherID int64,
-		checkConflictFn func(ctx context.Context, slotIDs []string, teacherID int64) (bool, error)) error
+	AssignTeacher(ctx context.Context, slotIDs []string, teacherID int64) error
 
 	// AssignCourse 给指定课表槽位们配置课程
-	//
-	// 传 nil 表示不做检查。冲突时整批中止，不写入任何槽位。
-	AssignCourse(ctx context.Context, slotIDs []string, courseID string,
-		checkConflictFn func(ctx context.Context, slots []courseSlot.CourseSlot, c course.Course) (bool, error)) error
+	AssignCourse(ctx context.Context, slotIDs []string, courseID string) error
 
 	// AssignClassroom 给指定课表槽位们配置教室
-	//
-	// 传 nil 表示不做检查。冲突时整批中止，不写入任何槽位。
-	AssignClassroom(ctx context.Context, slotIDs []string, classroomID string,
-		checkConflictFn func(ctx context.Context, slots []courseSlot.CourseSlot, c classroom.Classroom) (bool, error)) error
+	AssignClassroom(ctx context.Context, slotIDs []string, classroomID string) error
+
+	// --- 下面都是「取排期」，按返回值的聚合根归到本接口 ---
+
+	// GetSlots 按 ID 取本次要排的槽位，顺序与入参一致；少一个就报 not found
+	GetSlots(slotIDs []string) (courseSlot.CourseSlots, error)
+	// GetTeacherSlots 取该讲师现有的全部排期
+	GetTeacherSlots(teacherID int64) (courseSlot.CourseSlots, error)
+	// GetClassroomSlots 取该教室现有的全部排期
+	GetClassroomSlots(classroomID string) (courseSlot.CourseSlots, error)
+	// GetCourseSlots 取该课程现有的全部排期
+	GetCourseSlots(courseID string) (courseSlot.CourseSlots, error)
+	// GetStudentSlots 取该学员在学课程的全部排期
+	GetStudentSlots(studentID int64) (courseSlot.CourseSlots, error)
 }

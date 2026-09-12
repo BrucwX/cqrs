@@ -37,3 +37,11 @@ func (c *CourseImp) Delete(id string) error {
 func (c *CourseImp) Get(id string) (*course.Course, error) {
 	panic("implement me")
 }
+
+func (c *CourseImp) GetCourse(courseID string) (course.Course, error) {
+	panic("implement me")
+}
+
+func (c *CourseImp) GetCourses(courseTypeID string) ([]course.Course, error) {
+	panic("implement me")
+}

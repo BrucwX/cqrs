@@ -14,6 +14,8 @@
 package memory
 
 import (
+	"context"
+
 	"cqrs/internal/core/course_scheduling/adapters/memorystore"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/absence"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/classroom"
@@ -42,6 +44,7 @@ type reader interface {
 	Absences() []*absence.AbsenceRecord
 	Enrollments() []*enrollment.CourseEnrollment
 	Qualifications() []*qualification.Qualification
+	Makeups() []*makeup.StudentMakeup
 
 	CourseByID(id string) (*course.Course, bool)
 	ClassroomByID(id string) (*classroom.Classroom, bool)
@@ -90,4 +93,18 @@ type Data struct {
 // 不满足就会在这里报错，也不会给 wire 添额外的 bind。
 func NewData(store *memorystore.Data) *Data {
 	return &Data{reader: store, writer: store}
+}
+
+// Begin 满足 app/command.Transaction。
+//
+// 内存里没有真事务：就一份 map，不存在「写到一半失败要回滚」这回事，所以 ctx
+// 原样返回。它的意义是让需要事务的命令处理器在内存 profile 下也装得起来，
+// 且「判定 + 写回」那段代码在两种实现下写法一致。
+func (d *Data) Begin(ctx context.Context) (context.Context, error) {
+	return ctx, nil
+}
+
+// End 满足 app/command.Transaction；内存里没什么可收尾的，把 err 透出去。
+func (d *Data) End(_ context.Context, err error) error {
+	return err
 }

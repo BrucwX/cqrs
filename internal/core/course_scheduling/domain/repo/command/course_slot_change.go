@@ -24,7 +24,11 @@ type CourseSlotChangeCommand interface {
 	Delete(id int64) error
 	// Change 登记一次临时换课
 	//
-	// checkConflictFn 由调用方注入，仓库会把「本次换课」传进去；
-	// 传 nil 表示不做检查。冲突时不写入。
-	Change(ctx context.Context, csc *courseSlotChange.CourseSlotChange, checkConflictFn func(ctx context.Context, csc *courseSlotChange.CourseSlotChange) (bool, error)) error
+	// 只管写：把这张变更单落库。冲突判定（目标讲师 / 教室在目标时段是否已被占用）
+	// 不在这里 —— 那是调用方的事（见 domain/service/schedule 的 Conflict.CheckSlotChange），
+	// 判定通过才调过来。所以这里没有回调，也没有「传 nil 表示不检查」这类分支。
+	Change(ctx context.Context, csc *courseSlotChange.CourseSlotChange) error
+	// todo 这里不应该取这个，应该取 和 CourseSlotChange 有交集的换课记录
+	// GetOtherSlotChanges 取除该变更单以外的全部换课记录
+	GetOtherSlotChanges(id int64) ([]*courseSlotChange.CourseSlotChange, error)
 }

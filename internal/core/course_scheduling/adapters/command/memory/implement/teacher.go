@@ -71,3 +71,15 @@ func (c *TeacherCommand) Get(id int64) (*teacher.Teacher, error) {
 	}
 	return item, nil
 }
+
+// GetTeacher 取讲师聚合本身；取不到报 ErrTeacherNotFound。
+//
+// 与 Get 的差别：Get 找不到时是 (nil, nil)（给「查到了没」的调用方），
+// GetTeacher 是规则判定要用的，找不到必须报错。
+func (c *TeacherCommand) GetTeacher(teacherID int64) (teacher.Teacher, error) {
+	item, ok := c.data.TeacherByID(teacherID)
+	if !ok {
+		return teacher.Teacher{}, fmt.Errorf("%w: %d", repo.ErrTeacherNotFound, teacherID)
+	}
+	return *item, nil
+}

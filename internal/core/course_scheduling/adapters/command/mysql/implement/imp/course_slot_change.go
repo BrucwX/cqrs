@@ -26,7 +26,10 @@ func (c *CourseSlotChangeImp) Delete(id int64) error {
 	panic("implement me")
 }
 
-func (c *CourseSlotChangeImp) Change(ctx context.Context, csc *courseSlotChange.CourseSlotChange,
-	checkConflictFn func(ctx context.Context, csc *courseSlotChange.CourseSlotChange) (bool, error)) error {
+func (c *CourseSlotChangeImp) Change(ctx context.Context, csc *courseSlotChange.CourseSlotChange) error {
+	panic("implement me")
+}
+
+func (c *CourseSlotChangeImp) GetOtherSlotChanges(id int64) ([]*courseSlotChange.CourseSlotChange, error) {
 	panic("implement me")
 }

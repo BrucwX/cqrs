@@ -27,6 +27,18 @@ const (
 	demoCourseTypeEnglish     = "ct-0002" // 成人英语
 )
 
+// 演示用 CourseSlot ID（与 script/mysql/course_scheduling_seed.sql 里的 UUID 一致）。
+//
+// 补课预约两端引用的也是这里：补课不跨课程，所以缺课与补课都落在同一门课的槽位上。
+const (
+	demoSlotC001Monday    = "550e8400-e29b-41d4-a716-446655440001" // C001 周一 09:00-11:00 R101
+	demoSlotC001Wednesday = "550e8400-e29b-41d4-a716-446655440002" // C001 周三 09:00-11:00 R101
+	demoSlotC002Monday    = "550e8400-e29b-41d4-a716-446655440003" // C002 周一 14:00-16:00 R102
+	demoSlotC003Wednesday = "550e8400-e29b-41d4-a716-446655440004" // C003 周三 09:00-11:00 R102
+	demoSlotC003Friday    = "550e8400-e29b-41d4-a716-446655440005" // C003 周五 09:00-11:00 R102
+	demoSlotC004Tuesday   = "550e8400-e29b-41d4-a716-446655440006" // C004 周二 09:00-11:00 R102
+)
+
 var (
 	demoNow        = time.Date(demoYear, time.September, 1, 10, 0, 0, 0, time.Local)
 	demoTermStart  = time.Date(demoYear, time.September, 7, 0, 0, 0, 0, time.Local)
@@ -195,27 +207,27 @@ func (d *Data) seedDemoCourses() error {
 //	5 C003 周五 09:00-11:00 王强 R102
 //	6 C004 周二 09:00-11:00 王强 R102
 func (d *Data) seedDemoCourseSlots() error {
-	slot1, err := demoSlot("550e8400-e29b-41d4-a716-446655440001", "C001", time.Monday, 9, 0, 11, 0, 1, "R101")
+	slot1, err := demoSlot(demoSlotC001Monday, "C001", time.Monday, 9, 0, 11, 0, 1, "R101")
 	if err != nil {
 		return err
 	}
-	slot2, err := demoSlot("550e8400-e29b-41d4-a716-446655440002", "C001", time.Wednesday, 9, 0, 11, 0, 1, "R101")
+	slot2, err := demoSlot(demoSlotC001Wednesday, "C001", time.Wednesday, 9, 0, 11, 0, 1, "R101")
 	if err != nil {
 		return err
 	}
-	slot3, err := demoSlot("550e8400-e29b-41d4-a716-446655440003", "C002", time.Monday, 14, 0, 16, 0, 2, "R102")
+	slot3, err := demoSlot(demoSlotC002Monday, "C002", time.Monday, 14, 0, 16, 0, 2, "R102")
 	if err != nil {
 		return err
 	}
-	slot4, err := demoSlot("550e8400-e29b-41d4-a716-446655440004", "C003", time.Wednesday, 9, 0, 11, 0, 3, "R102")
+	slot4, err := demoSlot(demoSlotC003Wednesday, "C003", time.Wednesday, 9, 0, 11, 0, 3, "R102")
 	if err != nil {
 		return err
 	}
-	slot5, err := demoSlot("550e8400-e29b-41d4-a716-446655440005", "C003", time.Friday, 9, 0, 11, 0, 3, "R102")
+	slot5, err := demoSlot(demoSlotC003Friday, "C003", time.Friday, 9, 0, 11, 0, 3, "R102")
 	if err != nil {
 		return err
 	}
-	slot6, err := demoSlot("550e8400-e29b-41d4-a716-446655440006", "C004", time.Tuesday, 9, 0, 11, 0, 3, "R102")
+	slot6, err := demoSlot(demoSlotC004Tuesday, "C004", time.Tuesday, 9, 0, 11, 0, 3, "R102")
 	if err != nil {
 		return err
 	}
@@ -272,11 +284,11 @@ func (d *Data) seedDemoAbsences() error {
 	now := time.Now()
 	// 使用 Reconstitute 恢复固定 ID的种子数据
 	a1 := absence.Reconstitute(
-		1, 101, "C001", 2, demoDate(time.September, 16), 2,
+		1, 101, "C001", demoSlotC001Wednesday, demoDate(time.September, 16), 2,
 		absence.TypePersonalLeave, "家中急事", now, now,
 	)
 	a2 := absence.Reconstitute(
-		2, 102, "C002", 3, demoDate(time.September, 14), 2,
+		2, 102, "C002", demoSlotC002Monday, demoDate(time.September, 14), 2,
 		absence.TypeUnexcused, "未请假缺席", now, now,
 	)
 	d.SeedAbsence(a1, a2)
@@ -285,9 +297,13 @@ func (d *Data) seedDemoAbsences() error {
 
 // --- 补课：1 条已补课，1 条已预约 ---
 func (d *Data) seedDemoMakeups() error {
-	// 使用 Reconstitute 恢复固定 ID的种子数据
+	// 使用 Reconstitute 恢复固定 ID的种子数据。
+	// 槽位一律引用上面那几条真排期：101 缺了 C001 周一那节，补到 C001 周三那节；
+	// 102 缺了 C002 周一那节，补回同一节。
 	m1 := makeup.Reconstitute(
-		1, 101, "C001", 1, demoDate(time.September, 14), 2, demoDate(time.September, 16), 2,
+		1, 101, "C001",
+		demoSlotC001Monday, demoDate(time.September, 14),
+		demoSlotC001Wednesday, demoDate(time.September, 16), 2,
 		makeup.StatusBooked, time.Time{}, demoNow, demoNow,
 	)
 	if err := m1.CompleteAttendance(demoNow); err != nil {
@@ -295,7 +311,9 @@ func (d *Data) seedDemoMakeups() error {
 	}
 
 	m2 := makeup.Reconstitute(
-		2, 102, "C002", 3, demoDate(time.September, 14), 3, demoDate(time.September, 21), 2,
+		2, 102, "C002",
+		demoSlotC002Monday, demoDate(time.September, 14),
+		demoSlotC002Monday, demoDate(time.September, 21), 2,
 		makeup.StatusBooked, time.Time{}, demoNow, demoNow,
 	)
 
@@ -306,7 +324,7 @@ func (d *Data) seedDemoMakeups() error {
 // --- 课表变更：1 条调课 + 1 条代课 ---
 func (d *Data) seedDemoCourseSlotChanges() error {
 	original1 := courseSlotChange.NewOriginalPlan(
-		1, demoDate(time.September, 14), 1, "R101", "09:00", "11:00",
+		demoSlotC001Monday, demoDate(time.September, 14), 1, "R101", "09:00", "11:00",
 	)
 	target1, err := courseSlotChange.NewTargetPlan(
 		demoDateTime(time.September, 15, 14, 0),
@@ -324,7 +342,7 @@ func (d *Data) seedDemoCourseSlotChanges() error {
 	)
 
 	original2 := courseSlotChange.NewOriginalPlan(
-		2, demoDate(time.September, 16), 1, "R101", "09:00", "11:00",
+		demoSlotC001Wednesday, demoDate(time.September, 16), 1, "R101", "09:00", "11:00",
 	)
 	target2, err := courseSlotChange.NewTargetPlan(
 		demoDateTime(time.September, 16, 9, 0),

@@ -4,8 +4,6 @@ import (
 	"context"
 
 	"cqrs/internal/core/course_scheduling/adapters/command/mysql"
-	"cqrs/internal/core/course_scheduling/domain/aggregate/classroom"
-	"cqrs/internal/core/course_scheduling/domain/aggregate/course"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlot"
 	repo "cqrs/internal/core/course_scheduling/domain/repo/command"
 )
@@ -30,17 +28,36 @@ func (c *CourseSlotImp) Delete(id string) error {
 	panic("implement me")
 }
 
-func (c *CourseSlotImp) AssignTeacher(ctx context.Context, slotIDs []string, teacherID int64,
-	checkConflictFn func(ctx context.Context, slotIDs []string, teacherID int64) (bool, error)) error {
+func (c *CourseSlotImp) AssignTeacher(ctx context.Context, slotIDs []string, teacherID int64) error {
 	panic("implement me")
 }
 
-func (c *CourseSlotImp) AssignCourse(ctx context.Context, slotIDs []string, courseID string,
-	checkConflictFn func(ctx context.Context, slots []courseSlot.CourseSlot, c course.Course) (bool, error)) error {
+func (c *CourseSlotImp) AssignCourse(ctx context.Context, slotIDs []string, courseID string) error {
 	panic("implement me")
 }
 
-func (c *CourseSlotImp) AssignClassroom(ctx context.Context, slotIDs []string, classroomID string,
-	checkConflictFn func(ctx context.Context, slots []courseSlot.CourseSlot, c classroom.Classroom) (bool, error)) error {
+func (c *CourseSlotImp) AssignClassroom(ctx context.Context, slotIDs []string, classroomID string) error {
+	panic("implement me")
+}
+
+// --- 排期读取（按返回值的聚合根归到本接口）---
+
+func (c *CourseSlotImp) GetSlots(slotIDs []string) (courseSlot.CourseSlots, error) {
+	panic("implement me")
+}
+
+func (c *CourseSlotImp) GetTeacherSlots(teacherID int64) (courseSlot.CourseSlots, error) {
+	panic("implement me")
+}
+
+func (c *CourseSlotImp) GetClassroomSlots(classroomID string) (courseSlot.CourseSlots, error) {
+	panic("implement me")
+}
+
+func (c *CourseSlotImp) GetCourseSlots(courseID string) (courseSlot.CourseSlots, error) {
+	panic("implement me")
+}
+
+func (c *CourseSlotImp) GetStudentSlots(studentID int64) (courseSlot.CourseSlots, error) {
 	panic("implement me")
 }

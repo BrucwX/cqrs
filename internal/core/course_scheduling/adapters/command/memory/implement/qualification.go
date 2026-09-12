@@ -26,21 +26,10 @@ func NewQualificationCommand(d *memory.Data) repo.QualificationCommand {
 
 // GrantQualification 授予授课资质
 //
-// 先把待授予的资质交给调用方判定（讲师修完课程了没），通过后才写入；
-// 传 nil 表示不做检查。
-func (c *QualificationCommand) GrantQualification(ctx context.Context, q *qualification.Qualification, checkQualifiedFn func(ctx context.Context, q *qualification.Qualification) (bool, error)) error {
+// 只管写：够不够格（讲师修没修完该类型的课）由调用方在调过来之前判完。
+func (c *QualificationCommand) GrantQualification(ctx context.Context, q *qualification.Qualification) error {
 	if q == nil {
 		return repo.ErrQualificationRequired
-	}
-
-	if checkQualifiedFn != nil {
-		notQualified, err := checkQualifiedFn(ctx, q)
-		if err != nil {
-			return err
-		}
-		if notQualified {
-			return fmt.Errorf("%w: teacher %d courseType %s", repo.ErrCourseNotFinished, q.TeacherID(), q.CourseTypeID())
-		}
 	}
 
 	c.data.SaveQualification(q)
@@ -53,4 +42,15 @@ func (c *QualificationCommand) Delete(id int64) error {
 		return fmt.Errorf("%w: %d", repo.ErrQualificationNotFound, id)
 	}
 	return nil
+}
+
+// GetQualifications 取该讲师持有的全部资质。
+func (c *QualificationCommand) GetQualifications(teacherID int64) ([]qualification.Qualification, error) {
+	out := make([]qualification.Qualification, 0)
+	for _, item := range c.data.Qualifications() {
+		if item.TeacherID() == teacherID {
+			out = append(out, *item)
+		}
+	}
+	return out, nil
 }

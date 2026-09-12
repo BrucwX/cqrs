@@ -30,4 +30,9 @@ type TeacherCommand interface {
 	Delete(id int64) error
 	// Get 取讲师；不存在时返回 (nil, nil)
 	Get(id int64) (*teacher.Teacher, error)
+	// GetTeacher 取讲师聚合本身；取不到报 ErrTeacherNotFound
+	//
+	// 与 Get 的差别：Get 找不到时是 (nil, nil)（给「查到了没」的调用方），
+	// GetTeacher 是规则判定要用的，找不到必须报错。
+	GetTeacher(teacherID int64) (teacher.Teacher, error)
 }

@@ -20,15 +20,14 @@
 --   2. 枚举（Status / AbsenceType / ChangeType / StudentType）都是 `iota + 1`，
 --      存 tinyint unsigned，取值范围见列注释。
 --   3. 主键就用聚合自己发的 ID：string 型是 uuid -> varchar(36)；
---      int64 型是 time.Now().UnixNano() -> bigint。--  4. 每张表都带 lock_version（bigint unsigned，默认 0）做乐观锁：
---     读时取出，写时 `SET lock_version = lock_version + 1 WHERE lock_version = ?`，
---     影响行数为 0 即版本冲突。它由存储层维护，不是领域字段。--
--- 两个「模型里就对不上」的地方，这里按 Go 类型如实建，先不改：
---   a. course_slot.id 是 varchar(36)，但 absence_record.course_slot_id、
---      student_makeup.original_slot_id / target_slot_id、
---      course_slot_change.original_slot_id 都是 int64，指不到它上面去。
---   b. course_slot 的时间是值对象（time），course_slot_change 的原计划快照
---      却是 "16:00" 这种字符串（varchar(5)）。
+--      int64 型是 time.Now().UnixNano() -> bigint。
+--  4. 每张表都带 lock_version（bigint unsigned，默认 0）做乐观锁：
+--      读时取出，写时 `SET lock_version = lock_version + 1 WHERE lock_version = ?`，
+--      影响行数为 0 即版本冲突。它由存储层维护，不是领域字段。
+--
+-- 一处「模型里就对不上」的地方，这里按 Go 类型如实建，先不改：
+--   course_slot 的时间是值对象（time），course_slot_change 的原计划快照
+--   却是 "16:00" 这种字符串（varchar(5)）。
 --
 -- 不加外键（引用列只建普通索引）：ID 全由应用生成、写入顺序自由，
 -- 删除也由应用决定，让 MySQL 少一份约束来源。
@@ -156,7 +155,7 @@ CREATE TABLE IF NOT EXISTS course_slot_change (
   course_id             varchar(36)      NOT NULL COMMENT '关联课程（course.id）',
   applicant_id          bigint           NOT NULL COMMENT '发起申请人 ID',
   change_type           tinyint unsigned NOT NULL COMMENT '1 改期 / 2 代课 / 3 换教室 / 4 复合变动',
-  original_slot_id      bigint           NOT NULL COMMENT '原课表模板 ID（OriginalPlan 快照）',
+  original_slot_id      varchar(36)      NOT NULL COMMENT '原课表槽位 ID（course_slot.id）',
   original_date         date             NOT NULL COMMENT '原定上课日期',
   original_teacher_id   bigint           NOT NULL COMMENT '原讲师 ID',
   original_classroom_id varchar(36)      NOT NULL COMMENT '原教室 ID',
@@ -196,7 +195,7 @@ CREATE TABLE IF NOT EXISTS absence_record (
   id             bigint           NOT NULL           COMMENT '缺勤记录 ID',
   student_id     bigint           NOT NULL           COMMENT '学员/员工 ID',
   course_id      varchar(36)      NOT NULL           COMMENT '关联课程 ID',
-  course_slot_id bigint           NOT NULL           COMMENT '关联的排课槽位 ID',
+  course_slot_id varchar(36)      NOT NULL           COMMENT '关联的课表槽位 ID（course_slot.id）',
   schedule_date  date             NOT NULL           COMMENT '具体上课日期',
   missed_hours   int              NOT NULL           COMMENT '缺席课时数',
   absence_type   tinyint unsigned NOT NULL           COMMENT '1 事假 / 2 公假 / 3 旷课',
@@ -214,9 +213,9 @@ CREATE TABLE IF NOT EXISTS student_makeup (
   id               bigint           NOT NULL           COMMENT '补课记录 ID',
   student_id       bigint           NOT NULL           COMMENT '学员 ID',
   course_id        varchar(36)      NOT NULL           COMMENT '课程 ID（补课不跨课程）',
-  original_slot_id bigint           NOT NULL           COMMENT '原排课槽位 ID',
+  original_slot_id varchar(36)      NOT NULL           COMMENT '原本缺席的那节 course_slot.id',
   original_date    date             NOT NULL           COMMENT '原缺课日期',
-  target_slot_id   bigint           NOT NULL           COMMENT '目标补课槽位 ID',
+  target_slot_id   varchar(36)      NOT NULL           COMMENT '目标补课的那节 course_slot.id',
   target_date      date             NOT NULL           COMMENT '目标补课日期',
   makeup_hours     int              NOT NULL           COMMENT '补课课时数',
   status           tinyint unsigned NOT NULL           COMMENT '1 已预约 / 2 已补课 / 3 已取消',

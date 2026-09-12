@@ -61,12 +61,9 @@
 //	                     original_classroom_id / original_start_time / original_end_time
 //	TargetPlan        -> target_start_at / target_end_at / target_teacher_id / target_classroom_id
 //
-// # 两处「模型里就对不上」的地方（如实建模，不在数据模型里悄悄修正）
+// # 一处「模型里就对不上」的地方（如实建模，不在数据模型里悄悄修正）
 //
-//  1. course_slot.id 是 varchar(36) 的 uuid，但 absence_record.course_slot_id、
-//     student_makeup.original_slot_id / target_slot_id、course_slot_change.original_slot_id
-//     都是 bigint，指不到具体的课表模板上。
-//  2. course_slot 的时间是 time 列（"09:00:00"），course_slot_change 的原计划快照
+//  1. course_slot 的时间是 time 列（"09:00:00"），course_slot_change 的原计划快照
 //     却是 varchar(5)（"09:00"），同一个概念两种表示。
 //
 // # 不加外键

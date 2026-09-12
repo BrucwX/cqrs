@@ -1,9 +1,7 @@
 package server
 
 import (
-	"cqrs/internal/core/product"
 	"cqrs/internal/core/course_scheduling"
-	"cqrs/internal/support/commerce"
 
 	"github.com/go-kratos/kratos/v3/transport"
 )
@@ -15,22 +13,14 @@ type Servers struct {
 }
 
 // NewServers creates a Servers that aggregates all bounded context servers.
-func NewServers(
-	courseScheduling *course_scheduling.Servers,
-	product *product.Servers,
-	commerce *commerce.Servers,
-) *Servers {
+//
+// 目前只有 course_scheduling 一个上下文在跑；product / commerce 的代码保留着，
+// 只是没进依赖注入。等它们的 provider 补齐、重新挂回 wire.Build 之后，
+// 再把它们的 *Servers 参数加回来。
+func NewServers(courseScheduling *course_scheduling.Servers) *Servers {
 	return &Servers{
-		HTTP: []transport.Server{
-			courseScheduling.HTTP,
-			product.HTTP,
-			commerce.HTTP,
-		},
-		GRPC: []transport.Server{
-			courseScheduling.GRPC,
-			product.GRPC,
-			commerce.GRPC,
-		},
+		HTTP: []transport.Server{courseScheduling.HTTP},
+		GRPC: []transport.Server{courseScheduling.GRPC},
 	}
 }
 

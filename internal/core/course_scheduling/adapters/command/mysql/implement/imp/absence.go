@@ -23,3 +23,7 @@ func (c *AbsenceRecordImp) Save(a *absence.AbsenceRecord) error {
 func (c *AbsenceRecordImp) Delete(id int64) error {
 	panic("implement me")
 }
+
+func (c *AbsenceRecordImp) GetAbsences(studentID int64) ([]absence.AbsenceRecord, error) {
+	panic("implement me")
+}

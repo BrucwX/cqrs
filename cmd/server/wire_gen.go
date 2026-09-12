@@ -8,21 +8,9 @@ package main
 
 import (
 	"cqrs/internal/conf"
-	"cqrs/internal/core/product/adapters/memory"
-	memorycmd2 "cqrs/internal/core/product/adapters/memory/command"
-	memoryquery "cqrs/internal/core/product/adapters/memory/query"
-	command2 "cqrs/internal/core/product/app/command"
-	ports2 "cqrs/internal/core/product/ports"
-	service2 "cqrs/internal/core/product/service"
 	"cqrs/internal/core/course_scheduling/ports"
 	"cqrs/internal/core/course_scheduling/service"
 	"cqrs/internal/server"
-	memory2 "cqrs/internal/support/commerce/adapters/memory"
-	command3 "cqrs/internal/support/commerce/adapters/memory/command"
-	query2 "cqrs/internal/support/commerce/adapters/memory/query"
-	command4 "cqrs/internal/support/commerce/app/command"
-	ports3 "cqrs/internal/support/commerce/ports"
-	service3 "cqrs/internal/support/commerce/service"
 	"github.com/go-kratos/kratos/v3"
 	"log/slog"
 )
@@ -34,6 +22,9 @@ import (
 // Injectors from wire.go:
 
 // wireApp init kratos application.
+//
+// 目前只 wire course_scheduling 一个上下文。product / commerce 的 ProviderSet
+// 先不挂进来：它们自己的 provider 还没补齐，挂进来会让整个应用没法生成。
 func wireApp(confServer *conf.Server, data *conf.Data, logger *slog.Logger) (*kratos.App, func(), error) {
 	teacherService := service.NewTeacherService()
 	studentService := service.NewStudentService()
@@ -41,37 +32,8 @@ func wireApp(confServer *conf.Server, data *conf.Data, logger *slog.Logger) (*kr
 	httpServer := ports.NewHTTPServer(confServer, teacherService, studentService, courseService)
 	grpcServer := ports.NewGRPCServer(confServer, teacherService, studentService, courseService)
 	v := ports.NewServers(httpServer, grpcServer)
-	memoryData, cleanup, err := memory.NewData(data)
-	if err != nil {
-		return nil, nil, err
-	}
-	productQuery := memoryquery.NewProductQuery(memoryData)
-	productCommand := memorycmd2.NewProductCommand(memoryData)
-	productUsecase := command2.NewProductUsecase(productQuery, productCommand)
-	productService := service2.NewProductService(productUsecase)
-	portsHTTPServer := ports2.NewHTTPServer(confServer, productService)
-	portsGRPCServer := ports2.NewGRPCServer(confServer, productService)
-	v2 := ports2.NewServers(portsHTTPServer, portsGRPCServer)
-	data2, cleanup2, err := memory2.NewData(data)
-	if err != nil {
-		cleanup()
-		return nil, nil, err
-	}
-	paymentQuery := query2.NewPaymentQuery(data2)
-	paymentCommand := command3.NewPaymentCommand(data2)
-	paymentUsecase := command4.NewPaymentUsecase(paymentQuery, paymentCommand)
-	paymentService := service3.NewPaymentService(paymentUsecase)
-	discountQuery := query2.NewDiscountQuery(data2)
-	discountCommand := command3.NewDiscountCommand(data2)
-	discountUsecase := command4.NewDiscountUsecase(discountQuery, discountCommand)
-	discountService := service3.NewDiscountService(discountUsecase)
-	httpServer2 := ports3.NewHTTPServer(confServer, paymentService, discountService)
-	grpcServer2 := ports3.NewGRPCServer(confServer, paymentService, discountService)
-	v3 := ports3.NewServers(httpServer2, grpcServer2)
-	servers := server.NewServers(v, v2, v3)
+	servers := server.NewServers(v)
 	app := newApp(logger, servers)
 	return app, func() {
-		cleanup2()
-		cleanup()
 	}, nil
 }

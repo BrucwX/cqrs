@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"cqrs/internal/core/course_scheduling/adapters/command/memory"
-	"cqrs/internal/core/course_scheduling/domain/aggregate/course"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/enrollment"
 	repo "cqrs/internal/core/course_scheduling/domain/repo/command"
 )
@@ -44,37 +43,22 @@ func (c *EnrollmentCommand) Delete(id int64) error {
 
 // Enroll 学员选课
 //
-// 先把该课程聚合取出来交给调用方判定（选课窗口 + 容量 + 时间冲突），
-// 通过后才写入；传 nil 表示不做检查。
-func (c *EnrollmentCommand) Enroll(ctx context.Context, e *enrollment.CourseEnrollment, checkConflictFn func(ctx context.Context, e *enrollment.CourseEnrollment, crs course.Course) (bool, error)) error {
+// 只管写：准入判定（选课窗口 / 容量 / 时间冲突）由调用方在调过来之前做完。
+func (c *EnrollmentCommand) Enroll(ctx context.Context, e *enrollment.CourseEnrollment) error {
 	if e == nil {
 		return repo.ErrEnrollmentRequired
-	}
-
-	if checkConflictFn != nil {
-		crs, err := c.courseByID(e.CourseID())
-		if err != nil {
-			return err
-		}
-
-		conflict, err := checkConflictFn(ctx, e, crs)
-		if err != nil {
-			return err
-		}
-		if conflict {
-			return fmt.Errorf("%w: student %d course %s", repo.ErrEnrollmentConflict, e.StudentID(), e.CourseID())
-		}
 	}
 
 	return c.Save(e)
 }
 
-// courseByID 取课程聚合，取不到报 not found。
-func (c *EnrollmentCommand) courseByID(id string) (course.Course, error) {
-	for _, item := range c.data.Courses() {
-		if item.ID() == id {
-			return *item, nil
+// GetEnrollments 取该学员的全部报名记录。
+func (c *EnrollmentCommand) GetEnrollments(studentID int64) ([]enrollment.CourseEnrollment, error) {
+	out := make([]enrollment.CourseEnrollment, 0)
+	for _, item := range c.data.Enrollments() {
+		if item.StudentID() == studentID {
+			out = append(out, *item)
 		}
 	}
-	return course.Course{}, fmt.Errorf("%w: %s", repo.ErrCourseNotFound, id)
+	return out, nil
 }

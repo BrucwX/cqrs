@@ -2,6 +2,7 @@ package implement
 
 import (
 	"fmt"
+	"time"
 
 	"cqrs/internal/core/course_scheduling/adapters/command/memory"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/makeup"
@@ -38,4 +39,18 @@ func (c *MakeupCommand) Delete(id int64) error {
 		return fmt.Errorf("%w: %d", repo.ErrMakeupNotFound, id)
 	}
 	return nil
+}
+
+// GetMakeupsForTarget 取补到同一节课上的全部补课预约。
+//
+// 按槽位 + 日期两把钥匙匹配，状态不过滤。
+func (c *MakeupCommand) GetMakeupsForTarget(targetSlotID string, targetDate time.Time) ([]makeup.StudentMakeup, error) {
+	out := make([]makeup.StudentMakeup, 0)
+	for _, item := range c.data.Makeups() {
+		if item.TargetSlotID() != targetSlotID || !item.TargetDate().Equal(targetDate) {
+			continue
+		}
+		out = append(out, *item)
+	}
+	return out, nil
 }

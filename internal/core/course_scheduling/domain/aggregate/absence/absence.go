@@ -14,7 +14,7 @@ type AbsenceRecord struct {
 	id           int64
 	studentID    int64       // 学员/员工 ID
 	courseID     string      // 关联课程 ID
-	courseSlotID int64       // 关联的具体排课模板槽位 ID
+	courseSlotID string      // 关联的具体排课槽位 ID（course_slot.id）
 	scheduleDate time.Time   // 具体上课日期（年月日）
 	missedHours  int         // 缺席课时数
 	absenceType  AbsenceType // 缺勤类型（事假 / 公假 / 旷课）
@@ -32,14 +32,17 @@ func generateID() int64 {
 func NewAbsenceRecord(
 	studentID int64,
 	courseID string,
-	courseSlotID int64,
+	courseSlotID string,
 	scheduleDate time.Time,
 	missedHours int,
 	absenceType AbsenceType,
 	reason string,
 ) (*AbsenceRecord, error) {
-	if studentID <= 0 || courseSlotID <= 0 {
-		return nil, errors.New("invalid student ID or courseSlot ID")
+	if studentID <= 0 {
+		return nil, errors.New("invalid student ID")
+	}
+	if courseSlotID == "" {
+		return nil, errors.New("course slot ID is required")
 	}
 	if courseID == "" {
 		return nil, errors.New("course ID is required")
@@ -68,7 +71,7 @@ func Reconstitute(
 	id int64,
 	studentID int64,
 	courseID string,
-	courseSlotID int64,
+	courseSlotID string,
 	scheduleDate time.Time,
 	missedHours int,
 	absenceType AbsenceType,
@@ -93,7 +96,7 @@ func Reconstitute(
 func (a *AbsenceRecord) ID() int64                { return a.id }
 func (a *AbsenceRecord) StudentID() int64         { return a.studentID }
 func (a *AbsenceRecord) CourseID() string         { return a.courseID }
-func (a *AbsenceRecord) CourseSlotID() int64      { return a.courseSlotID }
+func (a *AbsenceRecord) CourseSlotID() string     { return a.courseSlotID }
 func (a *AbsenceRecord) ScheduleDate() time.Time  { return a.scheduleDate }
 func (a *AbsenceRecord) MissedHours() int         { return a.missedHours }
 func (a *AbsenceRecord) AbsenceType() AbsenceType { return a.absenceType }

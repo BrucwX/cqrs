@@ -5,8 +5,6 @@ import (
 	"fmt"
 
 	"cqrs/internal/core/course_scheduling/adapters/command/memory"
-	"cqrs/internal/core/course_scheduling/domain/aggregate/classroom"
-	"cqrs/internal/core/course_scheduling/domain/aggregate/course"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlot"
 	repo "cqrs/internal/core/course_scheduling/domain/repo/command"
 )
@@ -45,20 +43,8 @@ func (c *CourseSlotCommand) Delete(id string) error {
 
 // AssignTeacher 给指定课表槽位们配置老师
 //
-// 仓库不认识规则：只把「槽位 ID + 讲师 ID」交给调用方注入的 checkConflictFn
-// 判定（传 nil 表示不做冲突检查）。判定通过才逐个写；冲突则整批中止，
-// 一个槽位都不写。
-func (c *CourseSlotCommand) AssignTeacher(ctx context.Context, slotIDs []string, teacherID int64, checkConflictFn func(ctx context.Context, slotIDs []string, teacherID int64) (bool, error)) error {
-	if checkConflictFn != nil {
-		conflict, err := checkConflictFn(ctx, slotIDs, teacherID)
-		if err != nil {
-			return err
-		}
-		if conflict {
-			return fmt.Errorf("%w: teacher %d", repo.ErrCourseSlotConflict, teacherID)
-		}
-	}
-
+// 只写。判定由调用方（领域服务）做完才调过来，仓库不认识规则。
+func (c *CourseSlotCommand) AssignTeacher(ctx context.Context, slotIDs []string, teacherID int64) error {
 	slots, err := c.loadSlots(slotIDs)
 	if err != nil {
 		return err
@@ -75,27 +61,11 @@ func (c *CourseSlotCommand) AssignTeacher(ctx context.Context, slotIDs []string,
 
 // AssignCourse 给指定课表槽位们配置课程
 //
-// 先把课程聚合取出来交给调用方判定；传 nil 表示不做冲突检查。
-// 冲突时整批中止，不写入任何槽位。
-func (c *CourseSlotCommand) AssignCourse(ctx context.Context, slotIDs []string, courseID string, checkConflictFn func(ctx context.Context, slots []courseSlot.CourseSlot, crs course.Course) (bool, error)) error {
+// 只写。判定由调用方（领域服务）做完才调过来。
+func (c *CourseSlotCommand) AssignCourse(ctx context.Context, slotIDs []string, courseID string) error {
 	slots, err := c.loadSlots(slotIDs)
 	if err != nil {
 		return err
-	}
-
-	if checkConflictFn != nil {
-		crs, err := c.courseByID(courseID)
-		if err != nil {
-			return err
-		}
-
-		conflict, err := checkConflictFn(ctx, slotValues(slots), crs)
-		if err != nil {
-			return err
-		}
-		if conflict {
-			return fmt.Errorf("%w: course %s", repo.ErrCourseSlotConflict, courseID)
-		}
 	}
 
 	for _, cs := range slots {
@@ -109,27 +79,11 @@ func (c *CourseSlotCommand) AssignCourse(ctx context.Context, slotIDs []string, 
 
 // AssignClassroom 给指定课表槽位们配置教室
 //
-// 先把教室聚合取出来交给调用方判定；传 nil 表示不做冲突检查。
-// 冲突时整批中止，不写入任何槽位。
-func (c *CourseSlotCommand) AssignClassroom(ctx context.Context, slotIDs []string, classroomID string, checkConflictFn func(ctx context.Context, slots []courseSlot.CourseSlot, cr classroom.Classroom) (bool, error)) error {
+// 只写。判定由调用方（领域服务）做完才调过来。
+func (c *CourseSlotCommand) AssignClassroom(ctx context.Context, slotIDs []string, classroomID string) error {
 	slots, err := c.loadSlots(slotIDs)
 	if err != nil {
 		return err
-	}
-
-	if checkConflictFn != nil {
-		cr, err := c.classroomByID(classroomID)
-		if err != nil {
-			return err
-		}
-
-		conflict, err := checkConflictFn(ctx, slotValues(slots), cr)
-		if err != nil {
-			return err
-		}
-		if conflict {
-			return fmt.Errorf("%w: classroom %s", repo.ErrCourseSlotConflict, classroomID)
-		}
 	}
 
 	for _, cs := range slots {
@@ -139,6 +93,78 @@ func (c *CourseSlotCommand) AssignClassroom(ctx context.Context, slotIDs []strin
 		c.data.SaveCourseSlot(cs)
 	}
 	return nil
+}
+
+// --- 排期读取（按返回值的聚合根归到本接口）---
+
+// GetSlots 按 ID 取本次要排的槽位，顺序与入参一致；少一个就报 not found。
+func (c *CourseSlotCommand) GetSlots(slotIDs []string) (courseSlot.CourseSlots, error) {
+	out := make(courseSlot.CourseSlots, 0, len(slotIDs))
+	for _, id := range slotIDs {
+		item, ok := c.data.CourseSlotByID(id)
+		if !ok {
+			return nil, fmt.Errorf("%w: %s", repo.ErrCourseSlotNotFound, id)
+		}
+		out = append(out, *item)
+	}
+	return out, nil
+}
+
+// GetTeacherSlots 取该讲师现有的全部排期。
+func (c *CourseSlotCommand) GetTeacherSlots(teacherID int64) (courseSlot.CourseSlots, error) {
+	out := make(courseSlot.CourseSlots, 0)
+	for _, cs := range c.data.CourseSlots() {
+		if cs.TeacherID() == teacherID {
+			out = append(out, *cs)
+		}
+	}
+	return out, nil
+}
+
+// GetClassroomSlots 取该教室现有的全部排期。
+func (c *CourseSlotCommand) GetClassroomSlots(classroomID string) (courseSlot.CourseSlots, error) {
+	out := make(courseSlot.CourseSlots, 0)
+	for _, cs := range c.data.CourseSlots() {
+		if cs.ClassroomID() == classroomID {
+			out = append(out, *cs)
+		}
+	}
+	return out, nil
+}
+
+// GetCourseSlots 取该课程现有的全部排期。
+func (c *CourseSlotCommand) GetCourseSlots(courseID string) (courseSlot.CourseSlots, error) {
+	return c.slotsOfCourses(courseID), nil
+}
+
+// GetStudentSlots 取该学员现有「在学」课程的全部排期。
+//
+// 已退课 / 已结业的记录不计入；结果里会包含目标课程自身的排期，
+// 所以重复选课会表现为与自身槽位重叠。
+func (c *CourseSlotCommand) GetStudentSlots(studentID int64) (courseSlot.CourseSlots, error) {
+	courseIDs := make([]string, 0)
+	for _, e := range c.data.Enrollments() {
+		if e.StudentID() == studentID && e.IsActive() {
+			courseIDs = append(courseIDs, e.CourseID())
+		}
+	}
+	return c.slotsOfCourses(courseIDs...), nil
+}
+
+// slotsOfCourses 取若干门课程的全部排期。
+func (c *CourseSlotCommand) slotsOfCourses(courseIDs ...string) courseSlot.CourseSlots {
+	want := make(map[string]struct{}, len(courseIDs))
+	for _, id := range courseIDs {
+		want[id] = struct{}{}
+	}
+
+	out := make(courseSlot.CourseSlots, 0)
+	for _, cs := range c.data.CourseSlots() {
+		if _, ok := want[cs.CourseID()]; ok {
+			out = append(out, *cs)
+		}
+	}
+	return out
 }
 
 // --- 内部实现 ---
@@ -154,35 +180,6 @@ func (c *CourseSlotCommand) loadSlots(slotIDs []string) ([]*courseSlot.CourseSlo
 		slots = append(slots, cs)
 	}
 	return slots, nil
-}
-
-// slotValues 把槽位指针切片转成值拷贝切片，避免调用方误改聚合。
-func slotValues(slots []*courseSlot.CourseSlot) []courseSlot.CourseSlot {
-	out := make([]courseSlot.CourseSlot, 0, len(slots))
-	for _, cs := range slots {
-		out = append(out, *cs)
-	}
-	return out
-}
-
-// classroomByID 取教室聚合，取不到报 not found。
-func (c *CourseSlotCommand) classroomByID(id string) (classroom.Classroom, error) {
-	for _, item := range c.data.Classrooms() {
-		if item.ID() == id {
-			return *item, nil
-		}
-	}
-	return classroom.Classroom{}, fmt.Errorf("%w: %s", repo.ErrClassroomNotFound, id)
-}
-
-// courseByID 取课程聚合，取不到报 not found。
-func (c *CourseSlotCommand) courseByID(id string) (course.Course, error) {
-	for _, item := range c.data.Courses() {
-		if item.ID() == id {
-			return *item, nil
-		}
-	}
-	return course.Course{}, fmt.Errorf("%w: %s", repo.ErrCourseNotFound, id)
 }
 
 // indexBy 按 key 建索引；重复 key 保留先出现的一个。

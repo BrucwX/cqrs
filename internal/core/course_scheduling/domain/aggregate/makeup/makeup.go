@@ -14,11 +14,11 @@ type StudentMakeup struct {
 	courseID  string // 课程 ID（补课不跨课程）
 
 	// 原定缺席信息快照
-	originalSlotID int64     // 原排课模板 ID
+	originalSlotID string    // 原本缺席的那节 CourseSlot ID（与 courseSlot.ID() 同型）
 	originalDate   time.Time // 原缺课日期
 
 	// 目标补课信息
-	targetSlotID int64     // 目标去蹭课/补课的 CourseSlot ID
+	targetSlotID string    // 目标去蹭课/补课的 CourseSlot ID（UUID，与 courseSlot.ID() 同型）
 	targetDate   time.Time // 目标补课的具体日期
 	makeupHours  int       // 补课课时数
 
@@ -37,9 +37,9 @@ func generateID() int64 {
 func NewStudentMakeup(
 	studentID int64,
 	courseID string,
-	originalSlotID int64,
+	originalSlotID string,
 	originalDate time.Time,
-	targetSlotID int64,
+	targetSlotID string,
 	targetDate time.Time,
 	makeupHours int,
 	now time.Time,
@@ -50,7 +50,7 @@ func NewStudentMakeup(
 	if courseID == "" {
 		return nil, errors.New("course ID is required")
 	}
-	if targetSlotID <= 0 {
+	if targetSlotID == "" {
 		return nil, errors.New("target course slot ID is required")
 	}
 	if makeupHours <= 0 {
@@ -77,9 +77,9 @@ func Reconstitute(
 	id int64,
 	studentID int64,
 	courseID string,
-	originalSlotID int64,
+	originalSlotID string,
 	originalDate time.Time,
-	targetSlotID int64,
+	targetSlotID string,
 	targetDate time.Time,
 	makeupHours int,
 	status Status,
@@ -135,9 +135,9 @@ func (m *StudentMakeup) Cancel(operatorID int64, now time.Time) error {
 func (m *StudentMakeup) ID() int64               { return m.id }
 func (m *StudentMakeup) StudentID() int64        { return m.studentID }
 func (m *StudentMakeup) CourseID() string        { return m.courseID }
-func (m *StudentMakeup) OriginalSlotID() int64   { return m.originalSlotID }
+func (m *StudentMakeup) OriginalSlotID() string  { return m.originalSlotID }
 func (m *StudentMakeup) OriginalDate() time.Time { return m.originalDate }
-func (m *StudentMakeup) TargetSlotID() int64     { return m.targetSlotID }
+func (m *StudentMakeup) TargetSlotID() string    { return m.targetSlotID }
 func (m *StudentMakeup) TargetDate() time.Time   { return m.targetDate }
 func (m *StudentMakeup) MakeupHours() int        { return m.makeupHours }
 func (m *StudentMakeup) Status() Status          { return m.status }

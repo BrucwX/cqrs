@@ -39,3 +39,14 @@ func (c *AbsenceCommand) Delete(id int64) error {
 	}
 	return nil
 }
+
+// GetAbsences 取该学员的全部缺勤记录。
+func (c *AbsenceCommand) GetAbsences(studentID int64) ([]absence.AbsenceRecord, error) {
+	out := make([]absence.AbsenceRecord, 0)
+	for _, item := range c.data.Absences() {
+		if item.StudentID() == studentID {
+			out = append(out, *item)
+		}
+	}
+	return out, nil
+}

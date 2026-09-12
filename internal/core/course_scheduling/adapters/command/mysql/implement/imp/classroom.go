@@ -34,6 +34,6 @@ func (c *ClassroomImp) Delete(id string) error {
 	panic("implement me")
 }
 
-func (c *ClassroomImp) Get(id string) (*classroom.Classroom, error) {
+func (c *ClassroomImp) MustGet(id string) (classroom.Classroom, error) {
 	panic("implement me")
 }

@@ -14,11 +14,9 @@ import (
 //	                OriginalClassroomID / OriginalStartTime / OriginalEndTime
 //	TargetPlan   -> TargetStartAt / TargetEndAt / TargetTeacherID / TargetClassroomID
 //
-// 两处「模型里就对不上」的地方（见 doc.go），这里如实建模：
+// 一处「模型里就对不上」的地方（见 doc.go），这里如实建模：
 //
-//	a. OriginalSlotID 是 int64，但 course_slot.id 是 varchar(36) 的 uuid，
-//	   这份快照指不到具体的课表模板上。
-//	b. 原计划的时间是 varchar(5) 的 "09:00"，目标时间是 datetime，
+//	a. 原计划的时间是 varchar(5) 的 "09:00"，目标时间是 datetime，
 //	   同一个概念在两份快照里的表示不一致。
 type CourseSlotChange struct {
 	ID          int64  // bigint      变更单 ID
@@ -29,7 +27,7 @@ type CourseSlotChange struct {
 	ChangeType uint8
 
 	// --- 原计划快照（OriginalPlan）---
-	OriginalSlotID      int64     // bigint      原课表模板 ID（见上文 a）
+	OriginalSlotID      string    // varchar(36) 原课表槽位 ID（course_slot.id）
 	OriginalDate        time.Time // date        原定上课日期
 	OriginalTeacherID   int64     // bigint      原讲师 ID
 	OriginalClassroomID string    // varchar(36) 原教室 ID

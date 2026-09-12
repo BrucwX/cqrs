@@ -37,3 +37,7 @@ func (c *TeacherImp) Delete(id int64) error {
 func (c *TeacherImp) Get(id int64) (*teacher.Teacher, error) {
 	panic("implement me")
 }
+
+func (c *TeacherImp) GetTeacher(teacherID int64) (teacher.Teacher, error) {
+	panic("implement me")
+}

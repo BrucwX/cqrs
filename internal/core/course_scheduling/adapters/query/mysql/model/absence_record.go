@@ -9,14 +9,11 @@ import (
 // AbsenceRecord 对应表 absence_record，领域模型是 absence.AbsenceRecord。
 //
 // 一条事实：没有审批、也没有「已补卡」这类状态，所以表里没有任何状态列。
-//
-// CourseSlotID 与 course_slot.id 类型对不上（int64 vs varchar(36)），
-// 见 doc.go 的说明；这里按 Go 类型如实建模。
 type AbsenceRecord struct {
 	ID           int64     // bigint      缺勤记录 ID
 	StudentID    int64     // bigint      学员/员工 ID
 	CourseID     string    // varchar(36) 关联课程 ID
-	CourseSlotID int64     // bigint      关联的排课槽位 ID
+	CourseSlotID string    // varchar(36) 关联的课表槽位 ID（course_slot.id）
 	ScheduleDate time.Time // date        具体上课日期
 	MissedHours  int       // int         缺席课时数
 

@@ -21,11 +21,11 @@ type StudentMakeup struct {
 	StudentID int64  // bigint      学员 ID
 	CourseID  string // varchar(36) 课程 ID（补课不跨课程）
 
-	OriginalSlotID int64     // bigint 原排课槽位 ID
-	OriginalDate   time.Time // date   原缺课日期
+	OriginalSlotID string    // varchar(36) 原本缺席的那节 CourseSlot ID
+	OriginalDate   time.Time // date        原缺课日期
 
-	TargetSlotID int64     // bigint 目标补课槽位 ID
-	TargetDate   time.Time // date   目标补课日期
+	TargetSlotID string    // varchar(36) 目标补课的那节 CourseSlot ID
+	TargetDate   time.Time // date        目标补课日期
 
 	MakeupHours int // int 补课课时数
 

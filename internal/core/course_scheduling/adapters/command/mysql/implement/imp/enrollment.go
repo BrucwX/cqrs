@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"cqrs/internal/core/course_scheduling/adapters/command/mysql"
-	"cqrs/internal/core/course_scheduling/domain/aggregate/course"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/enrollment"
 	repo "cqrs/internal/core/course_scheduling/domain/repo/command"
 )
@@ -27,7 +26,10 @@ func (c *CourseEnrollmentImp) Delete(id int64) error {
 	panic("implement me")
 }
 
-func (c *CourseEnrollmentImp) Enroll(ctx context.Context, e *enrollment.CourseEnrollment,
-	checkConflictFn func(ctx context.Context, e *enrollment.CourseEnrollment, c course.Course) (bool, error)) error {
+func (c *CourseEnrollmentImp) Enroll(ctx context.Context, e *enrollment.CourseEnrollment) error {
+	panic("implement me")
+}
+
+func (c *CourseEnrollmentImp) GetEnrollments(studentID int64) ([]enrollment.CourseEnrollment, error) {
 	panic("implement me")
 }

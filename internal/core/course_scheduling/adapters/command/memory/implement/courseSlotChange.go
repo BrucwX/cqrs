@@ -43,21 +43,24 @@ func (c *CourseSlotChangeCommand) Delete(id int64) error {
 
 // Change 登记一次临时换课
 //
-// 把本次换课交给调用方判定（目标讲师/教室在目标时段是否已被占用），
-// 通过后才写入；传 nil 表示不做检查。
-func (c *CourseSlotChangeCommand) Change(ctx context.Context, csc *courseSlotChange.CourseSlotChange, checkConflictFn func(ctx context.Context, csc *courseSlotChange.CourseSlotChange) (bool, error)) error {
+// 只管写：冲突判定（目标讲师 / 教室在目标时段是否已被占用）由调用方在调过来之前做完。
+func (c *CourseSlotChangeCommand) Change(ctx context.Context, csc *courseSlotChange.CourseSlotChange) error {
 	if csc == nil {
 		return repo.ErrSlotChangeRequired
 	}
 
-	if checkConflictFn != nil {
-		conflict, err := checkConflictFn(ctx, csc)
-		if err != nil {
-			return err
-		}
-		if conflict {
-			return fmt.Errorf("%w: course %s", repo.ErrSlotChangeConflict, csc.CourseID())
+	return c.Save(csc)
+}
+
+// GetOtherSlotChanges 取除该变更单以外的全部换课记录。
+func (c *CourseSlotChangeCommand) GetOtherSlotChanges(id int64) ([]*courseSlotChange.CourseSlotChange, error) {
+	all := c.data.CourseSlotChanges()
+
+	out := make([]*courseSlotChange.CourseSlotChange, 0, len(all))
+	for _, item := range all {
+		if item.ID() != id {
+			out = append(out, item)
 		}
 	}
-	return c.Save(csc)
+	return out, nil
 }

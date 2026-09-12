@@ -71,3 +71,26 @@ func (c *CourseCommand) Get(id string) (*course.Course, error) {
 	}
 	return item, nil
 }
+
+// GetCourse 取课程聚合本身；取不到报 ErrCourseNotFound。
+//
+// 与 Get 的差别：Get 找不到时是 (nil, nil)（给「查到了没」的调用方），
+// GetCourse 是规则判定要用的，找不到必须报错。
+func (c *CourseCommand) GetCourse(courseID string) (course.Course, error) {
+	item, ok := c.data.CourseByID(courseID)
+	if !ok {
+		return course.Course{}, fmt.Errorf("%w: %s", repo.ErrCourseNotFound, courseID)
+	}
+	return *item, nil
+}
+
+// GetCourses 取某课程类型下的全部课程。
+func (c *CourseCommand) GetCourses(courseTypeID string) ([]course.Course, error) {
+	out := make([]course.Course, 0)
+	for _, item := range c.data.Courses() {
+		if item.CourseTypeID() == courseTypeID {
+			out = append(out, *item)
+		}
+	}
+	return out, nil
+}

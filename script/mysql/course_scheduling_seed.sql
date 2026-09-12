@@ -22,11 +22,8 @@
 --           course_slot 6 / course_slot_change 2 / course_enrollment 4 /
 --           absence_record 2 / student_makeup 2 / qualification 5  = 35 行
 --
--- 刻意保留的两处「模型对不上」的数据（见建表脚本头部注释）：
---   a. absence_record.course_slot_id、student_makeup.original/target_slot_id、
---      course_slot_change.original_slot_id 存的是 1/2/3 这种 int64，
---      而 course_slot.id 是 uuid 字符串 —— 这里按 Go 模型如实灌。
---   b. course_slot_change 的原计划时间是 "09:00" 字符串，目标时间是 datetime。
+-- 刻意保留的一处「模型对不上」的数据（见建表脚本头部注释）：
+--   course_slot_change 的原计划时间是 "09:00" 字符串，目标时间是 datetime。
 --
 -- 数据刻意包含时间冲突与不冲突两类课程，方便直接观察查询结果差异：
 --   C001 周一/周三 09:00-11:00 张伟 R101   C003 周三/周五 09:00-11:00 王强 R102
@@ -125,12 +122,14 @@ INSERT INTO course_slot_change (
   target_start_at, target_end_at, target_teacher_id, target_classroom_id,
   reason, created_at, updated_at
 ) VALUES
-  (1, 'C001', 1, 1, 1, '2026-09-14', 1, 'R101', '09:00', '11:00',
-     '2026-09-15 14:00:00', '2026-09-15 16:00:00', 1, 'R102',
-     '场地检修，临时调至周二下午', @demo_now, @demo_now),
-  (2, 'C001', 1, 2, 2, '2026-09-16', 1, 'R101', '09:00', '11:00',
-     '2026-09-16 09:00:00', '2026-09-16 11:00:00', 2, 'R101',
-     '讲师出差，由李娜代课', @demo_now, @demo_now);
+  (1, 'C001', 1, 1,
+   '550e8400-e29b-41d4-a716-446655440001', '2026-09-14', 1, 'R101', '09:00', '11:00',
+   '2026-09-15 14:00:00', '2026-09-15 16:00:00', 1, 'R102',
+   '场地检修，临时调至周二下午', @demo_now, @demo_now),
+  (2, 'C001', 1, 2,
+   '550e8400-e29b-41d4-a716-446655440002', '2026-09-16', 1, 'R101', '09:00', '11:00',
+   '2026-09-16 09:00:00', '2026-09-16 11:00:00', 2, 'R101',
+   '讲师出差，由李娜代课', @demo_now, @demo_now);
 
 -- 选课报名：103 的 C002 那条是「已结业」，用来验证查询侧不过滤状态
 INSERT INTO course_enrollment (
@@ -147,8 +146,8 @@ INSERT INTO absence_record (
   id, student_id, course_id, course_slot_id, schedule_date,
   missed_hours, absence_type, reason, created_at, updated_at
 ) VALUES
-  (1, 101, 'C001', 2, '2026-09-16', 2, 1, '家中急事',   @demo_now, @demo_now),
-  (2, 102, 'C002', 3, '2026-09-14', 2, 3, '未请假缺席', @demo_now, @demo_now);
+  (1, 101, 'C001', '550e8400-e29b-41d4-a716-446655440002', '2026-09-16', 2, 1, '家中急事',   @demo_now, @demo_now),
+  (2, 102, 'C002', '550e8400-e29b-41d4-a716-446655440003', '2026-09-14', 2, 3, '未请假缺席', @demo_now, @demo_now);
 
 -- 补课预约：1 条已补课（现场核销）+ 1 条已预约（status 1 已预约 / 2 已补课 / 3 已取消）
 INSERT INTO student_makeup (
@@ -156,8 +155,14 @@ INSERT INTO student_makeup (
   original_slot_id, original_date, target_slot_id, target_date,
   makeup_hours, status, completed_at, created_at, updated_at
 ) VALUES
-  (1, 101, 'C001', 1, '2026-09-14', 2, '2026-09-16', 2, 2, @demo_now, @demo_now, @demo_now),
-  (2, 102, 'C002', 3, '2026-09-14', 3, '2026-09-21', 2, 1, NULL,      @demo_now, @demo_now);
+  (1, 101, 'C001',
+   '550e8400-e29b-41d4-a716-446655440001', '2026-09-14',
+   '550e8400-e29b-41d4-a716-446655440002', '2026-09-16',
+   2, 2, @demo_now, @demo_now, @demo_now),
+  (2, 102, 'C002',
+   '550e8400-e29b-41d4-a716-446655440003', '2026-09-14',
+   '550e8400-e29b-41d4-a716-446655440003', '2026-09-21',
+   2, 1, NULL,      @demo_now, @demo_now);
 
 -- -----------------------------------------------------------------------------
 -- 四、授课资质

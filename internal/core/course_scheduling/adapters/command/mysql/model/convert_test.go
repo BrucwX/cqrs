@@ -143,7 +143,7 @@ func TestRoundTrip(t *testing.T) {
 	})
 
 	t.Run("courseSlotChange", func(t *testing.T) {
-		original := courseSlotChange.NewOriginalPlan(11, start, 1, "cl-1", "16:00", "18:00")
+		original := courseSlotChange.NewOriginalPlan("slot-11", start, 1, "cl-1", "16:00", "18:00")
 		target, err := courseSlotChange.NewTargetPlan(start, end, 2, "cl-2")
 		if err != nil {
 			t.Fatal(err)
@@ -180,7 +180,7 @@ func TestRoundTrip(t *testing.T) {
 	})
 
 	t.Run("makeup", func(t *testing.T) {
-		do := makeup.Reconstitute(2, 101, "c-1", 11, start, 12, end, 2, 1, end, now, now)
+		do := makeup.Reconstitute(2, 101, "c-1", "slot-11", start, "slot-12", end, 2, 1, end, now, now)
 
 		po := MakeupToPO(do)
 		eq(t, "CompletedAt.Valid", po.CompletedAt.Valid, true)
@@ -190,12 +190,13 @@ func TestRoundTrip(t *testing.T) {
 			t.Fatal(err)
 		}
 		eq(t, "CompletedAt", back.CompletedAt(), end)
-		eq(t, "OriginalSlotID", back.OriginalSlotID(), int64(11))
+		eq(t, "OriginalSlotID", back.OriginalSlotID(), "slot-11")
+		eq(t, "TargetSlotID", back.TargetSlotID(), "slot-12")
 		eq(t, "TargetDate", back.TargetDate(), end)
 	})
 
 	t.Run("absence", func(t *testing.T) {
-		do := absence.Reconstitute(1, 101, "c-1", 11, start, 2, 3, "家中有事", now, now)
+		do := absence.Reconstitute(1, 101, "c-1", "slot-11", start, 2, 3, "家中有事", now, now)
 
 		back, err := AbsenceToDO(AbsenceToPO(do))
 		if err != nil {
@@ -203,7 +204,7 @@ func TestRoundTrip(t *testing.T) {
 		}
 		eq(t, "Reason", back.Reason(), "家中有事")
 		eq(t, "AbsenceType", back.AbsenceType(), absence.AbsenceType(3))
-		eq(t, "UpdatedAt", back.UpdatedAt(), now)
+		eq(t, "CourseSlotID", back.CourseSlotID(), "slot-11")
 	})
 
 	t.Run("qualification", func(t *testing.T) {

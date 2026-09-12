@@ -28,6 +28,6 @@ type ClassroomCommand interface {
 	) error
 	// Delete 删除教室
 	Delete(id string) error
-	// Get 取教室；不存在时返回 (nil, nil)
-	Get(id string) (*classroom.Classroom, error)
+	// MustGet 取教室聚合本身；不存在时返回 ErrClassroomNotFound
+	MustGet(id string) (classroom.Classroom, error)
 }
