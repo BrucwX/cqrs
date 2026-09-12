@@ -34,11 +34,7 @@ SELECT `+help.AbsenceColumns+`
 }
 
 // ListByStudentID 根据学员 ID 获取缺勤记录列表。
-//
-// 接口没带 ctx，只能兜一个 Background，因此这个查询无法被取消
-// （读侧本来也不参与写侧事务，影响有限）。
-func (q *absenceRecordQuery) ListByStudentID(studentID int64) ([]*absence.AbsenceRecord, error) {
-	ctx := context.Background()
+func (q *absenceRecordQuery) ListByStudentID(ctx context.Context, studentID int64) ([]*absence.AbsenceRecord, error) {
 	return help.QueryAll(ctx, q.data.Conn(ctx), `
 SELECT `+help.AbsenceColumns+`
   FROM absence_record
@@ -47,10 +43,7 @@ SELECT `+help.AbsenceColumns+`
 }
 
 // ListByCourseID 根据课程 ID 获取缺勤记录列表。
-//
-// 同样没有 ctx 可继承。
-func (q *absenceRecordQuery) ListByCourseID(courseID string) ([]*absence.AbsenceRecord, error) {
-	ctx := context.Background()
+func (q *absenceRecordQuery) ListByCourseID(ctx context.Context, courseID string) ([]*absence.AbsenceRecord, error) {
 	return help.QueryAll(ctx, q.data.Conn(ctx), `
 SELECT `+help.AbsenceColumns+`
   FROM absence_record

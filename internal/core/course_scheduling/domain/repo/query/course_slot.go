@@ -11,5 +11,5 @@ type CourseSlotQuery interface {
 	// Page 分页查询课表槽位列表
 	Page(ctx context.Context, page int, pageSize int) ([]*courseSlot.CourseSlot, error)
 	// ListByCourseID 根据课程 ID 获取课表槽位列表
-	ListByCourseID(courseID string) ([]*courseSlot.CourseSlot, error)
+	ListByCourseID(ctx context.Context, courseID string) ([]*courseSlot.CourseSlot, error)
 }

@@ -34,11 +34,7 @@ SELECT `+help.CourseSlotColumns+`
 }
 
 // ListByCourseID 根据课程 ID 获取课表槽位列表。
-//
-// 接口没带 ctx，只能兜一个 Background，因此这个查询无法被取消
-// （读侧本来也不参与写侧事务，影响有限）。
-func (q *courseSlotQuery) ListByCourseID(courseID string) ([]*courseSlot.CourseSlot, error) {
-	ctx := context.Background()
+func (q *courseSlotQuery) ListByCourseID(ctx context.Context, courseID string) ([]*courseSlot.CourseSlot, error) {
 	return help.QueryAll(ctx, q.data.Conn(ctx), `
 SELECT `+help.CourseSlotColumns+`
   FROM course_slot

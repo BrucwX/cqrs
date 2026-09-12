@@ -31,7 +31,7 @@ func TestAbsenceRecordQueryListByStudentID(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := q.ListByStudentID(tt.studentID)
+			got, err := q.ListByStudentID(context.Background(), tt.studentID)
 			if err != nil {
 				t.Fatalf("ListByStudentID() error = %v", err)
 			}
@@ -55,7 +55,7 @@ func TestAbsenceRecordQueryListByCourseID(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := q.ListByCourseID(tt.courseID)
+			got, err := q.ListByCourseID(context.Background(), tt.courseID)
 			if err != nil {
 				t.Fatalf("ListByCourseID() error = %v", err)
 			}

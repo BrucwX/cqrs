@@ -34,11 +34,7 @@ SELECT `+help.CourseSlotChangeColumns+`
 }
 
 // ListByCourseID 根据课程 ID 获取课表变更列表。
-//
-// 接口没带 ctx，只能兜一个 Background，因此这个查询无法被取消
-// （读侧本来也不参与写侧事务，影响有限）。
-func (q *courseSlotChangeQuery) ListByCourseID(courseID string) ([]*courseSlotChange.CourseSlotChange, error) {
-	ctx := context.Background()
+func (q *courseSlotChangeQuery) ListByCourseID(ctx context.Context, courseID string) ([]*courseSlotChange.CourseSlotChange, error) {
 	return help.QueryAll(ctx, q.data.Conn(ctx), `
 SELECT `+help.CourseSlotChangeColumns+`
   FROM course_slot_change

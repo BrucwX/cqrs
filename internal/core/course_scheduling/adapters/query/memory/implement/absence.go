@@ -24,7 +24,7 @@ func (q *absenceRecordQuery) Page(_ context.Context, page, pageSize int) ([]*abs
 }
 
 // ListByStudentID 根据学员 ID 获取缺勤记录列表。
-func (q *absenceRecordQuery) ListByStudentID(studentID int64) ([]*absence.AbsenceRecord, error) {
+func (q *absenceRecordQuery) ListByStudentID(_ context.Context, studentID int64) ([]*absence.AbsenceRecord, error) {
 	out := make([]*absence.AbsenceRecord, 0)
 	for _, item := range q.data.Absences() {
 		if item.StudentID() == studentID {
@@ -35,7 +35,7 @@ func (q *absenceRecordQuery) ListByStudentID(studentID int64) ([]*absence.Absenc
 }
 
 // ListByCourseID 根据课程 ID 获取缺勤记录列表。
-func (q *absenceRecordQuery) ListByCourseID(courseID string) ([]*absence.AbsenceRecord, error) {
+func (q *absenceRecordQuery) ListByCourseID(_ context.Context, courseID string) ([]*absence.AbsenceRecord, error) {
 	out := make([]*absence.AbsenceRecord, 0)
 	for _, item := range q.data.Absences() {
 		if item.CourseID() == courseID {

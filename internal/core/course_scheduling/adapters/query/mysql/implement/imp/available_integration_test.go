@@ -137,7 +137,7 @@ func TestIntegrationFieldFidelity(t *testing.T) {
 	})
 
 	t.Run("course_slot 的 TIME 列与星期", func(t *testing.T) {
-		got, err := NewCourseSlotQuery(data).ListByCourseID("C001")
+		got, err := NewCourseSlotQuery(data).ListByCourseID(ctx, "C001")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -172,7 +172,7 @@ func TestIntegrationFieldFidelity(t *testing.T) {
 	})
 
 	t.Run("course_slot_change 的字符串快照与枚举", func(t *testing.T) {
-		got, err := NewCourseSlotChangeQuery(data).ListByCourseID("C001")
+		got, err := NewCourseSlotChangeQuery(data).ListByCourseID(ctx, "C001")
 		if err != nil {
 			t.Fatal(err)
 		}

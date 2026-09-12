@@ -32,7 +32,7 @@ func TestCourseSlotChangeQueryListByCourseID(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := q.ListByCourseID(tt.courseID)
+			got, err := q.ListByCourseID(context.Background(), tt.courseID)
 			if err != nil {
 				t.Fatalf("ListByCourseID() error = %v", err)
 			}
@@ -44,7 +44,7 @@ func TestCourseSlotChangeQueryListByCourseID(t *testing.T) {
 func TestCourseSlotChangeQueryReturnsSeededFields(t *testing.T) {
 	q := NewCourseSlotChangeQuery(newSeededData(t))
 
-	got, err := q.ListByCourseID("C001")
+	got, err := q.ListByCourseID(context.Background(), "C001")
 	if err != nil {
 		t.Fatalf("ListByCourseID() error = %v", err)
 	}

@@ -13,5 +13,5 @@ type ListByCourseID struct {
 
 // ListByCourseID 根据课程 ID 获取缺勤记录
 func (h *Handler) ListByCourseID(ctx context.Context, q ListByCourseID) ([]*absence.AbsenceRecord, error) {
-	return h.Query.ListByCourseID(q.CourseID)
+	return h.Query.ListByCourseID(ctx, q.CourseID)
 }

@@ -240,11 +240,10 @@ func TestIntegrationPage(t *testing.T) {
 
 func TestIntegrationListByID(t *testing.T) {
 	data := newIntegrationData(t)
+	ctx := context.Background()
 
-	// 这几个方法在接口上就没有 ctx 参数，适配器内部自己兜 Background，
-	// 所以这里只传 data。
 	t.Run("course_slot 按课程", func(t *testing.T) {
-		got, err := NewCourseSlotQuery(data).ListByCourseID("C001")
+		got, err := NewCourseSlotQuery(data).ListByCourseID(ctx, "C001")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -254,7 +253,7 @@ func TestIntegrationListByID(t *testing.T) {
 				"550e8400-e29b-41d4-a716-446655440002",
 			})
 
-		empty, err := NewCourseSlotQuery(data).ListByCourseID("C999")
+		empty, err := NewCourseSlotQuery(data).ListByCourseID(ctx, "C999")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -264,14 +263,14 @@ func TestIntegrationListByID(t *testing.T) {
 	})
 
 	t.Run("course_slot_change 按课程", func(t *testing.T) {
-		got, err := NewCourseSlotChangeQuery(data).ListByCourseID("C001")
+		got, err := NewCourseSlotChangeQuery(data).ListByCourseID(ctx, "C001")
 		if err != nil {
 			t.Fatal(err)
 		}
 		assertInts(t, "C001", intIDs(got, func(c *courseSlotChange.CourseSlotChange) int64 { return c.ID() }),
 			[]int64{1, 2})
 
-		got, err = NewCourseSlotChangeQuery(data).ListByCourseID("C002")
+		got, err = NewCourseSlotChangeQuery(data).ListByCourseID(ctx, "C002")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -280,14 +279,14 @@ func TestIntegrationListByID(t *testing.T) {
 	})
 
 	t.Run("absence 按学员 / 课程", func(t *testing.T) {
-		byStudent, err := NewAbsenceRecordQuery(data).ListByStudentID(101)
+		byStudent, err := NewAbsenceRecordQuery(data).ListByStudentID(ctx, 101)
 		if err != nil {
 			t.Fatal(err)
 		}
 		assertInts(t, "student 101",
 			intIDs(byStudent, func(a *absence.AbsenceRecord) int64 { return a.ID() }), []int64{1})
 
-		byCourse, err := NewAbsenceRecordQuery(data).ListByCourseID("C002")
+		byCourse, err := NewAbsenceRecordQuery(data).ListByCourseID(ctx, "C002")
 		if err != nil {
 			t.Fatal(err)
 		}

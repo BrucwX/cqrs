@@ -24,7 +24,7 @@ func (q *courseSlotChangeQuery) Page(_ context.Context, page, pageSize int) ([]*
 }
 
 // ListByCourseID 根据课程 ID 获取课表变更列表。
-func (q *courseSlotChangeQuery) ListByCourseID(courseID string) ([]*courseSlotChange.CourseSlotChange, error) {
+func (q *courseSlotChangeQuery) ListByCourseID(_ context.Context, courseID string) ([]*courseSlotChange.CourseSlotChange, error) {
 	out := make([]*courseSlotChange.CourseSlotChange, 0)
 	for _, item := range q.data.CourseSlotChanges() {
 		if item.CourseID() == courseID {

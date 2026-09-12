@@ -24,7 +24,7 @@ func (q *courseSlotQuery) Page(_ context.Context, page, pageSize int) ([]*course
 }
 
 // ListByCourseID 根据课程 ID 获取课表槽位列表。
-func (q *courseSlotQuery) ListByCourseID(courseID string) ([]*courseSlot.CourseSlot, error) {
+func (q *courseSlotQuery) ListByCourseID(_ context.Context, courseID string) ([]*courseSlot.CourseSlot, error) {
 	out := make([]*courseSlot.CourseSlot, 0)
 	for _, item := range q.data.CourseSlots() {
 		if item.CourseID() == courseID {

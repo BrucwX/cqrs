@@ -11,5 +11,5 @@ type CourseSlotChangeQuery interface {
 	// Page 分页查询课表变更列表
 	Page(ctx context.Context, page int, pageSize int) ([]*courseSlotChange.CourseSlotChange, error)
 	// ListByCourseID 根据课程 ID 获取课表变更列表
-	ListByCourseID(courseID string) ([]*courseSlotChange.CourseSlotChange, error)
+	ListByCourseID(ctx context.Context, courseID string) ([]*courseSlotChange.CourseSlotChange, error)
 }
