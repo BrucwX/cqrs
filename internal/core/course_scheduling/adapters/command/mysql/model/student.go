@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"time"
 
 	"cqrs/internal/core/course_scheduling/domain/aggregate/student"
@@ -31,7 +32,10 @@ type Student struct {
 }
 
 // StudentToPO 写路径：ContactInfo 值对象打平成 Phone / Email 两列。
-func StudentToPO(do *student.Student) *Student {
+func StudentToPO(do *student.Student) (*Student, error) {
+	if do == nil {
+		return nil, ErrStudentDOToPO
+	}
 	contact := do.Contact()
 	return &Student{
 		ID:          do.ID(),
@@ -42,14 +46,17 @@ func StudentToPO(do *student.Student) *Student {
 		Status:      uint8(do.Status()),
 		CreatedAt:   do.CreatedAt(),
 		UpdatedAt:   do.UpdatedAt(),
-	}
+	}, nil
 }
 
 // StudentToDO 读路径：手机号不符合格式会被值对象构造函数拒绝。
 func StudentToDO(po *Student) (*student.Student, error) {
+	if po == nil {
+		return nil, ErrStudentPOToDO
+	}
 	contact, err := student.NewContactInfo(po.Phone, po.Email)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w: %v", ErrStudentPOToDO, err)
 	}
 	return student.Reconstitute(
 		po.ID, po.Name, student.StudentType(po.StudentType), contact,

@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"time"
 
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlot"
@@ -37,7 +38,10 @@ type CourseSlot struct {
 }
 
 // CourseSlotToPO 写路径：DayTimeRange 打平成两个 time 列。
-func CourseSlotToPO(do *courseSlot.CourseSlot) *CourseSlot {
+func CourseSlotToPO(do *courseSlot.CourseSlot) (*CourseSlot, error) {
+	if do == nil {
+		return nil, ErrCourseSlotDOToPO
+	}
 	timeRange := do.TimeRange()
 	return &CourseSlot{
 		ID:          do.ID(),
@@ -49,22 +53,25 @@ func CourseSlotToPO(do *courseSlot.CourseSlot) *CourseSlot {
 		ClassroomID: do.ClassroomID(),
 		CreatedAt:   do.CreatedAt(),
 		UpdatedAt:   do.UpdatedAt(),
-	}
+	}, nil
 }
 
 // CourseSlotToDO 读路径：两个 time 列拼回 DayTimeRange，先后顺序反了会被拒绝。
 func CourseSlotToDO(po *CourseSlot) (*courseSlot.CourseSlot, error) {
+	if po == nil {
+		return nil, ErrCourseSlotPOToDO
+	}
 	start, err := dayTimeFromPO(po.StartTime)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w: %v", ErrCourseSlotPOToDO, err)
 	}
 	end, err := dayTimeFromPO(po.EndTime)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w: %v", ErrCourseSlotPOToDO, err)
 	}
 	timeRange, err := courseSlot.NewDayTimeRange(start, end)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w: %v", ErrCourseSlotPOToDO, err)
 	}
 	return courseSlot.Reconstitute(
 		po.ID, po.CourseID, time.Weekday(po.Weekday), timeRange,

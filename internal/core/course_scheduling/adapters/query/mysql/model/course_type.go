@@ -20,18 +20,24 @@ type CourseType struct {
 }
 
 // CourseTypeToPO 写路径。
-func CourseTypeToPO(do *courseType.CourseType) *CourseType {
+func CourseTypeToPO(do *courseType.CourseType) (*CourseType, error) {
+	if do == nil {
+		return nil, ErrCourseTypeDOToPO
+	}
 	return &CourseType{
 		ID:          do.ID(),
 		Name:        do.Name(),
 		Description: do.Description(),
 		CreatedAt:   do.CreatedAt(),
 		UpdatedAt:   do.UpdatedAt(),
-	}
+	}, nil
 }
 
 // CourseTypeToDO 读路径。
 func CourseTypeToDO(po *CourseType) (*courseType.CourseType, error) {
+	if po == nil {
+		return nil, ErrCourseTypePOToDO
+	}
 	return courseType.Reconstitute(
 		po.ID, po.Name, po.Description, po.CreatedAt, po.UpdatedAt,
 	), nil

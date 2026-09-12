@@ -28,9 +28,12 @@ func (c *CourseSlotChangeImp) Save(ctx context.Context, csc *courseSlotChange.Co
 	if csc == nil {
 		return repo.ErrSlotChangeRequired
 	}
-	po := model.CourseSlotChangeToPO(csc)
+	po, err := model.CourseSlotChangeToPO(csc)
+	if err != nil {
+		return err
+	}
 
-	_, err := c.data.Conn(ctx).ExecContext(ctx, `
+	_, err = c.data.Conn(ctx).ExecContext(ctx, `
 INSERT INTO course_slot_change
   (id, course_id, applicant_id, change_type, original_slot_id, original_date,
    original_teacher_id, original_classroom_id, original_start_time, original_end_time,

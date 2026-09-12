@@ -28,9 +28,12 @@ func (c *CourseEnrollmentImp) Save(ctx context.Context, e *enrollment.CourseEnro
 	if e == nil {
 		return repo.ErrEnrollmentRequired
 	}
-	po := model.EnrollmentToPO(e)
+	po, err := model.EnrollmentToPO(e)
+	if err != nil {
+		return err
+	}
 
-	_, err := c.data.Conn(ctx).ExecContext(ctx, `
+	_, err = c.data.Conn(ctx).ExecContext(ctx, `
 INSERT INTO course_enrollment
   (id, student_id, course_id, status, enrolled_at, completed_at, dropped_at, updated_at)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?)

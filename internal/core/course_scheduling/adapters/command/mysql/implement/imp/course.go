@@ -28,9 +28,12 @@ func (c *CourseImp) Create(ctx context.Context, crs *course.Course) error {
 	if crs == nil {
 		return repo.ErrCourseRequired
 	}
-	po := model.CourseToPO(crs)
+	po, err := model.CourseToPO(crs)
+	if err != nil {
+		return err
+	}
 
-	_, err := c.data.Conn(ctx).ExecContext(ctx, `
+	_, err = c.data.Conn(ctx).ExecContext(ctx, `
 INSERT INTO course
   (id, course_type_id, capacity_max, capacity_enrolled, enroll_start_at, enroll_end_at, drop_deadline,
    period_start_at, period_end_at, total_hours, completed_hours)
@@ -61,7 +64,10 @@ func (c *CourseImp) Update(
 		return repo.ErrCourseRequired
 	}
 
-	po := model.CourseToPO(updated)
+	po, err := model.CourseToPO(updated)
+	if err != nil {
+		return err
+	}
 	_, err = c.data.Conn(ctx).ExecContext(ctx, `
 UPDATE course
    SET course_type_id = ?, capacity_max = ?, capacity_enrolled = ?,

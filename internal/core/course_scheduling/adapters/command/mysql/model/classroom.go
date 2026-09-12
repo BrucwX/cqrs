@@ -1,6 +1,10 @@
 package model
 
-import "cqrs/internal/core/course_scheduling/domain/aggregate/classroom"
+import (
+	"fmt"
+
+	"cqrs/internal/core/course_scheduling/domain/aggregate/classroom"
+)
 
 // Classroom 对应表 classroom，领域模型是 classroom.Classroom。
 //
@@ -23,7 +27,10 @@ type Classroom struct {
 }
 
 // ClassroomToPO 写路径：Location 值对象打平成三列。
-func ClassroomToPO(do *classroom.Classroom) *Classroom {
+func ClassroomToPO(do *classroom.Classroom) (*Classroom, error) {
+	if do == nil {
+		return nil, ErrClassroomDOToPO
+	}
 	location := do.Location()
 	return &Classroom{
 		ID:        do.ID(),
@@ -33,14 +40,17 @@ func ClassroomToPO(do *classroom.Classroom) *Classroom {
 		Capacity:  do.Capacity(),
 		Allocated: do.AllocatedSeats(),
 		Status:    uint8(do.Status()),
-	}
+	}, nil
 }
 
 // ClassroomToDO 读路径：三列重新拼回 Location，楼栋/房间号为空会被拒绝。
 func ClassroomToDO(po *Classroom) (*classroom.Classroom, error) {
+	if po == nil {
+		return nil, ErrClassroomPOToDO
+	}
 	location, err := classroom.NewLocation(po.Building, po.Floor, po.Room)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w: %v", ErrClassroomPOToDO, err)
 	}
 	return classroom.Reconstitute(
 		po.ID, location, po.Capacity, po.Allocated, classroom.Status(po.Status),

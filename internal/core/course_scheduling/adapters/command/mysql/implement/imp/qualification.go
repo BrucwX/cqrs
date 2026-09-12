@@ -28,9 +28,12 @@ func (c *QualificationImp) GrantQualification(ctx context.Context, q *qualificat
 	if q == nil {
 		return repo.ErrQualificationRequired
 	}
-	po := model.QualificationToPO(q)
+	po, err := model.QualificationToPO(q)
+	if err != nil {
+		return err
+	}
 
-	_, err := c.data.Conn(ctx).ExecContext(ctx, `
+	_, err = c.data.Conn(ctx).ExecContext(ctx, `
 INSERT INTO qualification
   (id, teacher_id, course_type_id, certified_at, status, updated_at)
 VALUES (?, ?, ?, ?, ?, ?)`,

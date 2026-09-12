@@ -28,9 +28,12 @@ func (c *ClassroomImp) Create(ctx context.Context, cl *classroom.Classroom) erro
 	if cl == nil {
 		return repo.ErrClassroomRequired
 	}
-	po := model.ClassroomToPO(cl)
+	po, err := model.ClassroomToPO(cl)
+	if err != nil {
+		return err
+	}
 
-	_, err := c.data.Conn(ctx).ExecContext(ctx, `
+	_, err = c.data.Conn(ctx).ExecContext(ctx, `
 INSERT INTO classroom (id, building, floor, room, capacity, allocated, status)
 VALUES (?, ?, ?, ?, ?, ?, ?)`,
 		po.ID, po.Building, po.Floor, po.Room, po.Capacity, po.Allocated, po.Status,
@@ -59,7 +62,10 @@ func (c *ClassroomImp) Update(
 		return repo.ErrClassroomRequired
 	}
 
-	npo := model.ClassroomToPO(updated)
+	npo, err := model.ClassroomToPO(updated)
+	if err != nil {
+		return err
+	}
 	_, err = c.data.Conn(ctx).ExecContext(ctx, `
 UPDATE classroom
    SET building = ?, floor = ?, room = ?, capacity = ?, allocated = ?, status = ?

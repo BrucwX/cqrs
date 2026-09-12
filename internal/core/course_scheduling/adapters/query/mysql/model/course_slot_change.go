@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"time"
 
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlotChange"
@@ -49,7 +50,10 @@ type CourseSlotChange struct {
 
 // CourseSlotChangeToPO 写路径：OriginalPlan 打平成 original_* 六列，
 // TargetPlan 打平成 target_* 四列。
-func CourseSlotChangeToPO(do *courseSlotChange.CourseSlotChange) *CourseSlotChange {
+func CourseSlotChangeToPO(do *courseSlotChange.CourseSlotChange) (*CourseSlotChange, error) {
+	if do == nil {
+		return nil, ErrCourseSlotChangeDOToPO
+	}
 	original := do.OriginalPlan()
 	target := do.TargetPlan()
 	return &CourseSlotChange{
@@ -73,7 +77,7 @@ func CourseSlotChangeToPO(do *courseSlotChange.CourseSlotChange) *CourseSlotChan
 		Reason:    do.Reason(),
 		CreatedAt: do.CreatedAt(),
 		UpdatedAt: do.UpdatedAt(),
-	}
+	}, nil
 }
 
 // CourseSlotChangeToDO 读路径：目标计划要走 NewTargetPlan，跨天或时间倒挂会报错。
@@ -81,6 +85,9 @@ func CourseSlotChangeToPO(do *courseSlotChange.CourseSlotChange) *CourseSlotChan
 // 原计划的 original_start_time / original_end_time 表里就是字符串（varchar(5)），
 // 和值对象一一对应，直接带过去。
 func CourseSlotChangeToDO(po *CourseSlotChange) (*courseSlotChange.CourseSlotChange, error) {
+	if po == nil {
+		return nil, ErrCourseSlotChangePOToDO
+	}
 	original := courseSlotChange.NewOriginalPlan(
 		po.OriginalSlotID, po.OriginalDate, po.OriginalTeacherID,
 		po.OriginalClassroomID, po.OriginalStartTime, po.OriginalEndTime,
@@ -89,7 +96,7 @@ func CourseSlotChangeToDO(po *CourseSlotChange) (*courseSlotChange.CourseSlotCha
 		po.TargetStartAt, po.TargetEndAt, po.TargetTeacherID, po.TargetClassroomID,
 	)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w: %v", ErrCourseSlotChangePOToDO, err)
 	}
 	return courseSlotChange.Reconstitute(
 		po.ID, po.CourseID, po.ApplicantID, courseSlotChange.ChangeType(po.ChangeType),

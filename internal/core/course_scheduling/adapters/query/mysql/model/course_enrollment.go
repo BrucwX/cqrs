@@ -32,7 +32,10 @@ type CourseEnrollment struct {
 }
 
 // EnrollmentToPO 写路径：零值时间表示「没有」，写进可空列就是 NULL。
-func EnrollmentToPO(do *enrollment.CourseEnrollment) *CourseEnrollment {
+func EnrollmentToPO(do *enrollment.CourseEnrollment) (*CourseEnrollment, error) {
+	if do == nil {
+		return nil, ErrEnrollmentDOToPO
+	}
 	return &CourseEnrollment{
 		ID:          do.ID(),
 		StudentID:   do.StudentID(),
@@ -42,11 +45,14 @@ func EnrollmentToPO(do *enrollment.CourseEnrollment) *CourseEnrollment {
 		CompletedAt: nullTime(do.CompletedAt()),
 		DroppedAt:   nullTime(do.DroppedAt()),
 		UpdatedAt:   do.UpdatedAt(),
-	}
+	}, nil
 }
 
 // EnrollmentToDO 读路径：NULL 还原成零值时间。
 func EnrollmentToDO(po *CourseEnrollment) (*enrollment.CourseEnrollment, error) {
+	if po == nil {
+		return nil, ErrEnrollmentPOToDO
+	}
 	return enrollment.Reconstitute(
 		po.ID, po.StudentID, po.CourseID, enrollment.Status(po.Status),
 		po.EnrolledAt, timeValue(po.CompletedAt), timeValue(po.DroppedAt), po.UpdatedAt,

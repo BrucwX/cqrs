@@ -28,9 +28,12 @@ func (c *StudentImp) Create(ctx context.Context, s *student.Student) error {
 	if s == nil {
 		return repo.ErrStudentRequired
 	}
-	po := model.StudentToPO(s)
+	po, err := model.StudentToPO(s)
+	if err != nil {
+		return err
+	}
 
-	_, err := c.data.Conn(ctx).ExecContext(ctx, `
+	_, err = c.data.Conn(ctx).ExecContext(ctx, `
 INSERT INTO student
   (id, name, student_type, phone, email, status, created_at, updated_at)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -58,7 +61,10 @@ func (c *StudentImp) Update(
 		return repo.ErrStudentRequired
 	}
 
-	po := model.StudentToPO(updated)
+	po, err := model.StudentToPO(updated)
+	if err != nil {
+		return err
+	}
 	_, err = c.data.Conn(ctx).ExecContext(ctx, `
 UPDATE student
    SET name = ?, student_type = ?, phone = ?, email = ?, status = ?, updated_at = ?

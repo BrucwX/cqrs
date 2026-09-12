@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"time"
 
 	"cqrs/internal/core/course_scheduling/domain/aggregate/course"
@@ -38,7 +39,10 @@ type Course struct {
 }
 
 // CourseToPO 写路径：Capacity / EnrollmentWindow / CoursePeriod 三个值对象打平。
-func CourseToPO(do *course.Course) *Course {
+func CourseToPO(do *course.Course) (*Course, error) {
+	if do == nil {
+		return nil, ErrCourseDOToPO
+	}
 	capacity := do.Capacity()
 	window := do.Enrollment()
 	period := do.Period()
@@ -54,20 +58,23 @@ func CourseToPO(do *course.Course) *Course {
 		PeriodEndAt:      period.EndAt(),
 		TotalHours:       period.TotalHours(),
 		CompletedHours:   period.CompletedHours(),
-	}
+	}, nil
 }
 
 // CourseToDO 读路径：容量与课时都走值对象构造函数，越界数据在这里报错。
 func CourseToDO(po *Course) (*course.Course, error) {
+	if po == nil {
+		return nil, ErrCoursePOToDO
+	}
 	capacity, err := course.NewCapacity(po.CapacityMax, po.CapacityEnrolled)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w: %v", ErrCoursePOToDO, err)
 	}
 	period, err := course.NewCoursePeriod(
 		po.PeriodStartAt, po.PeriodEndAt, po.TotalHours, po.CompletedHours,
 	)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w: %v", ErrCoursePOToDO, err)
 	}
 	window := course.NewEnrollmentWindow(po.EnrollStartAt, po.EnrollEndAt, po.DropDeadline)
 

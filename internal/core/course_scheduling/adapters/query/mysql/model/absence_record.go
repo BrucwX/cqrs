@@ -28,7 +28,10 @@ type AbsenceRecord struct {
 }
 
 // AbsenceToPO 写路径。这张表没有状态列，缺勤就是一条事实。
-func AbsenceToPO(do *absence.AbsenceRecord) *AbsenceRecord {
+func AbsenceToPO(do *absence.AbsenceRecord) (*AbsenceRecord, error) {
+	if do == nil {
+		return nil, ErrAbsenceDOToPO
+	}
 	return &AbsenceRecord{
 		ID:           do.ID(),
 		StudentID:    do.StudentID(),
@@ -40,11 +43,14 @@ func AbsenceToPO(do *absence.AbsenceRecord) *AbsenceRecord {
 		Reason:       do.Reason(),
 		CreatedAt:    do.CreatedAt(),
 		UpdatedAt:    do.UpdatedAt(),
-	}
+	}, nil
 }
 
 // AbsenceToDO 读路径。
 func AbsenceToDO(po *AbsenceRecord) (*absence.AbsenceRecord, error) {
+	if po == nil {
+		return nil, ErrAbsencePOToDO
+	}
 	return absence.Reconstitute(
 		po.ID, po.StudentID, po.CourseID, po.CourseSlotID, po.ScheduleDate,
 		po.MissedHours, absence.AbsenceType(po.AbsenceType), po.Reason,

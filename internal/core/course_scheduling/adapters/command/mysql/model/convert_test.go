@@ -34,7 +34,11 @@ func eq(t *testing.T, name string, got, want any) {
 func TestRoundTrip(t *testing.T) {
 	t.Run("courseType", func(t *testing.T) {
 		do := courseType.Reconstitute("ct-1", "少儿编程", "6-12 岁", now, now)
-		back, err := CourseTypeToDO(CourseTypeToPO(do))
+		po, err := CourseTypeToPO(do)
+		if err != nil {
+			t.Fatal(err)
+		}
+		back, err := CourseTypeToDO(po)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -49,7 +53,10 @@ func TestRoundTrip(t *testing.T) {
 		}
 		do := classroom.Reconstitute("cl-1", loc, 30, 7, 2)
 
-		po := ClassroomToPO(do)
+		po, err := ClassroomToPO(do)
+		if err != nil {
+			t.Fatal(err)
+		}
 		eq(t, "Floor", po.Floor, 1)
 		eq(t, "Allocated", po.Allocated, 7)
 
@@ -68,7 +75,11 @@ func TestRoundTrip(t *testing.T) {
 		}
 		do := student.Reconstitute(101, "陈晨", student.TypeInternal, contact, 1, now, now)
 
-		back, err := StudentToDO(StudentToPO(do))
+		po, err := StudentToPO(do)
+		if err != nil {
+			t.Fatal(err)
+		}
+		back, err := StudentToDO(po)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -84,7 +95,11 @@ func TestRoundTrip(t *testing.T) {
 		}
 		do := teacher.Reconstitute(1, 201, "张伟", "金牌讲师", contact, 2, now, now)
 
-		back, err := TeacherToDO(TeacherToPO(do))
+		po, err := TeacherToPO(do)
+		if err != nil {
+			t.Fatal(err)
+		}
+		back, err := TeacherToDO(po)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -105,7 +120,10 @@ func TestRoundTrip(t *testing.T) {
 		window := course.NewEnrollmentWindow(now, end, start)
 		do := course.Reconstitute("c-1", "ct-1", capacity, window, period)
 
-		po := CourseToPO(do)
+		po, err := CourseToPO(do)
+		if err != nil {
+			t.Fatal(err)
+		}
 		eq(t, "DropDeadline", po.DropDeadline, start)
 		eq(t, "TotalHours", po.TotalHours, 40)
 
@@ -128,7 +146,10 @@ func TestRoundTrip(t *testing.T) {
 		}
 		do := courseSlot.Reconstitute("slot-1", "c-1", time.Wednesday, tr, -1, "", now, now)
 
-		po := CourseSlotToPO(do)
+		po, err := CourseSlotToPO(do)
+		if err != nil {
+			t.Fatal(err)
+		}
 		eq(t, "StartTime", po.StartTime, "16:00:00")
 		eq(t, "EndTime", po.EndTime, "18:30:00")
 		eq(t, "Weekday", po.Weekday, uint8(3))
@@ -150,7 +171,10 @@ func TestRoundTrip(t *testing.T) {
 		}
 		do := courseSlotChange.Reconstitute(7, "c-1", 1, 2, original, target, "临时代课", now, now)
 
-		po := CourseSlotChangeToPO(do)
+		po, err := CourseSlotChangeToPO(do)
+		if err != nil {
+			t.Fatal(err)
+		}
 		eq(t, "OriginalStartTime", po.OriginalStartTime, "16:00")
 		eq(t, "TargetTeacherID", po.TargetTeacherID, int64(2))
 
@@ -167,7 +191,10 @@ func TestRoundTrip(t *testing.T) {
 	t.Run("enrollment", func(t *testing.T) {
 		do := enrollment.Reconstitute(1, 101, "c-1", 1, now, time.Time{}, time.Time{}, now)
 
-		po := EnrollmentToPO(do)
+		po, err := EnrollmentToPO(do)
+		if err != nil {
+			t.Fatal(err)
+		}
 		eq(t, "CompletedAt.Valid", po.CompletedAt.Valid, false)
 
 		back, err := EnrollmentToDO(po)
@@ -182,7 +209,10 @@ func TestRoundTrip(t *testing.T) {
 	t.Run("makeup", func(t *testing.T) {
 		do := makeup.Reconstitute(2, 101, "c-1", "slot-11", start, "slot-12", end, 2, 1, end, now, now)
 
-		po := MakeupToPO(do)
+		po, err := MakeupToPO(do)
+		if err != nil {
+			t.Fatal(err)
+		}
 		eq(t, "CompletedAt.Valid", po.CompletedAt.Valid, true)
 
 		back, err := MakeupToDO(po)
@@ -198,7 +228,11 @@ func TestRoundTrip(t *testing.T) {
 	t.Run("absence", func(t *testing.T) {
 		do := absence.Reconstitute(1, 101, "c-1", "slot-11", start, 2, 3, "家中有事", now, now)
 
-		back, err := AbsenceToDO(AbsenceToPO(do))
+		po, err := AbsenceToPO(do)
+		if err != nil {
+			t.Fatal(err)
+		}
+		back, err := AbsenceToDO(po)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -210,7 +244,11 @@ func TestRoundTrip(t *testing.T) {
 	t.Run("qualification", func(t *testing.T) {
 		do := qualification.Reconstitute(1, 1, "ct-1", now, 2, now)
 
-		back, err := QualificationToDO(QualificationToPO(do))
+		po, err := QualificationToPO(do)
+		if err != nil {
+			t.Fatal(err)
+		}
+		back, err := QualificationToDO(po)
 		if err != nil {
 			t.Fatal(err)
 		}

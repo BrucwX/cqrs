@@ -29,9 +29,12 @@ func (c *StudentMakeupImp) Save(ctx context.Context, m *makeup.StudentMakeup) er
 	if m == nil {
 		return repo.ErrMakeupRequired
 	}
-	po := model.MakeupToPO(m)
+	po, err := model.MakeupToPO(m)
+	if err != nil {
+		return err
+	}
 
-	_, err := c.data.Conn(ctx).ExecContext(ctx, `
+	_, err = c.data.Conn(ctx).ExecContext(ctx, `
 INSERT INTO student_makeup
   (id, student_id, course_id, original_slot_id, original_date, target_slot_id, target_date,
    makeup_hours, status, completed_at, created_at, updated_at)

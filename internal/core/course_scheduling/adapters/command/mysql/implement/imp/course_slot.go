@@ -28,9 +28,12 @@ func (c *CourseSlotImp) Save(ctx context.Context, cs *courseSlot.CourseSlot) err
 	if cs == nil {
 		return repo.ErrCourseSlotRequired
 	}
-	po := model.CourseSlotToPO(cs)
+	po, err := model.CourseSlotToPO(cs)
+	if err != nil {
+		return err
+	}
 
-	_, err := c.data.Conn(ctx).ExecContext(ctx, `
+	_, err = c.data.Conn(ctx).ExecContext(ctx, `
 INSERT INTO course_slot
   (id, course_id, weekday, start_time, end_time, teacher_id, classroom_id, created_at, updated_at)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)

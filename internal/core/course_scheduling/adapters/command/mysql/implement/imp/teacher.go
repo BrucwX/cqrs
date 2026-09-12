@@ -28,9 +28,12 @@ func (c *TeacherImp) Create(ctx context.Context, t *teacher.Teacher) error {
 	if t == nil {
 		return repo.ErrTeacherRequired
 	}
-	po := model.TeacherToPO(t)
+	po, err := model.TeacherToPO(t)
+	if err != nil {
+		return err
+	}
 
-	_, err := c.data.Conn(ctx).ExecContext(ctx, `
+	_, err = c.data.Conn(ctx).ExecContext(ctx, `
 INSERT INTO teacher
   (id, student_id, name, title, phone, email, status, created_at, updated_at)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -58,7 +61,10 @@ func (c *TeacherImp) Update(
 		return repo.ErrTeacherRequired
 	}
 
-	po := model.TeacherToPO(updated)
+	po, err := model.TeacherToPO(updated)
+	if err != nil {
+		return err
+	}
 	_, err = c.data.Conn(ctx).ExecContext(ctx, `
 UPDATE teacher
    SET student_id = ?, name = ?, title = ?, phone = ?, email = ?, status = ?, updated_at = ?

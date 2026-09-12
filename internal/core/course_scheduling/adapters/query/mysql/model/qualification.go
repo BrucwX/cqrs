@@ -32,7 +32,10 @@ type Qualification struct {
 }
 
 // QualificationToPO 写路径。表里只有 updated_at，认证时间就是 CertifiedAt。
-func QualificationToPO(do *qualification.Qualification) *Qualification {
+func QualificationToPO(do *qualification.Qualification) (*Qualification, error) {
+	if do == nil {
+		return nil, ErrQualificationDOToPO
+	}
 	return &Qualification{
 		ID:           do.ID(),
 		TeacherID:    do.TeacherID(),
@@ -40,11 +43,14 @@ func QualificationToPO(do *qualification.Qualification) *Qualification {
 		CertifiedAt:  do.CertifiedAt(),
 		Status:       uint8(do.Status()),
 		UpdatedAt:    do.UpdatedAt(),
-	}
+	}, nil
 }
 
 // QualificationToDO 读路径。
 func QualificationToDO(po *Qualification) (*qualification.Qualification, error) {
+	if po == nil {
+		return nil, ErrQualificationPOToDO
+	}
 	return qualification.Reconstitute(
 		po.ID, po.TeacherID, po.CourseTypeID, po.CertifiedAt,
 		qualification.Status(po.Status), po.UpdatedAt,

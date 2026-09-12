@@ -28,9 +28,12 @@ func (c *AbsenceRecordImp) Save(ctx context.Context, a *absence.AbsenceRecord) e
 	if a == nil {
 		return repo.ErrAbsenceRequired
 	}
-	po := model.AbsenceToPO(a)
+	po, err := model.AbsenceToPO(a)
+	if err != nil {
+		return err
+	}
 
-	_, err := c.data.Conn(ctx).ExecContext(ctx, `
+	_, err = c.data.Conn(ctx).ExecContext(ctx, `
 INSERT INTO absence_record
   (id, student_id, course_id, course_slot_id, schedule_date, missed_hours, absence_type, reason, created_at, updated_at)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)

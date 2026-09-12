@@ -40,7 +40,10 @@ type StudentMakeup struct {
 }
 
 // MakeupToPO 写路径：CompletedAt 零值表示还没现场核销，写进可空列就是 NULL。
-func MakeupToPO(do *makeup.StudentMakeup) *StudentMakeup {
+func MakeupToPO(do *makeup.StudentMakeup) (*StudentMakeup, error) {
+	if do == nil {
+		return nil, ErrMakeupDOToPO
+	}
 	return &StudentMakeup{
 		ID:             do.ID(),
 		StudentID:      do.StudentID(),
@@ -54,11 +57,14 @@ func MakeupToPO(do *makeup.StudentMakeup) *StudentMakeup {
 		CompletedAt:    nullTime(do.CompletedAt()),
 		CreatedAt:      do.CreatedAt(),
 		UpdatedAt:      do.UpdatedAt(),
-	}
+	}, nil
 }
 
 // MakeupToDO 读路径：NULL 还原成零值时间。
 func MakeupToDO(po *StudentMakeup) (*makeup.StudentMakeup, error) {
+	if po == nil {
+		return nil, ErrMakeupPOToDO
+	}
 	return makeup.Reconstitute(
 		po.ID, po.StudentID, po.CourseID,
 		po.OriginalSlotID, po.OriginalDate, po.TargetSlotID, po.TargetDate,
