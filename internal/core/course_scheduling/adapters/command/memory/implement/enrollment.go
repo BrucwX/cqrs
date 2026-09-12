@@ -41,6 +41,16 @@ func (c *EnrollmentCommand) Delete(ctx context.Context, id int64) error {
 	return nil
 }
 
+// MustGet 取课程注册聚合；不存在时报 ErrEnrollmentNotFound。
+func (c *EnrollmentCommand) MustGet(ctx context.Context, id int64) (enrollment.CourseEnrollment, error) {
+	for _, item := range c.data.Enrollments() {
+		if item.ID() == id {
+			return *item, nil
+		}
+	}
+	return enrollment.CourseEnrollment{}, fmt.Errorf("%w: %d", repo.ErrEnrollmentNotFound, id)
+}
+
 // Enroll 学员选课
 //
 // 只管写：准入判定（选课窗口 / 容量 / 时间冲突）由调用方在调过来之前做完。

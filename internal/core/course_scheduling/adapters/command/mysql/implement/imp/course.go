@@ -38,7 +38,7 @@ func (c *CourseImp) Get(ctx context.Context, id string) (*course.Course, error) 
 	panic("implement me")
 }
 
-func (c *CourseImp) GetCourse(ctx context.Context, courseID string) (course.Course, error) {
+func (c *CourseImp) MustGet(ctx context.Context, id string) (course.Course, error) {
 	panic("implement me")
 }
 

@@ -42,6 +42,16 @@ func (c *MakeupCommand) Delete(ctx context.Context, id int64) error {
 	return nil
 }
 
+// MustGet 取补课预约聚合；不存在时报 ErrMakeupNotFound。
+func (c *MakeupCommand) MustGet(ctx context.Context, id int64) (makeup.StudentMakeup, error) {
+	for _, item := range c.data.Makeups() {
+		if item.ID() == id {
+			return *item, nil
+		}
+	}
+	return makeup.StudentMakeup{}, fmt.Errorf("%w: %d", repo.ErrMakeupNotFound, id)
+}
+
 // GetMakeupsForTarget 取补到同一节课上的全部补课预约。
 //
 // 按槽位 + 日期两把钥匙匹配，状态不过滤。

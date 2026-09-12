@@ -10,7 +10,7 @@ import "context"
 // 目标槽位本身已经属于这门课的话同样会判成冲突 —— 那说明重复配置了，
 // 应该报出来让调用方处理。
 func (s *Service) CheckCourse(ctx context.Context, courseID string, slotIDs []string) (bool, error) {
-	if _, err := s.courses.GetCourse(ctx, courseID); err != nil {
+	if _, err := s.courses.MustGet(ctx, courseID); err != nil {
 		return false, err
 	}
 

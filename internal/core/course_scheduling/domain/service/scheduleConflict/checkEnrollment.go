@@ -12,7 +12,7 @@ import (
 // 课程不存在时报 not found —— 调用方传错了 ID 应该报出来，
 // 而不是当成「不能选」悄悄拦下。
 func (s *Service) CheckEnrollment(ctx context.Context, studentID int64, courseID string) (bool, error) {
-	crs, err := s.courses.GetCourse(ctx, courseID)
+	crs, err := s.courses.MustGet(ctx, courseID)
 	if err != nil {
 		return false, err
 	}

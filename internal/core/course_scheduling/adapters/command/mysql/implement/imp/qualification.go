@@ -26,6 +26,10 @@ func (c *QualificationImp) Delete(ctx context.Context, id int64) error {
 	panic("implement me")
 }
 
+func (c *QualificationImp) MustGet(ctx context.Context, id int64) (qualification.Qualification, error) {
+	panic("implement me")
+}
+
 func (c *QualificationImp) GetQualifications(ctx context.Context, teacherID int64) ([]qualification.Qualification, error) {
 	panic("implement me")
 }

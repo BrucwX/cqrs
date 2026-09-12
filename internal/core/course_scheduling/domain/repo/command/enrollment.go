@@ -22,6 +22,8 @@ type CourseEnrollmentCommand interface {
 	Save(ctx context.Context, e *enrollment.CourseEnrollment) error
 	// Delete 删除课程注册
 	Delete(ctx context.Context, id int64) error
+	// MustGet 取课程注册聚合；不存在时报 ErrEnrollmentNotFound
+	MustGet(ctx context.Context, id int64) (enrollment.CourseEnrollment, error)
 	// Enroll 学员选课
 	//
 	// 只管写：把这条注册记录落库。准入判定（选课窗口 / 容量 / 时间冲突）

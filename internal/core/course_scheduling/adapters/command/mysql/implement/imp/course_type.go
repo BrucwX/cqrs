@@ -18,6 +18,10 @@ func NewCourseTypeImp(d *mysql.Data) repo.CourseTypeCommand {
 	return &CourseTypeImp{data: d}
 }
 
+func (c *CourseTypeImp) MustGet(ctx context.Context, id string) (courseType.CourseType, error) {
+	panic("implement me")
+}
+
 func (c *CourseTypeImp) GetCourseType(ctx context.Context, courseID string) (courseType.CourseType, error) {
 	panic("implement me")
 }

@@ -27,6 +27,10 @@ func (c *StudentMakeupImp) Delete(ctx context.Context, id int64) error {
 	panic("implement me")
 }
 
+func (c *StudentMakeupImp) MustGet(ctx context.Context, id int64) (makeup.StudentMakeup, error) {
+	panic("implement me")
+}
+
 func (c *StudentMakeupImp) GetMakeupsForTarget(ctx context.Context, targetSlotID string, targetDate time.Time) ([]makeup.StudentMakeup, error) {
 	panic("implement me")
 }

@@ -41,6 +41,16 @@ func (c *CourseSlotChangeCommand) Delete(ctx context.Context, id int64) error {
 	return nil
 }
 
+// MustGet 取课表变更聚合；不存在时报 ErrSlotChangeNotFound。
+func (c *CourseSlotChangeCommand) MustGet(ctx context.Context, id int64) (courseSlotChange.CourseSlotChange, error) {
+	for _, item := range c.data.CourseSlotChanges() {
+		if item.ID() == id {
+			return *item, nil
+		}
+	}
+	return courseSlotChange.CourseSlotChange{}, fmt.Errorf("%w: %d", repo.ErrSlotChangeNotFound, id)
+}
+
 // Change 登记一次临时换课
 //
 // 只管写：冲突判定（目标讲师 / 教室在目标时段是否已被占用）由调用方在调过来之前做完。

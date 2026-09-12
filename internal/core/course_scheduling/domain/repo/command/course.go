@@ -30,11 +30,11 @@ type CourseCommand interface {
 	Delete(ctx context.Context, id string) error
 	// Get 取课程；不存在时返回 (nil, nil)
 	Get(ctx context.Context, id string) (*course.Course, error)
-	// GetCourse 取课程聚合本身；取不到报 ErrCourseNotFound
+	// MustGet 取课程聚合本身；取不到报 ErrCourseNotFound
 	//
 	// 与 Get 的差别：Get 找不到时是 (nil, nil)（给「查到了没」的调用方），
-	// GetCourse 是规则判定要用的，找不到必须报错。
-	GetCourse(ctx context.Context, courseID string) (course.Course, error)
+	// MustGet 是规则判定要用的，找不到必须报错。
+	MustGet(ctx context.Context, id string) (course.Course, error)
 	// GetCourses 取某课程类型下的全部课程
 	GetCourses(ctx context.Context, courseTypeID string) ([]course.Course, error)
 }

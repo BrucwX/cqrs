@@ -37,3 +37,7 @@ func (c *StudentImp) Delete(ctx context.Context, id int64) error {
 func (c *StudentImp) Get(ctx context.Context, id int64) (*student.Student, error) {
 	panic("implement me")
 }
+
+func (c *StudentImp) MustGet(ctx context.Context, id int64) (student.Student, error) {
+	panic("implement me")
+}

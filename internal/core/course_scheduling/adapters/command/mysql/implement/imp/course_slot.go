@@ -28,6 +28,10 @@ func (c *CourseSlotImp) Delete(ctx context.Context, id string) error {
 	panic("implement me")
 }
 
+func (c *CourseSlotImp) MustGet(ctx context.Context, id string) (courseSlot.CourseSlot, error) {
+	panic("implement me")
+}
+
 func (c *CourseSlotImp) AssignTeacher(ctx context.Context, slotIDs []string, teacherID int64) error {
 	panic("implement me")
 }

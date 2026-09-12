@@ -26,6 +26,10 @@ func (c *CourseEnrollmentImp) Delete(ctx context.Context, id int64) error {
 	panic("implement me")
 }
 
+func (c *CourseEnrollmentImp) MustGet(ctx context.Context, id int64) (enrollment.CourseEnrollment, error) {
+	panic("implement me")
+}
+
 func (c *CourseEnrollmentImp) Enroll(ctx context.Context, e *enrollment.CourseEnrollment) error {
 	panic("implement me")
 }

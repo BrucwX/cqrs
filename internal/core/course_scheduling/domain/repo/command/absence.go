@@ -23,6 +23,8 @@ type AbsenceRecordCommand interface {
 	Save(ctx context.Context, a *absence.AbsenceRecord) error
 	// Delete 删除缺勤记录
 	Delete(ctx context.Context, id int64) error
+	// MustGet 取缺勤记录聚合；不存在时报 ErrAbsenceNotFound
+	MustGet(ctx context.Context, id int64) (absence.AbsenceRecord, error)
 	// GetAbsences 取该学员的全部缺勤记录
 	GetAbsences(ctx context.Context, studentID int64) ([]absence.AbsenceRecord, error)
 }

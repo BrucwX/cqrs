@@ -26,6 +26,10 @@ func (c *CourseSlotChangeImp) Delete(ctx context.Context, id int64) error {
 	panic("implement me")
 }
 
+func (c *CourseSlotChangeImp) MustGet(ctx context.Context, id int64) (courseSlotChange.CourseSlotChange, error) {
+	panic("implement me")
+}
+
 func (c *CourseSlotChangeImp) Change(ctx context.Context, csc *courseSlotChange.CourseSlotChange) error {
 	panic("implement me")
 }

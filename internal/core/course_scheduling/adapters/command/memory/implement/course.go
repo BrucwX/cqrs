@@ -72,14 +72,14 @@ func (c *CourseCommand) Get(ctx context.Context, id string) (*course.Course, err
 	return item, nil
 }
 
-// GetCourse 取课程聚合本身；取不到报 ErrCourseNotFound。
+// MustGet 取课程聚合本身；取不到报 ErrCourseNotFound。
 //
 // 与 Get 的差别：Get 找不到时是 (nil, nil)（给「查到了没」的调用方），
-// GetCourse 是规则判定要用的，找不到必须报错。
-func (c *CourseCommand) GetCourse(ctx context.Context, courseID string) (course.Course, error) {
-	item, ok := c.data.CourseByID(courseID)
+// MustGet 是规则判定要用的，找不到必须报错。
+func (c *CourseCommand) MustGet(ctx context.Context, id string) (course.Course, error) {
+	item, ok := c.data.CourseByID(id)
 	if !ok {
-		return course.Course{}, fmt.Errorf("%w: %s", repo.ErrCourseNotFound, courseID)
+		return course.Course{}, fmt.Errorf("%w: %s", repo.ErrCourseNotFound, id)
 	}
 	return *item, nil
 }

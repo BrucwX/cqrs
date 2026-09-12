@@ -71,3 +71,12 @@ func (c *StudentCommand) Get(ctx context.Context, id int64) (*student.Student, e
 	}
 	return item, nil
 }
+
+// MustGet 取学员聚合本身；不存在时报 ErrStudentNotFound。
+func (c *StudentCommand) MustGet(ctx context.Context, id int64) (student.Student, error) {
+	item, ok := c.data.StudentByID(id)
+	if !ok {
+		return student.Student{}, fmt.Errorf("%w: %d", repo.ErrStudentNotFound, id)
+	}
+	return *item, nil
+}

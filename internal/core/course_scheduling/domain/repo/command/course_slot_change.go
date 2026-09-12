@@ -22,6 +22,8 @@ type CourseSlotChangeCommand interface {
 	Save(ctx context.Context, csc *courseSlotChange.CourseSlotChange) error
 	// Delete 删除课表变更
 	Delete(ctx context.Context, id int64) error
+	// MustGet 取课表变更聚合；不存在时报 ErrSlotChangeNotFound
+	MustGet(ctx context.Context, id int64) (courseSlotChange.CourseSlotChange, error)
 	// Change 登记一次临时换课
 	//
 	// 只管写：把这张变更单落库。冲突判定（目标讲师 / 教室在目标时段是否已被占用）

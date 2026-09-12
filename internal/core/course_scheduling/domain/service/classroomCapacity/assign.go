@@ -21,7 +21,7 @@ func (s *Service) Check(ctx context.Context, classroomID string, slotIDs []strin
 	}
 
 	for _, slot := range slots {
-		crs, err := s.courses.GetCourse(ctx, slot.CourseID())
+		crs, err := s.courses.MustGet(ctx, slot.CourseID())
 		if err != nil {
 			return false, err
 		}

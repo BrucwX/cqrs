@@ -41,6 +41,15 @@ func (c *CourseSlotCommand) Delete(ctx context.Context, id string) error {
 	return nil
 }
 
+// MustGet 取课表槽位聚合；不存在时报 ErrCourseSlotNotFound。
+func (c *CourseSlotCommand) MustGet(ctx context.Context, id string) (courseSlot.CourseSlot, error) {
+	item, ok := c.data.CourseSlotByID(id)
+	if !ok {
+		return courseSlot.CourseSlot{}, fmt.Errorf("%w: %s", repo.ErrCourseSlotNotFound, id)
+	}
+	return *item, nil
+}
+
 // AssignTeacher 给指定课表槽位们配置老师
 //
 // 只写。判定由调用方（领域服务）做完才调过来，仓库不认识规则。

@@ -41,6 +41,16 @@ func (c *AbsenceCommand) Delete(ctx context.Context, id int64) error {
 	return nil
 }
 
+// MustGet 取缺勤记录聚合；不存在时报 ErrAbsenceNotFound。
+func (c *AbsenceCommand) MustGet(ctx context.Context, id int64) (absence.AbsenceRecord, error) {
+	for _, item := range c.data.Absences() {
+		if item.ID() == id {
+			return *item, nil
+		}
+	}
+	return absence.AbsenceRecord{}, fmt.Errorf("%w: %d", repo.ErrAbsenceNotFound, id)
+}
+
 // GetAbsences 取该学员的全部缺勤记录。
 func (c *AbsenceCommand) GetAbsences(ctx context.Context, studentID int64) ([]absence.AbsenceRecord, error) {
 	out := make([]absence.AbsenceRecord, 0)

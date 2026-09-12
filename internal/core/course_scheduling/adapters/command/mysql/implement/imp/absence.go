@@ -26,6 +26,10 @@ func (c *AbsenceRecordImp) Delete(ctx context.Context, id int64) error {
 	panic("implement me")
 }
 
+func (c *AbsenceRecordImp) MustGet(ctx context.Context, id int64) (absence.AbsenceRecord, error) {
+	panic("implement me")
+}
+
 func (c *AbsenceRecordImp) GetAbsences(ctx context.Context, studentID int64) ([]absence.AbsenceRecord, error) {
 	panic("implement me")
 }

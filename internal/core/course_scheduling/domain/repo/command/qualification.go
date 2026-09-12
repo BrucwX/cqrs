@@ -29,6 +29,8 @@ type QualificationCommand interface {
 	GrantQualification(ctx context.Context, q *qualification.Qualification) error
 	// Delete 删除授课资质
 	Delete(ctx context.Context, id int64) error
+	// MustGet 取授课资质聚合；不存在时报 ErrQualificationNotFound
+	MustGet(ctx context.Context, id int64) (qualification.Qualification, error)
 	// GetQualifications 取该讲师持有的全部资质
 	GetQualifications(ctx context.Context, teacherID int64) ([]qualification.Qualification, error)
 }

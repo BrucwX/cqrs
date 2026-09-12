@@ -30,6 +30,9 @@ type CourseSlotCommand interface {
 	// Delete 删除课表槽位
 	Delete(ctx context.Context, id string) error
 
+	// MustGet 取课表槽位聚合；不存在时报 ErrCourseSlotNotFound
+	MustGet(ctx context.Context, id string) (courseSlot.CourseSlot, error)
+
 	// AssignTeacher 给指定课表槽位们配置老师
 	AssignTeacher(ctx context.Context, slotIDs []string, teacherID int64) error
 

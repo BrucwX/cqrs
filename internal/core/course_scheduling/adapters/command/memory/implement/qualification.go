@@ -44,6 +44,16 @@ func (c *QualificationCommand) Delete(ctx context.Context, id int64) error {
 	return nil
 }
 
+// MustGet 取授课资质聚合；不存在时报 ErrQualificationNotFound。
+func (c *QualificationCommand) MustGet(ctx context.Context, id int64) (qualification.Qualification, error) {
+	for _, item := range c.data.Qualifications() {
+		if item.ID() == id {
+			return *item, nil
+		}
+	}
+	return qualification.Qualification{}, fmt.Errorf("%w: %d", repo.ErrQualificationNotFound, id)
+}
+
 // GetQualifications 取该讲师持有的全部资质。
 func (c *QualificationCommand) GetQualifications(ctx context.Context, teacherID int64) ([]qualification.Qualification, error) {
 	out := make([]qualification.Qualification, 0)

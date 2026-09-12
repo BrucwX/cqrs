@@ -30,4 +30,6 @@ type StudentCommand interface {
 	Delete(ctx context.Context, id int64) error
 	// Get 取学员；不存在时返回 (nil, nil)
 	Get(ctx context.Context, id int64) (*student.Student, error)
+	// MustGet 取学员聚合本身；取不到报 ErrStudentNotFound
+	MustGet(ctx context.Context, id int64) (student.Student, error)
 }
