@@ -3,18 +3,18 @@ package implement
 import (
 	"github.com/google/wire"
 
-	"cqrs/internal/core/course_scheduling/adapters/query/mysql/implement/repoImp"
+	"cqrs/internal/core/course_scheduling/adapters/query/mysql/implement/imp"
 )
 
 var ProviderSet = wire.NewSet(
-	repoImp.NewAbsenceRecordQuery,
-	repoImp.NewClassroomQuery,
-	repoImp.NewCourseEnrollmentQuery,
-	repoImp.NewCourseQuery,
-	repoImp.NewCourseSlotChangeQuery,
-	repoImp.NewCourseSlotQuery,
-	repoImp.NewQualificationQuery,
-	repoImp.NewStudentMakeupQuery,
-	repoImp.NewStudentQuery,
-	repoImp.NewTeacherQuery,
+	imp.NewAbsenceRecordQuery,
+	imp.NewClassroomQuery,
+	imp.NewCourseEnrollmentQuery,
+	imp.NewCourseQuery,
+	imp.NewCourseSlotChangeQuery,
+	imp.NewCourseSlotQuery,
+	imp.NewQualificationQuery,
+	imp.NewStudentMakeupQuery,
+	imp.NewStudentQuery,
+	imp.NewTeacherQuery,
 )
