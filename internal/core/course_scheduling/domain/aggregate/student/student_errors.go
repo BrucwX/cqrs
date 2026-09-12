@@ -9,4 +9,9 @@ var (
 	ErrStudentCancelled         = errors.New("student account has been cancelled")
 	ErrSelfEnrollmentProhibited = errors.New("a teacher cannot enroll in their own course as a student")
 	ErrUnknownStatus            = errors.New("unknown student status")
+
+	// ErrStudentRequired 传入的学员为空。
+	ErrStudentRequired = errors.New("student is required")
+	// ErrStudentNotFound 指定的学员不存在。
+	ErrStudentNotFound = errors.New("student not found")
 )

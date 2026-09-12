@@ -11,4 +11,9 @@ var (
 	ErrAlreadyActive     = errors.New("teacher is already in active status")
 	ErrAlreadyTerminated = errors.New("teacher has already been terminated")
 	ErrUnknownStatus     = errors.New("unknown teacher status")
+
+	// ErrTeacherRequired 传入的讲师为空。
+	ErrTeacherRequired = errors.New("teacher is required")
+	// ErrTeacherNotFound 指定的讲师不存在。
+	ErrTeacherNotFound = errors.New("teacher not found")
 )

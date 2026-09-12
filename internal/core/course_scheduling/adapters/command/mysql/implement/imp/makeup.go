@@ -27,7 +27,7 @@ func NewStudentMakeupImp(d *mysql.Data) repo.StudentMakeupCommand {
 // Save 保存补课预约（新增或更新）。
 func (c *StudentMakeupImp) Save(ctx context.Context, m *makeup.StudentMakeup) error {
 	if m == nil {
-		return repo.ErrMakeupRequired
+		return makeup.ErrMakeupRequired
 	}
 	po, err := model.MakeupToPO(m)
 	if err != nil {
@@ -63,7 +63,7 @@ func (c *StudentMakeupImp) Delete(ctx context.Context, id int64) error {
 		return err
 	}
 	if affected == 0 {
-		return fmt.Errorf("%w: %d", repo.ErrMakeupNotFound, id)
+		return fmt.Errorf("%w: %d", makeup.ErrMakeupNotFound, id)
 	}
 	return nil
 }
@@ -75,7 +75,7 @@ SELECT `+help.MakeupColumns+`
   FROM student_makeup
  WHERE id = ?`, id))
 	if errors.Is(err, sql.ErrNoRows) {
-		return makeup.StudentMakeup{}, fmt.Errorf("%w: %d", repo.ErrMakeupNotFound, id)
+		return makeup.StudentMakeup{}, fmt.Errorf("%w: %d", makeup.ErrMakeupNotFound, id)
 	}
 	if err != nil {
 		return makeup.StudentMakeup{}, err

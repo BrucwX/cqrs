@@ -9,7 +9,7 @@ import (
 // CourseInput 保存课程命令
 //
 // ID 为 nil 表示新增（课程 ID 由聚合生成）；
-// 非 nil 表示更新，指的课程不存在时报 repo.ErrCourseNotFound。
+// 非 nil 表示更新，指的课程不存在时报 course.ErrCourseNotFound。
 // 更新时只应用非 nil 的字段，nil 的字段保持原值。
 type CourseInput struct {
 	ID           *string

@@ -6,7 +6,8 @@ import (
 	"testing"
 	"time"
 
-	repo "cqrs/internal/core/course_scheduling/domain/repo/command"
+	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlot"
+	"cqrs/internal/core/course_scheduling/domain/aggregate/teacher"
 )
 
 // TestAssignTeacher 有资质且时间不冲突时排课成功。
@@ -42,8 +43,8 @@ func TestAssignTeacherWithoutQualification(t *testing.T) {
 	if err == nil {
 		t.Fatal("期望被拒绝，实际成功")
 	}
-	if !errors.Is(err, repo.ErrCourseSlotConflict) {
-		t.Errorf("err = %v, want %v", err, repo.ErrCourseSlotConflict)
+	if !errors.Is(err, courseSlot.ErrCourseSlotConflict) {
+		t.Errorf("err = %v, want %v", err, courseSlot.ErrCourseSlotConflict)
 	}
 
 	saved, _ := f.data.CourseSlotByID(slot.ID())
@@ -64,8 +65,8 @@ func TestAssignTeacherTimeConflict(t *testing.T) {
 		SlotIDs:   []string{target.ID()},
 		TeacherID: f.teacher.ID(),
 	})
-	if !errors.Is(err, repo.ErrCourseSlotConflict) {
-		t.Errorf("err = %v, want %v", err, repo.ErrCourseSlotConflict)
+	if !errors.Is(err, courseSlot.ErrCourseSlotConflict) {
+		t.Errorf("err = %v, want %v", err, courseSlot.ErrCourseSlotConflict)
 	}
 }
 
@@ -81,7 +82,7 @@ func TestAssignTeacherOtherSlotOverlaps(t *testing.T) {
 		SlotIDs:   []string{target.ID()},
 		TeacherID: f.teacher.ID(),
 	})
-	if !errors.Is(err, repo.ErrCourseSlotConflict) {
+	if !errors.Is(err, courseSlot.ErrCourseSlotConflict) {
 		t.Errorf("与别的槽位重叠时应判冲突，err = %v", err)
 	}
 }
@@ -95,8 +96,8 @@ func TestAssignTeacherDuplicateAssignment(t *testing.T) {
 		SlotIDs:   []string{target.ID()},
 		TeacherID: f.teacher.ID(),
 	})
-	if !errors.Is(err, repo.ErrCourseSlotConflict) {
-		t.Errorf("重复安排应判冲突，err = %v, want %v", err, repo.ErrCourseSlotConflict)
+	if !errors.Is(err, courseSlot.ErrCourseSlotConflict) {
+		t.Errorf("重复安排应判冲突，err = %v, want %v", err, courseSlot.ErrCourseSlotConflict)
 	}
 }
 
@@ -109,8 +110,8 @@ func TestAssignTeacherNotFound(t *testing.T) {
 		SlotIDs:   []string{slot.ID()},
 		TeacherID: 999999,
 	})
-	if !errors.Is(err, repo.ErrTeacherNotFound) {
-		t.Errorf("err = %v, want %v", err, repo.ErrTeacherNotFound)
+	if !errors.Is(err, teacher.ErrTeacherNotFound) {
+		t.Errorf("err = %v, want %v", err, teacher.ErrTeacherNotFound)
 	}
 }
 
@@ -122,7 +123,7 @@ func TestAssignTeacherSlotNotFound(t *testing.T) {
 		SlotIDs:   []string{"no-such-slot"},
 		TeacherID: f.teacher.ID(),
 	})
-	if !errors.Is(err, repo.ErrCourseSlotNotFound) {
-		t.Errorf("err = %v, want %v", err, repo.ErrCourseSlotNotFound)
+	if !errors.Is(err, courseSlot.ErrCourseSlotNotFound) {
+		t.Errorf("err = %v, want %v", err, courseSlot.ErrCourseSlotNotFound)
 	}
 }

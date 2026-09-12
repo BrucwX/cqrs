@@ -26,7 +26,7 @@ func NewCourseSlotImp(d *mysql.Data) repo.CourseSlotCommand {
 // Save 保存课表槽位（新增或更新）。
 func (c *CourseSlotImp) Save(ctx context.Context, cs *courseSlot.CourseSlot) error {
 	if cs == nil {
-		return repo.ErrCourseSlotRequired
+		return courseSlot.ErrCourseSlotRequired
 	}
 	po, err := model.CourseSlotToPO(cs)
 	if err != nil {
@@ -59,7 +59,7 @@ func (c *CourseSlotImp) Delete(ctx context.Context, id string) error {
 		return err
 	}
 	if affected == 0 {
-		return fmt.Errorf("%w: %s", repo.ErrCourseSlotNotFound, id)
+		return fmt.Errorf("%w: %s", courseSlot.ErrCourseSlotNotFound, id)
 	}
 	return nil
 }
@@ -71,7 +71,7 @@ SELECT `+help.CourseSlotColumns+`
   FROM course_slot
  WHERE id = ?`, id))
 	if errors.Is(err, sql.ErrNoRows) {
-		return courseSlot.CourseSlot{}, fmt.Errorf("%w: %s", repo.ErrCourseSlotNotFound, id)
+		return courseSlot.CourseSlot{}, fmt.Errorf("%w: %s", courseSlot.ErrCourseSlotNotFound, id)
 	}
 	if err != nil {
 		return courseSlot.CourseSlot{}, err

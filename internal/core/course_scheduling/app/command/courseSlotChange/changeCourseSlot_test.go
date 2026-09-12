@@ -11,7 +11,6 @@ import (
 	"cqrs/internal/core/course_scheduling/adapters/memorystore"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlot"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlotChange"
-	repo "cqrs/internal/core/course_scheduling/domain/repo/command"
 	"cqrs/internal/core/course_scheduling/domain/service/scheduleConflict"
 )
 
@@ -186,8 +185,8 @@ func TestChangeCourseSlotConflict(t *testing.T) {
 			if err == nil {
 				t.Fatalf("期望被拒绝，实际成功: %+v", got)
 			}
-			if !errors.Is(err, repo.ErrSlotChangeConflict) {
-				t.Errorf("err = %v, want %v", err, repo.ErrSlotChangeConflict)
+			if !errors.Is(err, courseSlotChange.ErrSlotChangeConflict) {
+				t.Errorf("err = %v, want %v", err, courseSlotChange.ErrSlotChangeConflict)
 			}
 			if changes := d.CourseSlotChanges(); len(changes) != 0 {
 				t.Errorf("被拒绝时不应写入，变更单数量 = %d", len(changes))
@@ -231,8 +230,8 @@ func TestChangeCourseSlotConflictWithOtherChange(t *testing.T) {
 	if err == nil {
 		t.Fatalf("期望被拒绝，实际成功: %+v", got)
 	}
-	if !errors.Is(err, repo.ErrSlotChangeConflict) {
-		t.Errorf("err = %v, want %v", err, repo.ErrSlotChangeConflict)
+	if !errors.Is(err, courseSlotChange.ErrSlotChangeConflict) {
+		t.Errorf("err = %v, want %v", err, courseSlotChange.ErrSlotChangeConflict)
 	}
 	if changes := d.CourseSlotChanges(); len(changes) != 1 {
 		t.Errorf("被拒绝时不应新增，变更单数量 = %d, want 1", len(changes))
@@ -298,7 +297,7 @@ func TestDeleteCourseSlotChange(t *testing.T) {
 	if err := h.ChangeCmd.Delete(context.Background(), got.ID()); err != nil {
 		t.Errorf("Delete(existing) = %v, want nil", err)
 	}
-	if err := h.ChangeCmd.Delete(context.Background(), got.ID()); !errors.Is(err, repo.ErrSlotChangeNotFound) {
-		t.Errorf("Delete(missing) = %v, want %v", err, repo.ErrSlotChangeNotFound)
+	if err := h.ChangeCmd.Delete(context.Background(), got.ID()); !errors.Is(err, courseSlotChange.ErrSlotChangeNotFound) {
+		t.Errorf("Delete(missing) = %v, want %v", err, courseSlotChange.ErrSlotChangeNotFound)
 	}
 }

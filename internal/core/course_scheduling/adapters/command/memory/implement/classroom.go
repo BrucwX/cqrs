@@ -27,7 +27,7 @@ func NewClassroomCommand(d *memory.Data) repo.ClassroomCommand {
 // Create 新增教室
 func (c *ClassroomCommand) Create(ctx context.Context, cl *classroom.Classroom) error {
 	if cl == nil {
-		return repo.ErrClassroomRequired
+		return classroom.ErrClassroomRequired
 	}
 	c.data.SaveClassroom(cl)
 	return nil
@@ -47,7 +47,7 @@ func (c *ClassroomCommand) Update(ctx context.Context, id string, updateFn func(
 		return err
 	}
 	if updated == nil {
-		return repo.ErrClassroomRequired
+		return classroom.ErrClassroomRequired
 	}
 
 	c.data.SaveClassroom(updated)
@@ -57,7 +57,7 @@ func (c *ClassroomCommand) Update(ctx context.Context, id string, updateFn func(
 // Delete 删除教室
 func (c *ClassroomCommand) Delete(ctx context.Context, id string) error {
 	if !c.data.DeleteClassroom(id) {
-		return fmt.Errorf("%w: %s", repo.ErrClassroomNotFound, id)
+		return fmt.Errorf("%w: %s", classroom.ErrClassroomNotFound, id)
 	}
 	return nil
 }
@@ -66,7 +66,7 @@ func (c *ClassroomCommand) Delete(ctx context.Context, id string) error {
 func (c *ClassroomCommand) MustGet(ctx context.Context, id string) (classroom.Classroom, error) {
 	item, ok := c.data.ClassroomByID(id)
 	if !ok {
-		return classroom.Classroom{}, fmt.Errorf("%w: %s", repo.ErrClassroomNotFound, id)
+		return classroom.Classroom{}, fmt.Errorf("%w: %s", classroom.ErrClassroomNotFound, id)
 	}
 	return *item, nil
 }

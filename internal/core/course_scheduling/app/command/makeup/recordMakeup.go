@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"cqrs/internal/core/course_scheduling/domain/aggregate/makeup"
-	"cqrs/internal/core/course_scheduling/domain/repo/command"
 )
 
 // RecordMakeup 记录学生补课命令
@@ -53,7 +52,7 @@ func (h *Handler) RecordMakeup(ctx context.Context, cmd RecordMakeup) (record *m
 		return nil, err
 	}
 	if tooSmall {
-		return nil, fmt.Errorf("%w: target slot %s", command.ErrMakeupConflict, cmd.TargetSlotID)
+		return nil, fmt.Errorf("%w: target slot %s", makeup.ErrMakeupConflict, cmd.TargetSlotID)
 	}
 
 	if err := h.MakeupCmd.Save(ctx, record); err != nil {

@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"cqrs/internal/core/course_scheduling/domain/aggregate/classroom"
-	repo "cqrs/internal/core/course_scheduling/domain/repo/command"
 )
 
 func intPtr(v int) *int { return &v }
@@ -116,8 +115,8 @@ func TestSaveClassroomUpdateMissing(t *testing.T) {
 		ID:       strPtr("R999"),
 		Capacity: intPtr(30),
 	})
-	if !errors.Is(err, repo.ErrClassroomNotFound) {
-		t.Errorf("err = %v, want %v", err, repo.ErrClassroomNotFound)
+	if !errors.Is(err, classroom.ErrClassroomNotFound) {
+		t.Errorf("err = %v, want %v", err, classroom.ErrClassroomNotFound)
 	}
 	if rooms := d.Classrooms(); len(rooms) != 0 {
 		t.Errorf("被拒绝时不应新建，教室数量 = %d", len(rooms))

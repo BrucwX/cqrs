@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"cqrs/internal/core/course_scheduling/domain/repo/command"
+	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlot"
 )
 
 // AssignCourseInput 给指定课表槽位设置课程命令
@@ -29,7 +29,7 @@ func (h *Handler) AssignCourse(ctx context.Context, cmd AssignCourseInput) (err 
 		return err
 	}
 	if conflict {
-		return fmt.Errorf("%w: course %s", command.ErrCourseSlotConflict, cmd.CourseID)
+		return fmt.Errorf("%w: course %s", courseSlot.ErrCourseSlotConflict, cmd.CourseID)
 	}
 
 	return h.SlotCmd.AssignCourse(ctx, cmd.SlotIDs, cmd.CourseID)

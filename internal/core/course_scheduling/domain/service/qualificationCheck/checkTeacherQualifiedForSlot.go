@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"cqrs/internal/core/course_scheduling/domain/repo/command"
+	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlot"
 )
 
 // CheckTeacherQualifiedForSlot 判断该讲师有没有资格教这一个槽位。
@@ -19,7 +19,7 @@ func (s *Service) CheckTeacherQualifiedForSlot(ctx context.Context, teacherID in
 		return false, err
 	}
 	if len(slots) == 0 {
-		return false, fmt.Errorf("%w: %s", command.ErrCourseSlotNotFound, slotID)
+		return false, fmt.Errorf("%w: %s", courseSlot.ErrCourseSlotNotFound, slotID)
 	}
 
 	return s.CheckTeacherQualified(ctx, teacherID, slots[0].CourseID())

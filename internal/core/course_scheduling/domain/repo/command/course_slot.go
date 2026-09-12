@@ -2,18 +2,8 @@ package command
 
 import (
 	"context"
-	"errors"
 
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlot"
-)
-
-var (
-	// ErrCourseSlotRequired 传入的课表槽位为空。
-	ErrCourseSlotRequired = errors.New("course slot is required")
-	// ErrCourseSlotNotFound 指定的课表槽位不存在。
-	ErrCourseSlotNotFound = errors.New("course slot not found")
-	// ErrCourseSlotConflict 目标讲师/教室/课程在该槽位的时间上已有其他安排。
-	ErrCourseSlotConflict = errors.New("course slot conflicts with an existing schedule")
 )
 
 // CourseSlotCommand 课表槽位命令接口

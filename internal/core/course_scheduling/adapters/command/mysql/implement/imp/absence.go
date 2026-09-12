@@ -26,7 +26,7 @@ func NewAbsenceRecordImp(d *mysql.Data) repo.AbsenceRecordCommand {
 // Save 保存缺勤记录（新增或更新）。
 func (c *AbsenceRecordImp) Save(ctx context.Context, a *absence.AbsenceRecord) error {
 	if a == nil {
-		return repo.ErrAbsenceRequired
+		return absence.ErrAbsenceRequired
 	}
 	po, err := model.AbsenceToPO(a)
 	if err != nil {
@@ -59,7 +59,7 @@ func (c *AbsenceRecordImp) Delete(ctx context.Context, id int64) error {
 		return err
 	}
 	if affected == 0 {
-		return fmt.Errorf("%w: %d", repo.ErrAbsenceNotFound, id)
+		return fmt.Errorf("%w: %d", absence.ErrAbsenceNotFound, id)
 	}
 	return nil
 }
@@ -71,7 +71,7 @@ SELECT `+help.AbsenceColumns+`
   FROM absence_record
  WHERE id = ?`, id))
 	if errors.Is(err, sql.ErrNoRows) {
-		return absence.AbsenceRecord{}, fmt.Errorf("%w: %d", repo.ErrAbsenceNotFound, id)
+		return absence.AbsenceRecord{}, fmt.Errorf("%w: %d", absence.ErrAbsenceNotFound, id)
 	}
 	if err != nil {
 		return absence.AbsenceRecord{}, err

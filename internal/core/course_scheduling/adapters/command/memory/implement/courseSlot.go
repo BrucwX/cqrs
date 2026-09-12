@@ -27,7 +27,7 @@ func NewCourseSlotCommand(d *memory.Data) repo.CourseSlotCommand {
 // Save 保存课表槽位（新增或更新）
 func (c *CourseSlotCommand) Save(ctx context.Context, cs *courseSlot.CourseSlot) error {
 	if cs == nil {
-		return repo.ErrCourseSlotRequired
+		return courseSlot.ErrCourseSlotRequired
 	}
 	c.data.SaveCourseSlot(cs)
 	return nil
@@ -36,7 +36,7 @@ func (c *CourseSlotCommand) Save(ctx context.Context, cs *courseSlot.CourseSlot)
 // Delete 删除课表槽位
 func (c *CourseSlotCommand) Delete(ctx context.Context, id string) error {
 	if !c.data.DeleteCourseSlot(id) {
-		return fmt.Errorf("%w: %s", repo.ErrCourseSlotNotFound, id)
+		return fmt.Errorf("%w: %s", courseSlot.ErrCourseSlotNotFound, id)
 	}
 	return nil
 }
@@ -45,7 +45,7 @@ func (c *CourseSlotCommand) Delete(ctx context.Context, id string) error {
 func (c *CourseSlotCommand) MustGet(ctx context.Context, id string) (courseSlot.CourseSlot, error) {
 	item, ok := c.data.CourseSlotByID(id)
 	if !ok {
-		return courseSlot.CourseSlot{}, fmt.Errorf("%w: %s", repo.ErrCourseSlotNotFound, id)
+		return courseSlot.CourseSlot{}, fmt.Errorf("%w: %s", courseSlot.ErrCourseSlotNotFound, id)
 	}
 	return *item, nil
 }
@@ -112,7 +112,7 @@ func (c *CourseSlotCommand) GetSlots(ctx context.Context, slotIDs []string) (cou
 	for _, id := range slotIDs {
 		item, ok := c.data.CourseSlotByID(id)
 		if !ok {
-			return nil, fmt.Errorf("%w: %s", repo.ErrCourseSlotNotFound, id)
+			return nil, fmt.Errorf("%w: %s", courseSlot.ErrCourseSlotNotFound, id)
 		}
 		out = append(out, *item)
 	}
@@ -184,7 +184,7 @@ func (c *CourseSlotCommand) loadSlots(slotIDs []string) ([]*courseSlot.CourseSlo
 	for _, id := range slotIDs {
 		cs, ok := c.data.CourseSlotByID(id)
 		if !ok {
-			return nil, fmt.Errorf("%w: %s", repo.ErrCourseSlotNotFound, id)
+			return nil, fmt.Errorf("%w: %s", courseSlot.ErrCourseSlotNotFound, id)
 		}
 		slots = append(slots, cs)
 	}

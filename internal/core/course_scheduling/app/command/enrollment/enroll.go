@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"cqrs/internal/core/course_scheduling/domain/aggregate/enrollment"
-	"cqrs/internal/core/course_scheduling/domain/repo/command"
 )
 
 // StudentEnroll 学生选课命令
@@ -38,7 +37,7 @@ func (h *Handler) StudentEnroll(ctx context.Context, cmd StudentEnroll) (enroll 
 		return nil, err
 	}
 	if rejected {
-		return nil, fmt.Errorf("%w: student %d course %s", command.ErrEnrollmentConflict, cmd.StudentID, cmd.CourseID)
+		return nil, fmt.Errorf("%w: student %d course %s", enrollment.ErrEnrollmentConflict, cmd.StudentID, cmd.CourseID)
 	}
 
 	// 3) 写回

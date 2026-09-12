@@ -26,7 +26,7 @@ func NewTeacherImp(d *mysql.Data) repo.TeacherCommand {
 // Create 新增讲师。
 func (c *TeacherImp) Create(ctx context.Context, t *teacher.Teacher) error {
 	if t == nil {
-		return repo.ErrTeacherRequired
+		return teacher.ErrTeacherRequired
 	}
 	po, err := model.TeacherToPO(t)
 	if err != nil {
@@ -58,7 +58,7 @@ func (c *TeacherImp) Update(
 		return err
 	}
 	if updated == nil {
-		return repo.ErrTeacherRequired
+		return teacher.ErrTeacherRequired
 	}
 
 	po, err := model.TeacherToPO(updated)
@@ -85,7 +85,7 @@ func (c *TeacherImp) Delete(ctx context.Context, id int64) error {
 		return err
 	}
 	if affected == 0 {
-		return fmt.Errorf("%w: %d", repo.ErrTeacherNotFound, id)
+		return fmt.Errorf("%w: %d", teacher.ErrTeacherNotFound, id)
 	}
 	return nil
 }
@@ -93,7 +93,7 @@ func (c *TeacherImp) Delete(ctx context.Context, id int64) error {
 // Get 取讲师；不存在时返回 (nil, nil)。
 func (c *TeacherImp) Get(ctx context.Context, id int64) (*teacher.Teacher, error) {
 	do, err := c.MustGet(ctx, id)
-	if errors.Is(err, repo.ErrTeacherNotFound) {
+	if errors.Is(err, teacher.ErrTeacherNotFound) {
 		return nil, nil
 	}
 	if err != nil {
@@ -109,7 +109,7 @@ SELECT `+help.TeacherColumns+`
   FROM teacher
  WHERE id = ?`, id))
 	if errors.Is(err, sql.ErrNoRows) {
-		return teacher.Teacher{}, fmt.Errorf("%w: %d", repo.ErrTeacherNotFound, id)
+		return teacher.Teacher{}, fmt.Errorf("%w: %d", teacher.ErrTeacherNotFound, id)
 	}
 	if err != nil {
 		return teacher.Teacher{}, err

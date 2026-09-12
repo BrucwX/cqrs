@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"cqrs/internal/core/course_scheduling/domain/repo/command"
+	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlot"
 )
 
 // AssignClassroomInput 给具体课表项安排教室命令
@@ -32,7 +32,7 @@ func (h *Handler) AssignClassroom(ctx context.Context, cmd AssignClassroomInput)
 		return err
 	}
 	if tooSmall {
-		return fmt.Errorf("%w: classroom %s", command.ErrCourseSlotConflict, cmd.ClassroomID)
+		return fmt.Errorf("%w: classroom %s", courseSlot.ErrCourseSlotConflict, cmd.ClassroomID)
 	}
 
 	// 2) 时间：与教室现有排课重叠 -> 冲突
@@ -43,7 +43,7 @@ func (h *Handler) AssignClassroom(ctx context.Context, cmd AssignClassroomInput)
 		return err
 	}
 	if conflict {
-		return fmt.Errorf("%w: classroom %s", command.ErrCourseSlotConflict, cmd.ClassroomID)
+		return fmt.Errorf("%w: classroom %s", courseSlot.ErrCourseSlotConflict, cmd.ClassroomID)
 	}
 
 	return h.SlotCmd.AssignClassroom(ctx, cmd.SlotIDs, cmd.ClassroomID)

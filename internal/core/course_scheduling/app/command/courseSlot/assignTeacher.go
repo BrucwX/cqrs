@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"cqrs/internal/core/course_scheduling/domain/repo/command"
+	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlot"
 )
 
 // AssignTeacherInput 给具体课表项排老师命令
@@ -31,7 +31,7 @@ func (h *Handler) AssignTeacher(ctx context.Context, cmd AssignTeacherInput) (er
 			return err
 		}
 		if notQualified {
-			return fmt.Errorf("%w: teacher %d 没有该课程类型的资质", command.ErrCourseSlotConflict, cmd.TeacherID)
+			return fmt.Errorf("%w: teacher %d 没有该课程类型的资质", courseSlot.ErrCourseSlotConflict, cmd.TeacherID)
 		}
 	}
 
@@ -44,7 +44,7 @@ func (h *Handler) AssignTeacher(ctx context.Context, cmd AssignTeacherInput) (er
 		return err
 	}
 	if conflict {
-		return fmt.Errorf("%w: teacher %d", command.ErrCourseSlotConflict, cmd.TeacherID)
+		return fmt.Errorf("%w: teacher %d", courseSlot.ErrCourseSlotConflict, cmd.TeacherID)
 	}
 
 	return h.SlotCmd.AssignTeacher(ctx, cmd.SlotIDs, cmd.TeacherID)

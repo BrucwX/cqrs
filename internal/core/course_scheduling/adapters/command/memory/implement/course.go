@@ -27,7 +27,7 @@ func NewCourseCommand(d *memory.Data) repo.CourseCommand {
 // Create 新增课程
 func (c *CourseCommand) Create(ctx context.Context, crs *course.Course) error {
 	if crs == nil {
-		return repo.ErrCourseRequired
+		return course.ErrCourseRequired
 	}
 	c.data.SaveCourse(crs)
 	return nil
@@ -40,7 +40,7 @@ func (c *CourseCommand) Update(ctx context.Context, id string, updateFn func(ctx
 		return err
 	}
 	if current == nil {
-		return fmt.Errorf("%w: %s", repo.ErrCourseNotFound, id)
+		return fmt.Errorf("%w: %s", course.ErrCourseNotFound, id)
 	}
 
 	updated, err := updateFn(ctx, current)
@@ -48,7 +48,7 @@ func (c *CourseCommand) Update(ctx context.Context, id string, updateFn func(ctx
 		return err
 	}
 	if updated == nil {
-		return repo.ErrCourseRequired
+		return course.ErrCourseRequired
 	}
 
 	c.data.SaveCourse(updated)
@@ -58,7 +58,7 @@ func (c *CourseCommand) Update(ctx context.Context, id string, updateFn func(ctx
 // Delete 删除课程
 func (c *CourseCommand) Delete(ctx context.Context, id string) error {
 	if !c.data.DeleteCourse(id) {
-		return fmt.Errorf("%w: %s", repo.ErrCourseNotFound, id)
+		return fmt.Errorf("%w: %s", course.ErrCourseNotFound, id)
 	}
 	return nil
 }
@@ -79,7 +79,7 @@ func (c *CourseCommand) Get(ctx context.Context, id string) (*course.Course, err
 func (c *CourseCommand) MustGet(ctx context.Context, id string) (course.Course, error) {
 	item, ok := c.data.CourseByID(id)
 	if !ok {
-		return course.Course{}, fmt.Errorf("%w: %s", repo.ErrCourseNotFound, id)
+		return course.Course{}, fmt.Errorf("%w: %s", course.ErrCourseNotFound, id)
 	}
 	return *item, nil
 }

@@ -26,7 +26,7 @@ func NewClassroomImp(d *mysql.Data) repo.ClassroomCommand {
 // Create 新增教室。
 func (c *ClassroomImp) Create(ctx context.Context, cl *classroom.Classroom) error {
 	if cl == nil {
-		return repo.ErrClassroomRequired
+		return classroom.ErrClassroomRequired
 	}
 	po, err := model.ClassroomToPO(cl)
 	if err != nil {
@@ -59,7 +59,7 @@ func (c *ClassroomImp) Update(
 		return err
 	}
 	if updated == nil {
-		return repo.ErrClassroomRequired
+		return classroom.ErrClassroomRequired
 	}
 
 	npo, err := model.ClassroomToPO(updated)
@@ -87,7 +87,7 @@ func (c *ClassroomImp) Delete(ctx context.Context, id string) error {
 		return err
 	}
 	if affected == 0 {
-		return fmt.Errorf("%w: %s", repo.ErrClassroomNotFound, id)
+		return fmt.Errorf("%w: %s", classroom.ErrClassroomNotFound, id)
 	}
 	return nil
 }
@@ -99,7 +99,7 @@ SELECT `+help.ClassroomColumns+`
   FROM classroom
  WHERE id = ?`, id))
 	if errors.Is(err, sql.ErrNoRows) {
-		return classroom.Classroom{}, fmt.Errorf("%w: %s", repo.ErrClassroomNotFound, id)
+		return classroom.Classroom{}, fmt.Errorf("%w: %s", classroom.ErrClassroomNotFound, id)
 	}
 	if err != nil {
 		return classroom.Classroom{}, err

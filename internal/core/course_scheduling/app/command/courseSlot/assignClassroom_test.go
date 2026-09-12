@@ -6,7 +6,9 @@ import (
 	"testing"
 	"time"
 
-	repo "cqrs/internal/core/course_scheduling/domain/repo/command"
+	"cqrs/internal/core/course_scheduling/domain/aggregate/classroom"
+	"cqrs/internal/core/course_scheduling/domain/aggregate/course"
+	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlot"
 )
 
 // TestAssignClassroom 教室装得下且该时段空闲时安排成功。
@@ -35,8 +37,8 @@ func TestAssignClassroomCapacityExceeded(t *testing.T) {
 		SlotIDs:     []string{target.ID()},
 		ClassroomID: smallRoom, // 5 座 < 课程 20 人
 	})
-	if !errors.Is(err, repo.ErrCourseSlotConflict) {
-		t.Errorf("err = %v, want %v", err, repo.ErrCourseSlotConflict)
+	if !errors.Is(err, courseSlot.ErrCourseSlotConflict) {
+		t.Errorf("err = %v, want %v", err, courseSlot.ErrCourseSlotConflict)
 	}
 	if got := f.slotClassroomID(t, target.ID()); got != noClassroom {
 		t.Errorf("被拒绝时不应写入，classroomID = %q, want %q", got, noClassroom)
@@ -55,8 +57,8 @@ func TestAssignClassroomTimeConflict(t *testing.T) {
 		SlotIDs:     []string{target.ID()},
 		ClassroomID: room,
 	})
-	if !errors.Is(err, repo.ErrCourseSlotConflict) {
-		t.Errorf("err = %v, want %v", err, repo.ErrCourseSlotConflict)
+	if !errors.Is(err, courseSlot.ErrCourseSlotConflict) {
+		t.Errorf("err = %v, want %v", err, courseSlot.ErrCourseSlotConflict)
 	}
 }
 
@@ -69,8 +71,8 @@ func TestAssignClassroomDuplicateAssignment(t *testing.T) {
 		SlotIDs:     []string{target.ID()},
 		ClassroomID: room,
 	})
-	if !errors.Is(err, repo.ErrCourseSlotConflict) {
-		t.Errorf("重复安排应判冲突，err = %v, want %v", err, repo.ErrCourseSlotConflict)
+	if !errors.Is(err, courseSlot.ErrCourseSlotConflict) {
+		t.Errorf("重复安排应判冲突，err = %v, want %v", err, courseSlot.ErrCourseSlotConflict)
 	}
 }
 
@@ -83,8 +85,8 @@ func TestAssignClassroomNotFound(t *testing.T) {
 		SlotIDs:     []string{slot.ID()},
 		ClassroomID: "no-such-room",
 	})
-	if !errors.Is(err, repo.ErrClassroomNotFound) {
-		t.Errorf("err = %v, want %v", err, repo.ErrClassroomNotFound)
+	if !errors.Is(err, classroom.ErrClassroomNotFound) {
+		t.Errorf("err = %v, want %v", err, classroom.ErrClassroomNotFound)
 	}
 }
 
@@ -97,7 +99,7 @@ func TestAssignClassroomCourseNotFound(t *testing.T) {
 		SlotIDs:     []string{slot.ID()},
 		ClassroomID: room,
 	})
-	if !errors.Is(err, repo.ErrCourseNotFound) {
-		t.Errorf("err = %v, want %v", err, repo.ErrCourseNotFound)
+	if !errors.Is(err, course.ErrCourseNotFound) {
+		t.Errorf("err = %v, want %v", err, course.ErrCourseNotFound)
 	}
 }

@@ -29,7 +29,7 @@ func NewQualificationCommand(d *memory.Data) repo.QualificationCommand {
 // 只管写：够不够格（讲师修没修完该类型的课）由调用方在调过来之前判完。
 func (c *QualificationCommand) GrantQualification(ctx context.Context, q *qualification.Qualification) error {
 	if q == nil {
-		return repo.ErrQualificationRequired
+		return qualification.ErrQualificationRequired
 	}
 
 	c.data.SaveQualification(q)
@@ -39,7 +39,7 @@ func (c *QualificationCommand) GrantQualification(ctx context.Context, q *qualif
 // Delete 删除授课资质
 func (c *QualificationCommand) Delete(ctx context.Context, id int64) error {
 	if !c.data.DeleteQualification(id) {
-		return fmt.Errorf("%w: %d", repo.ErrQualificationNotFound, id)
+		return fmt.Errorf("%w: %d", qualification.ErrQualificationNotFound, id)
 	}
 	return nil
 }
@@ -51,7 +51,7 @@ func (c *QualificationCommand) MustGet(ctx context.Context, id int64) (qualifica
 			return *item, nil
 		}
 	}
-	return qualification.Qualification{}, fmt.Errorf("%w: %d", repo.ErrQualificationNotFound, id)
+	return qualification.Qualification{}, fmt.Errorf("%w: %d", qualification.ErrQualificationNotFound, id)
 }
 
 // GetQualifications 取该讲师持有的全部资质。

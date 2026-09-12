@@ -33,7 +33,7 @@ func (c *CourseTypeCommand) MustGet(ctx context.Context, id string) (courseType.
 			return *item, nil
 		}
 	}
-	return courseType.CourseType{}, fmt.Errorf("%w: %s", repo.ErrCourseTypeNotFound, id)
+	return courseType.CourseType{}, fmt.Errorf("%w: %s", courseType.ErrCourseTypeNotFound, id)
 }
 
 // GetCourseType 取某门课程归属的课程类型。
@@ -41,13 +41,13 @@ func (c *CourseTypeCommand) GetCourseType(ctx context.Context, courseID string) 
 	courses := indexBy(c.data.Courses(), func(item *course.Course) string { return item.ID() })
 	item, ok := courses[courseID]
 	if !ok {
-		return courseType.CourseType{}, fmt.Errorf("%w: course %s", repo.ErrCourseTypeNotFound, courseID)
+		return courseType.CourseType{}, fmt.Errorf("%w: course %s", courseType.ErrCourseTypeNotFound, courseID)
 	}
 
 	types := indexBy(c.data.CourseTypes(), func(item *courseType.CourseType) string { return item.ID() })
 	ct, ok := types[item.CourseTypeID()]
 	if !ok {
-		return courseType.CourseType{}, fmt.Errorf("%w: %s", repo.ErrCourseTypeNotFound, item.CourseTypeID())
+		return courseType.CourseType{}, fmt.Errorf("%w: %s", courseType.ErrCourseTypeNotFound, item.CourseTypeID())
 	}
 
 	return *ct, nil

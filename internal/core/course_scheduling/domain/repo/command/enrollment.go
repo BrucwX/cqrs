@@ -2,18 +2,8 @@ package command
 
 import (
 	"context"
-	"errors"
 
 	"cqrs/internal/core/course_scheduling/domain/aggregate/enrollment"
-)
-
-var (
-	// ErrEnrollmentRequired 传入的注册记录为空。
-	ErrEnrollmentRequired = errors.New("course enrollment is required")
-	// ErrEnrollmentNotFound 指定的注册记录不存在。
-	ErrEnrollmentNotFound = errors.New("course enrollment not found")
-	// ErrEnrollmentConflict 选课被拒绝（不在选课窗口 / 已满 / 与在学课程撞时间）。
-	ErrEnrollmentConflict = errors.New("course enrollment conflicts with existing constraints")
 )
 
 // CourseEnrollmentCommand 课程注册命令接口

@@ -12,7 +12,6 @@ import (
 	"cqrs/internal/core/course_scheduling/domain/aggregate/enrollment"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/qualification"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/teacher"
-	repo "cqrs/internal/core/course_scheduling/domain/repo/command"
 )
 
 const (
@@ -154,8 +153,8 @@ func TestQualifyRejectsUnfinished(t *testing.T) {
 				TeacherID:    teacherWang,
 				CourseTypeID: ctProgramming,
 			})
-			if !errors.Is(err, repo.ErrCourseNotFinished) {
-				t.Errorf("err = %v, want %v", err, repo.ErrCourseNotFinished)
+			if !errors.Is(err, qualification.ErrCourseNotFinished) {
+				t.Errorf("err = %v, want %v", err, qualification.ErrCourseNotFinished)
 			}
 			if got := len(d.Qualifications()); got != 0 {
 				t.Errorf("资质数量 = %d, want 0", got)
@@ -176,8 +175,8 @@ func TestQualifyRejectsAbsence(t *testing.T) {
 		TeacherID:    teacherWang,
 		CourseTypeID: ctProgramming,
 	})
-	if !errors.Is(err, repo.ErrCourseNotFinished) {
-		t.Errorf("err = %v, want %v", err, repo.ErrCourseNotFinished)
+	if !errors.Is(err, qualification.ErrCourseNotFinished) {
+		t.Errorf("err = %v, want %v", err, qualification.ErrCourseNotFinished)
 	}
 	if got := len(d.Qualifications()); got != 0 {
 		t.Errorf("资质数量 = %d, want 0", got)
@@ -195,8 +194,8 @@ func TestQualifyRejectsOtherCourseType(t *testing.T) {
 		TeacherID:    teacherWang,
 		CourseTypeID: ctProgramming,
 	})
-	if !errors.Is(err, repo.ErrCourseNotFinished) {
-		t.Errorf("err = %v, want %v", err, repo.ErrCourseNotFinished)
+	if !errors.Is(err, qualification.ErrCourseNotFinished) {
+		t.Errorf("err = %v, want %v", err, qualification.ErrCourseNotFinished)
 	}
 }
 
@@ -209,8 +208,8 @@ func TestQualifyRejectsNoCourse(t *testing.T) {
 		TeacherID:    teacherWang,
 		CourseTypeID: ctProgramming,
 	})
-	if !errors.Is(err, repo.ErrCourseNotFinished) {
-		t.Errorf("err = %v, want %v", err, repo.ErrCourseNotFinished)
+	if !errors.Is(err, qualification.ErrCourseNotFinished) {
+		t.Errorf("err = %v, want %v", err, qualification.ErrCourseNotFinished)
 	}
 }
 
@@ -224,8 +223,8 @@ func TestQualifyRejectsUnknownTeacher(t *testing.T) {
 		TeacherID:    teacherWang,
 		CourseTypeID: ctProgramming,
 	})
-	if !errors.Is(err, repo.ErrTeacherNotFound) {
-		t.Errorf("err = %v, want %v", err, repo.ErrTeacherNotFound)
+	if !errors.Is(err, teacher.ErrTeacherNotFound) {
+		t.Errorf("err = %v, want %v", err, teacher.ErrTeacherNotFound)
 	}
 }
 
@@ -244,8 +243,8 @@ func TestQualifyRejectsOtherStudent(t *testing.T) {
 		TeacherID:    teacherWang,
 		CourseTypeID: ctProgramming,
 	})
-	if !errors.Is(err, repo.ErrCourseNotFinished) {
-		t.Errorf("err = %v, want %v", err, repo.ErrCourseNotFinished)
+	if !errors.Is(err, qualification.ErrCourseNotFinished) {
+		t.Errorf("err = %v, want %v", err, qualification.ErrCourseNotFinished)
 	}
 }
 

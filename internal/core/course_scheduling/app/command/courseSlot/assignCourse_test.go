@@ -6,7 +6,8 @@ import (
 	"testing"
 	"time"
 
-	repo "cqrs/internal/core/course_scheduling/domain/repo/command"
+	"cqrs/internal/core/course_scheduling/domain/aggregate/course"
+	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlot"
 )
 
 // TestAssignCourse 课程在该时段没有别的排期时配置成功。
@@ -38,8 +39,8 @@ func TestAssignCourseTimeConflict(t *testing.T) {
 		SlotIDs:  []string{target.ID()},
 		CourseID: ownCourse,
 	})
-	if !errors.Is(err, repo.ErrCourseSlotConflict) {
-		t.Errorf("err = %v, want %v", err, repo.ErrCourseSlotConflict)
+	if !errors.Is(err, courseSlot.ErrCourseSlotConflict) {
+		t.Errorf("err = %v, want %v", err, courseSlot.ErrCourseSlotConflict)
 	}
 	if got := f.slotCourseID(t, target.ID()); got != otherCourse {
 		t.Errorf("被拒绝时不应写入，courseID = %q, want %q", got, otherCourse)
@@ -55,8 +56,8 @@ func TestAssignCourseDuplicateAssignment(t *testing.T) {
 		SlotIDs:  []string{target.ID()},
 		CourseID: ownCourse,
 	})
-	if !errors.Is(err, repo.ErrCourseSlotConflict) {
-		t.Errorf("重复配置应判冲突，err = %v, want %v", err, repo.ErrCourseSlotConflict)
+	if !errors.Is(err, courseSlot.ErrCourseSlotConflict) {
+		t.Errorf("重复配置应判冲突，err = %v, want %v", err, courseSlot.ErrCourseSlotConflict)
 	}
 }
 
@@ -69,8 +70,8 @@ func TestAssignCourseNotFound(t *testing.T) {
 		SlotIDs:  []string{slot.ID()},
 		CourseID: "no-such-course",
 	})
-	if !errors.Is(err, repo.ErrCourseNotFound) {
-		t.Errorf("err = %v, want %v", err, repo.ErrCourseNotFound)
+	if !errors.Is(err, course.ErrCourseNotFound) {
+		t.Errorf("err = %v, want %v", err, course.ErrCourseNotFound)
 	}
 }
 
@@ -82,7 +83,7 @@ func TestAssignCourseSlotNotFound(t *testing.T) {
 		SlotIDs:  []string{"no-such-slot"},
 		CourseID: ownCourse,
 	})
-	if !errors.Is(err, repo.ErrCourseSlotNotFound) {
-		t.Errorf("err = %v, want %v", err, repo.ErrCourseSlotNotFound)
+	if !errors.Is(err, courseSlot.ErrCourseSlotNotFound) {
+		t.Errorf("err = %v, want %v", err, courseSlot.ErrCourseSlotNotFound)
 	}
 }

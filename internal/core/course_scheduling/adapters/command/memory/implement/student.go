@@ -27,7 +27,7 @@ func NewStudentCommand(d *memory.Data) repo.StudentCommand {
 // Create 新增学员
 func (c *StudentCommand) Create(ctx context.Context, s *student.Student) error {
 	if s == nil {
-		return repo.ErrStudentRequired
+		return student.ErrStudentRequired
 	}
 	c.data.SaveStudent(s)
 	return nil
@@ -40,7 +40,7 @@ func (c *StudentCommand) Update(ctx context.Context, id int64, updateFn func(ctx
 		return err
 	}
 	if current == nil {
-		return fmt.Errorf("%w: %d", repo.ErrStudentNotFound, id)
+		return fmt.Errorf("%w: %d", student.ErrStudentNotFound, id)
 	}
 
 	updated, err := updateFn(ctx, current)
@@ -48,7 +48,7 @@ func (c *StudentCommand) Update(ctx context.Context, id int64, updateFn func(ctx
 		return err
 	}
 	if updated == nil {
-		return repo.ErrStudentRequired
+		return student.ErrStudentRequired
 	}
 
 	c.data.SaveStudent(updated)
@@ -58,7 +58,7 @@ func (c *StudentCommand) Update(ctx context.Context, id int64, updateFn func(ctx
 // Delete 删除学员
 func (c *StudentCommand) Delete(ctx context.Context, id int64) error {
 	if !c.data.DeleteStudent(id) {
-		return fmt.Errorf("%w: %d", repo.ErrStudentNotFound, id)
+		return fmt.Errorf("%w: %d", student.ErrStudentNotFound, id)
 	}
 	return nil
 }
@@ -76,7 +76,7 @@ func (c *StudentCommand) Get(ctx context.Context, id int64) (*student.Student, e
 func (c *StudentCommand) MustGet(ctx context.Context, id int64) (student.Student, error) {
 	item, ok := c.data.StudentByID(id)
 	if !ok {
-		return student.Student{}, fmt.Errorf("%w: %d", repo.ErrStudentNotFound, id)
+		return student.Student{}, fmt.Errorf("%w: %d", student.ErrStudentNotFound, id)
 	}
 	return *item, nil
 }

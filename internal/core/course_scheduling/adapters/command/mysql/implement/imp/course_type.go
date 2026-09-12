@@ -30,7 +30,7 @@ SELECT `+help.CourseTypeColumns+`
   FROM course_type
  WHERE id = ?`, id))
 	if errors.Is(err, sql.ErrNoRows) {
-		return courseType.CourseType{}, fmt.Errorf("%w: %s", repo.ErrCourseTypeNotFound, id)
+		return courseType.CourseType{}, fmt.Errorf("%w: %s", courseType.ErrCourseTypeNotFound, id)
 	}
 	if err != nil {
 		return courseType.CourseType{}, err
@@ -50,7 +50,7 @@ SELECT course_type_id
   FROM course
  WHERE id = ?`, courseID).Scan(&courseTypeID)
 	if errors.Is(err, sql.ErrNoRows) {
-		return courseType.CourseType{}, fmt.Errorf("%w: course %s", repo.ErrCourseTypeNotFound, courseID)
+		return courseType.CourseType{}, fmt.Errorf("%w: course %s", courseType.ErrCourseTypeNotFound, courseID)
 	}
 	if err != nil {
 		return courseType.CourseType{}, err

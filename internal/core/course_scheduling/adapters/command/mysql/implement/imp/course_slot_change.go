@@ -26,7 +26,7 @@ func NewCourseSlotChangeImp(d *mysql.Data) repo.CourseSlotChangeCommand {
 // Save 保存课表变更（新增或更新，不做检查）。
 func (c *CourseSlotChangeImp) Save(ctx context.Context, csc *courseSlotChange.CourseSlotChange) error {
 	if csc == nil {
-		return repo.ErrSlotChangeRequired
+		return courseSlotChange.ErrSlotChangeRequired
 	}
 	po, err := model.CourseSlotChangeToPO(csc)
 	if err != nil {
@@ -69,7 +69,7 @@ func (c *CourseSlotChangeImp) Delete(ctx context.Context, id int64) error {
 		return err
 	}
 	if affected == 0 {
-		return fmt.Errorf("%w: %d", repo.ErrSlotChangeNotFound, id)
+		return fmt.Errorf("%w: %d", courseSlotChange.ErrSlotChangeNotFound, id)
 	}
 	return nil
 }
@@ -81,7 +81,7 @@ SELECT `+help.CourseSlotChangeColumns+`
   FROM course_slot_change
  WHERE id = ?`, id))
 	if errors.Is(err, sql.ErrNoRows) {
-		return courseSlotChange.CourseSlotChange{}, fmt.Errorf("%w: %d", repo.ErrSlotChangeNotFound, id)
+		return courseSlotChange.CourseSlotChange{}, fmt.Errorf("%w: %d", courseSlotChange.ErrSlotChangeNotFound, id)
 	}
 	if err != nil {
 		return courseSlotChange.CourseSlotChange{}, err
@@ -96,7 +96,7 @@ SELECT `+help.CourseSlotChangeColumns+`
 // Change 登记一次临时换课：冲突判定由调用方做完，这里只落库。
 func (c *CourseSlotChangeImp) Change(ctx context.Context, csc *courseSlotChange.CourseSlotChange) error {
 	if csc == nil {
-		return repo.ErrSlotChangeRequired
+		return courseSlotChange.ErrSlotChangeRequired
 	}
 	return c.Save(ctx, csc)
 }

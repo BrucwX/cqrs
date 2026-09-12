@@ -14,7 +14,6 @@ import (
 	"cqrs/internal/core/course_scheduling/domain/aggregate/course"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlot"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/enrollment"
-	repo "cqrs/internal/core/course_scheduling/domain/repo/command"
 	"cqrs/internal/core/course_scheduling/domain/service/scheduleConflict"
 )
 
@@ -139,12 +138,12 @@ func TestStudentEnroll_Rejected(t *testing.T) {
 		courseID string
 		wantErr  error
 	}{
-		{"重复选课", courseDupe, repo.ErrEnrollmentConflict},
-		{"窗口已关闭", courseClosed, repo.ErrEnrollmentConflict},
-		{"课程已满", courseFull, repo.ErrEnrollmentConflict},
-		{"与在学课程撞时间", courseClash, repo.ErrEnrollmentConflict},
+		{"重复选课", courseDupe, enrollment.ErrEnrollmentConflict},
+		{"窗口已关闭", courseClosed, enrollment.ErrEnrollmentConflict},
+		{"课程已满", courseFull, enrollment.ErrEnrollmentConflict},
+		{"与在学课程撞时间", courseClash, enrollment.ErrEnrollmentConflict},
 		// 课程取不到时仓库会直接报 not found，不再当成冲突
-		{"课程不存在", "c-not-exist", repo.ErrCourseNotFound},
+		{"课程不存在", "c-not-exist", course.ErrCourseNotFound},
 	}
 
 	for _, tc := range cases {

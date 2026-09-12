@@ -27,7 +27,7 @@ func NewEnrollmentCommand(d *memory.Data) repo.CourseEnrollmentCommand {
 // Save 保存课程注册（新增或更新）
 func (c *EnrollmentCommand) Save(ctx context.Context, e *enrollment.CourseEnrollment) error {
 	if e == nil {
-		return repo.ErrEnrollmentRequired
+		return enrollment.ErrEnrollmentRequired
 	}
 	c.data.SaveEnrollment(e)
 	return nil
@@ -36,7 +36,7 @@ func (c *EnrollmentCommand) Save(ctx context.Context, e *enrollment.CourseEnroll
 // Delete 删除课程注册
 func (c *EnrollmentCommand) Delete(ctx context.Context, id int64) error {
 	if !c.data.DeleteEnrollment(id) {
-		return fmt.Errorf("%w: %d", repo.ErrEnrollmentNotFound, id)
+		return fmt.Errorf("%w: %d", enrollment.ErrEnrollmentNotFound, id)
 	}
 	return nil
 }
@@ -48,7 +48,7 @@ func (c *EnrollmentCommand) MustGet(ctx context.Context, id int64) (enrollment.C
 			return *item, nil
 		}
 	}
-	return enrollment.CourseEnrollment{}, fmt.Errorf("%w: %d", repo.ErrEnrollmentNotFound, id)
+	return enrollment.CourseEnrollment{}, fmt.Errorf("%w: %d", enrollment.ErrEnrollmentNotFound, id)
 }
 
 // Enroll 学员选课
@@ -56,7 +56,7 @@ func (c *EnrollmentCommand) MustGet(ctx context.Context, id int64) (enrollment.C
 // 只管写：准入判定（选课窗口 / 容量 / 时间冲突）由调用方在调过来之前做完。
 func (c *EnrollmentCommand) Enroll(ctx context.Context, e *enrollment.CourseEnrollment) error {
 	if e == nil {
-		return repo.ErrEnrollmentRequired
+		return enrollment.ErrEnrollmentRequired
 	}
 
 	return c.Save(ctx, e)

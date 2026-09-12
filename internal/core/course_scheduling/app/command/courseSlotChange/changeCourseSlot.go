@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlotChange"
-	"cqrs/internal/core/course_scheduling/domain/repo/command"
 )
 
 // ChangeCourseSlot 临时换课命令
@@ -51,7 +50,7 @@ func (h *Handler) ChangeCourseSlot(ctx context.Context, cmd ChangeCourseSlot) (c
 		return nil, err
 	}
 	if conflict {
-		return nil, fmt.Errorf("%w: course %s", command.ErrSlotChangeConflict, cmd.CourseID)
+		return nil, fmt.Errorf("%w: course %s", courseSlotChange.ErrSlotChangeConflict, cmd.CourseID)
 	}
 
 	if err := h.ChangeCmd.Change(ctx, change); err != nil {

@@ -9,7 +9,7 @@ import (
 // TeacherInput 保存讲师命令
 //
 // ID 为 nil 表示新增（讲师 ID 由聚合生成）；
-// 非 nil 表示更新，指的讲师不存在时报 repo.ErrTeacherNotFound。
+// 非 nil 表示更新，指的讲师不存在时报 teacher.ErrTeacherNotFound。
 // 更新时只应用非 nil 的字段，nil 的字段保持原值。
 //
 // StudentID 只在新增时有意义（改不了，那是身份），不给就由聚合生成。

@@ -26,7 +26,7 @@ func NewCourseImp(d *mysql.Data) repo.CourseCommand {
 // Create 新增课程。
 func (c *CourseImp) Create(ctx context.Context, crs *course.Course) error {
 	if crs == nil {
-		return repo.ErrCourseRequired
+		return course.ErrCourseRequired
 	}
 	po, err := model.CourseToPO(crs)
 	if err != nil {
@@ -61,7 +61,7 @@ func (c *CourseImp) Update(
 		return err
 	}
 	if updated == nil {
-		return repo.ErrCourseRequired
+		return course.ErrCourseRequired
 	}
 
 	po, err := model.CourseToPO(updated)
@@ -93,7 +93,7 @@ func (c *CourseImp) Delete(ctx context.Context, id string) error {
 		return err
 	}
 	if affected == 0 {
-		return fmt.Errorf("%w: %s", repo.ErrCourseNotFound, id)
+		return fmt.Errorf("%w: %s", course.ErrCourseNotFound, id)
 	}
 	return nil
 }
@@ -101,7 +101,7 @@ func (c *CourseImp) Delete(ctx context.Context, id string) error {
 // Get 取课程；不存在时返回 (nil, nil)。
 func (c *CourseImp) Get(ctx context.Context, id string) (*course.Course, error) {
 	do, err := c.MustGet(ctx, id)
-	if errors.Is(err, repo.ErrCourseNotFound) {
+	if errors.Is(err, course.ErrCourseNotFound) {
 		return nil, nil
 	}
 	if err != nil {
@@ -117,7 +117,7 @@ SELECT `+help.CourseColumns+`
   FROM course
  WHERE id = ?`, id))
 	if errors.Is(err, sql.ErrNoRows) {
-		return course.Course{}, fmt.Errorf("%w: %s", repo.ErrCourseNotFound, id)
+		return course.Course{}, fmt.Errorf("%w: %s", course.ErrCourseNotFound, id)
 	}
 	if err != nil {
 		return course.Course{}, err

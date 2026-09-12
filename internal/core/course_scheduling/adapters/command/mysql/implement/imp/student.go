@@ -26,7 +26,7 @@ func NewStudentImp(d *mysql.Data) repo.StudentCommand {
 // Create 新增学员。
 func (c *StudentImp) Create(ctx context.Context, s *student.Student) error {
 	if s == nil {
-		return repo.ErrStudentRequired
+		return student.ErrStudentRequired
 	}
 	po, err := model.StudentToPO(s)
 	if err != nil {
@@ -58,7 +58,7 @@ func (c *StudentImp) Update(
 		return err
 	}
 	if updated == nil {
-		return repo.ErrStudentRequired
+		return student.ErrStudentRequired
 	}
 
 	po, err := model.StudentToPO(updated)
@@ -85,7 +85,7 @@ func (c *StudentImp) Delete(ctx context.Context, id int64) error {
 		return err
 	}
 	if affected == 0 {
-		return fmt.Errorf("%w: %d", repo.ErrStudentNotFound, id)
+		return fmt.Errorf("%w: %d", student.ErrStudentNotFound, id)
 	}
 	return nil
 }
@@ -93,7 +93,7 @@ func (c *StudentImp) Delete(ctx context.Context, id int64) error {
 // Get 取学员；不存在时返回 (nil, nil)。
 func (c *StudentImp) Get(ctx context.Context, id int64) (*student.Student, error) {
 	do, err := c.MustGet(ctx, id)
-	if errors.Is(err, repo.ErrStudentNotFound) {
+	if errors.Is(err, student.ErrStudentNotFound) {
 		return nil, nil
 	}
 	if err != nil {
@@ -109,7 +109,7 @@ SELECT `+help.StudentColumns+`
   FROM student
  WHERE id = ?`, id))
 	if errors.Is(err, sql.ErrNoRows) {
-		return student.Student{}, fmt.Errorf("%w: %d", repo.ErrStudentNotFound, id)
+		return student.Student{}, fmt.Errorf("%w: %d", student.ErrStudentNotFound, id)
 	}
 	if err != nil {
 		return student.Student{}, err

@@ -10,7 +10,6 @@ import (
 	memorycmd "cqrs/internal/core/course_scheduling/adapters/command/memory/implement"
 	"cqrs/internal/core/course_scheduling/adapters/memorystore"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/teacher"
-	repo "cqrs/internal/core/course_scheduling/domain/repo/command"
 )
 
 // newHandler 装配一个跑在干净内存存储上的命令处理器。
@@ -53,7 +52,7 @@ func TestDeleteTeacher(t *testing.T) {
 		t.Errorf("讲师数量 = %d, want 0", len(got))
 	}
 
-	if err := h.DeleteTeacher(context.Background(), tt.ID()); !errors.Is(err, repo.ErrTeacherNotFound) {
-		t.Errorf("重复删除 err = %v, want %v", err, repo.ErrTeacherNotFound)
+	if err := h.DeleteTeacher(context.Background(), tt.ID()); !errors.Is(err, teacher.ErrTeacherNotFound) {
+		t.Errorf("重复删除 err = %v, want %v", err, teacher.ErrTeacherNotFound)
 	}
 }

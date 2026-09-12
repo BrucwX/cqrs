@@ -28,7 +28,7 @@ func NewMakeupCommand(d *memory.Data) repo.StudentMakeupCommand {
 // Save 保存补课预约（新增或更新）
 func (c *MakeupCommand) Save(ctx context.Context, m *makeup.StudentMakeup) error {
 	if m == nil {
-		return repo.ErrMakeupRequired
+		return makeup.ErrMakeupRequired
 	}
 	c.data.SaveMakeup(m)
 	return nil
@@ -37,7 +37,7 @@ func (c *MakeupCommand) Save(ctx context.Context, m *makeup.StudentMakeup) error
 // Delete 删除补课预约
 func (c *MakeupCommand) Delete(ctx context.Context, id int64) error {
 	if !c.data.DeleteMakeup(id) {
-		return fmt.Errorf("%w: %d", repo.ErrMakeupNotFound, id)
+		return fmt.Errorf("%w: %d", makeup.ErrMakeupNotFound, id)
 	}
 	return nil
 }
@@ -49,7 +49,7 @@ func (c *MakeupCommand) MustGet(ctx context.Context, id int64) (makeup.StudentMa
 			return *item, nil
 		}
 	}
-	return makeup.StudentMakeup{}, fmt.Errorf("%w: %d", repo.ErrMakeupNotFound, id)
+	return makeup.StudentMakeup{}, fmt.Errorf("%w: %d", makeup.ErrMakeupNotFound, id)
 }
 
 // GetMakeupsForTarget 取补到同一节课上的全部补课预约。

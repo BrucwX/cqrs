@@ -2,16 +2,8 @@ package command
 
 import (
 	"context"
-	"errors"
 
 	"cqrs/internal/core/course_scheduling/domain/aggregate/classroom"
-)
-
-var (
-	// ErrClassroomRequired 传入的教室为空。
-	ErrClassroomRequired = errors.New("classroom is required")
-	// ErrClassroomNotFound 指定的教室不存在。
-	ErrClassroomNotFound = errors.New("classroom not found")
 )
 
 // ClassroomCommand 教室命令接口

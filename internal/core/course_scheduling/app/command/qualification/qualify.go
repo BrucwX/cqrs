@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"cqrs/internal/core/course_scheduling/domain/aggregate/qualification"
-	"cqrs/internal/core/course_scheduling/domain/repo/command"
 )
 
 // QualifyInput 授予授课资质命令
@@ -35,7 +34,7 @@ func (h *Handler) Qualify(ctx context.Context, cmd QualifyInput) (err error) {
 		return err
 	}
 	if notFinished {
-		return fmt.Errorf("%w: teacher %d courseType %s", command.ErrCourseNotFinished, cmd.TeacherID, cmd.CourseTypeID)
+		return fmt.Errorf("%w: teacher %d courseType %s", qualification.ErrCourseNotFinished, cmd.TeacherID, cmd.CourseTypeID)
 	}
 
 	return h.QualificationCmd.GrantQualification(ctx, created)

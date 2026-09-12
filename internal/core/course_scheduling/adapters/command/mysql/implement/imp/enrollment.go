@@ -26,7 +26,7 @@ func NewCourseEnrollmentImp(d *mysql.Data) repo.CourseEnrollmentCommand {
 // Save 保存课程注册（新增或更新，不做检查）。
 func (c *CourseEnrollmentImp) Save(ctx context.Context, e *enrollment.CourseEnrollment) error {
 	if e == nil {
-		return repo.ErrEnrollmentRequired
+		return enrollment.ErrEnrollmentRequired
 	}
 	po, err := model.EnrollmentToPO(e)
 	if err != nil {
@@ -59,7 +59,7 @@ func (c *CourseEnrollmentImp) Delete(ctx context.Context, id int64) error {
 		return err
 	}
 	if affected == 0 {
-		return fmt.Errorf("%w: %d", repo.ErrEnrollmentNotFound, id)
+		return fmt.Errorf("%w: %d", enrollment.ErrEnrollmentNotFound, id)
 	}
 	return nil
 }
@@ -71,7 +71,7 @@ SELECT `+help.EnrollmentColumns+`
   FROM course_enrollment
  WHERE id = ?`, id))
 	if errors.Is(err, sql.ErrNoRows) {
-		return enrollment.CourseEnrollment{}, fmt.Errorf("%w: %d", repo.ErrEnrollmentNotFound, id)
+		return enrollment.CourseEnrollment{}, fmt.Errorf("%w: %d", enrollment.ErrEnrollmentNotFound, id)
 	}
 	if err != nil {
 		return enrollment.CourseEnrollment{}, err
@@ -86,7 +86,7 @@ SELECT `+help.EnrollmentColumns+`
 // Enroll 学员选课：准入判定由调用方做完，这里只落库。
 func (c *CourseEnrollmentImp) Enroll(ctx context.Context, e *enrollment.CourseEnrollment) error {
 	if e == nil {
-		return repo.ErrEnrollmentRequired
+		return enrollment.ErrEnrollmentRequired
 	}
 	return c.Save(ctx, e)
 }

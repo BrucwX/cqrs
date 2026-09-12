@@ -13,7 +13,6 @@ import (
 	"cqrs/internal/core/course_scheduling/domain/aggregate/course"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlot"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/makeup"
-	repo "cqrs/internal/core/course_scheduling/domain/repo/command"
 	"cqrs/internal/core/course_scheduling/domain/service/classroomCapacity"
 )
 
@@ -208,8 +207,8 @@ func TestRecordMakeupCountsOtherMakeups(t *testing.T) {
 
 			_, err := f.handler.RecordMakeup(context.Background(), cmd)
 			if tc.wantErr {
-				if !errors.Is(err, repo.ErrMakeupConflict) {
-					t.Errorf("err = %v, want %v", err, repo.ErrMakeupConflict)
+				if !errors.Is(err, makeup.ErrMakeupConflict) {
+					t.Errorf("err = %v, want %v", err, makeup.ErrMakeupConflict)
 				}
 				return
 			}
@@ -242,8 +241,8 @@ func TestRecordMakeupClassroomTooSmall(t *testing.T) {
 	cmd.TargetSlotID = f.smallSlot
 
 	got, err := f.handler.RecordMakeup(context.Background(), cmd)
-	if !errors.Is(err, repo.ErrMakeupConflict) {
-		t.Errorf("err = %v, want %v", err, repo.ErrMakeupConflict)
+	if !errors.Is(err, makeup.ErrMakeupConflict) {
+		t.Errorf("err = %v, want %v", err, makeup.ErrMakeupConflict)
 	}
 	if records := f.data.Makeups(); len(records) != 0 {
 		t.Errorf("被拒绝时不应写入，补课记录数 = %d", len(records))
@@ -317,7 +316,7 @@ func TestDeleteMakeup(t *testing.T) {
 	if err := f.handler.MakeupCmd.Delete(context.Background(), got.ID()); err != nil {
 		t.Errorf("Delete(existing) = %v, want nil", err)
 	}
-	if err := f.handler.MakeupCmd.Delete(context.Background(), got.ID()); !errors.Is(err, repo.ErrMakeupNotFound) {
-		t.Errorf("Delete(missing) = %v, want %v", err, repo.ErrMakeupNotFound)
+	if err := f.handler.MakeupCmd.Delete(context.Background(), got.ID()); !errors.Is(err, makeup.ErrMakeupNotFound) {
+		t.Errorf("Delete(missing) = %v, want %v", err, makeup.ErrMakeupNotFound)
 	}
 }

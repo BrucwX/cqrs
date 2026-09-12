@@ -9,7 +9,7 @@ import (
 // ClassroomInput 保存教室命令
 //
 // ID 为 nil 表示新增（教室 ID 由服务端生成）；
-// 非 nil 表示更新，指的教室不存在时报 repo.ErrClassroomNotFound。
+// 非 nil 表示更新，指的教室不存在时报 classroom.ErrClassroomNotFound。
 // 更新时只应用非 nil 的字段，nil 的字段保持原值。
 type ClassroomInput struct {
 	ID       *string
@@ -21,7 +21,7 @@ type ClassroomInput struct {
 // SaveClassroom 保存或更新教室
 //
 // ID 为 nil 表示新增（ID 由聚合生成）；非 nil 表示更新，教室不存在时报
-// repo.ErrClassroomNotFound。必填校验、状态机、哪些字段可改都由聚合决定。
+// classroom.ErrClassroomNotFound。必填校验、状态机、哪些字段可改都由聚合决定。
 func (h *Handler) SaveClassroom(ctx context.Context, cmd ClassroomInput) (err error) {
 	ctx, err = h.tx.Begin(ctx)
 	if err != nil {

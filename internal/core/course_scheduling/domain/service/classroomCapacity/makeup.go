@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlot"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/makeup"
-	"cqrs/internal/core/course_scheduling/domain/repo/command"
 )
 
 // CheckMakeup 判断学员补到某节课上时，那节课的教室装不装得下。
@@ -26,7 +26,7 @@ func (s *Service) CheckMakeup(ctx context.Context, targetSlotID string, targetDa
 		return false, err
 	}
 	if len(slots) == 0 {
-		return false, fmt.Errorf("%w: %s", command.ErrCourseSlotNotFound, targetSlotID)
+		return false, fmt.Errorf("%w: %s", courseSlot.ErrCourseSlotNotFound, targetSlotID)
 	}
 	target := slots[0]
 

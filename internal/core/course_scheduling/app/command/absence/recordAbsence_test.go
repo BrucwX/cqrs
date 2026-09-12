@@ -10,7 +10,6 @@ import (
 	memorycmd "cqrs/internal/core/course_scheduling/adapters/command/memory/implement"
 	"cqrs/internal/core/course_scheduling/adapters/memorystore"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/absence"
-	repo "cqrs/internal/core/course_scheduling/domain/repo/command"
 )
 
 // newHandler 装配一个跑在干净内存存储上的命令处理器。
@@ -110,7 +109,7 @@ func TestDeleteAbsence(t *testing.T) {
 	if err := h.AbsenceCmd.Delete(context.Background(), got.ID()); err != nil {
 		t.Errorf("Delete(existing) = %v, want nil", err)
 	}
-	if err := h.AbsenceCmd.Delete(context.Background(), got.ID()); !errors.Is(err, repo.ErrAbsenceNotFound) {
-		t.Errorf("Delete(missing) = %v, want %v", err, repo.ErrAbsenceNotFound)
+	if err := h.AbsenceCmd.Delete(context.Background(), got.ID()); !errors.Is(err, absence.ErrAbsenceNotFound) {
+		t.Errorf("Delete(missing) = %v, want %v", err, absence.ErrAbsenceNotFound)
 	}
 }

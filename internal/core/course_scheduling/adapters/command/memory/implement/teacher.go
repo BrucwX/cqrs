@@ -27,7 +27,7 @@ func NewTeacherCommand(d *memory.Data) repo.TeacherCommand {
 // Create 新增讲师
 func (c *TeacherCommand) Create(ctx context.Context, t *teacher.Teacher) error {
 	if t == nil {
-		return repo.ErrTeacherRequired
+		return teacher.ErrTeacherRequired
 	}
 	c.data.SaveTeacher(t)
 	return nil
@@ -40,7 +40,7 @@ func (c *TeacherCommand) Update(ctx context.Context, id int64, updateFn func(ctx
 		return err
 	}
 	if current == nil {
-		return fmt.Errorf("%w: %d", repo.ErrTeacherNotFound, id)
+		return fmt.Errorf("%w: %d", teacher.ErrTeacherNotFound, id)
 	}
 
 	updated, err := updateFn(ctx, current)
@@ -48,7 +48,7 @@ func (c *TeacherCommand) Update(ctx context.Context, id int64, updateFn func(ctx
 		return err
 	}
 	if updated == nil {
-		return repo.ErrTeacherRequired
+		return teacher.ErrTeacherRequired
 	}
 
 	c.data.SaveTeacher(updated)
@@ -58,7 +58,7 @@ func (c *TeacherCommand) Update(ctx context.Context, id int64, updateFn func(ctx
 // Delete 删除讲师
 func (c *TeacherCommand) Delete(ctx context.Context, id int64) error {
 	if !c.data.DeleteTeacher(id) {
-		return fmt.Errorf("%w: %d", repo.ErrTeacherNotFound, id)
+		return fmt.Errorf("%w: %d", teacher.ErrTeacherNotFound, id)
 	}
 	return nil
 }
@@ -79,7 +79,7 @@ func (c *TeacherCommand) Get(ctx context.Context, id int64) (*teacher.Teacher, e
 func (c *TeacherCommand) MustGet(ctx context.Context, teacherID int64) (teacher.Teacher, error) {
 	item, ok := c.data.TeacherByID(teacherID)
 	if !ok {
-		return teacher.Teacher{}, fmt.Errorf("%w: %d", repo.ErrTeacherNotFound, teacherID)
+		return teacher.Teacher{}, fmt.Errorf("%w: %d", teacher.ErrTeacherNotFound, teacherID)
 	}
 	return *item, nil
 }

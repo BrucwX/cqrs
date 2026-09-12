@@ -10,7 +10,6 @@ import (
 	memorycmd "cqrs/internal/core/course_scheduling/adapters/command/memory/implement"
 	"cqrs/internal/core/course_scheduling/adapters/memorystore"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/qualification"
-	repo "cqrs/internal/core/course_scheduling/domain/repo/command"
 	"cqrs/internal/core/course_scheduling/domain/service/qualificationCheck"
 )
 
@@ -65,7 +64,7 @@ func TestDeleteQualification(t *testing.T) {
 		t.Errorf("资质数量 = %d, want 0", len(got))
 	}
 
-	if err := h.DeleteQualification(context.Background(), q.ID()); !errors.Is(err, repo.ErrQualificationNotFound) {
-		t.Errorf("重复删除 err = %v, want %v", err, repo.ErrQualificationNotFound)
+	if err := h.DeleteQualification(context.Background(), q.ID()); !errors.Is(err, qualification.ErrQualificationNotFound) {
+		t.Errorf("重复删除 err = %v, want %v", err, qualification.ErrQualificationNotFound)
 	}
 }

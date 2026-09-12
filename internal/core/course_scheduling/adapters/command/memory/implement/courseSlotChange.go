@@ -27,7 +27,7 @@ func NewCourseSlotChangeCommand(d *memory.Data) repo.CourseSlotChangeCommand {
 // Save 保存课表变更（新增或更新）
 func (c *CourseSlotChangeCommand) Save(ctx context.Context, csc *courseSlotChange.CourseSlotChange) error {
 	if csc == nil {
-		return repo.ErrSlotChangeRequired
+		return courseSlotChange.ErrSlotChangeRequired
 	}
 	c.data.SaveCourseSlotChange(csc)
 	return nil
@@ -36,7 +36,7 @@ func (c *CourseSlotChangeCommand) Save(ctx context.Context, csc *courseSlotChang
 // Delete 删除课表变更
 func (c *CourseSlotChangeCommand) Delete(ctx context.Context, id int64) error {
 	if !c.data.DeleteCourseSlotChange(id) {
-		return fmt.Errorf("%w: %d", repo.ErrSlotChangeNotFound, id)
+		return fmt.Errorf("%w: %d", courseSlotChange.ErrSlotChangeNotFound, id)
 	}
 	return nil
 }
@@ -48,7 +48,7 @@ func (c *CourseSlotChangeCommand) MustGet(ctx context.Context, id int64) (course
 			return *item, nil
 		}
 	}
-	return courseSlotChange.CourseSlotChange{}, fmt.Errorf("%w: %d", repo.ErrSlotChangeNotFound, id)
+	return courseSlotChange.CourseSlotChange{}, fmt.Errorf("%w: %d", courseSlotChange.ErrSlotChangeNotFound, id)
 }
 
 // Change 登记一次临时换课
@@ -56,7 +56,7 @@ func (c *CourseSlotChangeCommand) MustGet(ctx context.Context, id int64) (course
 // 只管写：冲突判定（目标讲师 / 教室在目标时段是否已被占用）由调用方在调过来之前做完。
 func (c *CourseSlotChangeCommand) Change(ctx context.Context, csc *courseSlotChange.CourseSlotChange) error {
 	if csc == nil {
-		return repo.ErrSlotChangeRequired
+		return courseSlotChange.ErrSlotChangeRequired
 	}
 
 	return c.Save(ctx, csc)

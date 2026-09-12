@@ -89,7 +89,7 @@ func createAndTrack(t *testing.T, c repo.ClassroomCommand) *classroom.Classroom 
 		t.Fatalf("Create: %v", err)
 	}
 	t.Cleanup(func() {
-		if err := c.Delete(context.Background(), cl.ID()); err != nil && !errors.Is(err, repo.ErrClassroomNotFound) {
+		if err := c.Delete(context.Background(), cl.ID()); err != nil && !errors.Is(err, classroom.ErrClassroomNotFound) {
 			t.Errorf("cleanup delete: %v", err)
 		}
 	})
@@ -152,10 +152,10 @@ func TestClassroomImpDelete(t *testing.T) {
 	if err := c.Delete(context.Background(), cl.ID()); err != nil {
 		t.Fatalf("Delete: %v", err)
 	}
-	if _, err := c.MustGet(context.Background(), cl.ID()); !errors.Is(err, repo.ErrClassroomNotFound) {
+	if _, err := c.MustGet(context.Background(), cl.ID()); !errors.Is(err, classroom.ErrClassroomNotFound) {
 		t.Fatalf("MustGet(after delete) = %v, want ErrClassroomNotFound", err)
 	}
-	if err := c.Delete(context.Background(), cl.ID()); !errors.Is(err, repo.ErrClassroomNotFound) {
+	if err := c.Delete(context.Background(), cl.ID()); !errors.Is(err, classroom.ErrClassroomNotFound) {
 		t.Fatalf("Delete(twice) = %v, want ErrClassroomNotFound", err)
 	}
 }
@@ -180,7 +180,7 @@ func TestClassroomImpTransaction(t *testing.T) {
 	if err := data.End(ctx, errors.New("boom")); err == nil {
 		t.Fatal("End should surface the injected error")
 	}
-	if _, err := c.MustGet(context.Background(), cl.ID()); !errors.Is(err, repo.ErrClassroomNotFound) {
+	if _, err := c.MustGet(context.Background(), cl.ID()); !errors.Is(err, classroom.ErrClassroomNotFound) {
 		t.Fatalf("MustGet(after rollback) = %v, want ErrClassroomNotFound", err)
 	}
 

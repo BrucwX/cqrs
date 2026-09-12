@@ -26,7 +26,7 @@ func NewQualificationImp(d *mysql.Data) repo.QualificationCommand {
 // GrantQualification 授予授课资质：够不够格由调用方判完，这里只落库。
 func (c *QualificationImp) GrantQualification(ctx context.Context, q *qualification.Qualification) error {
 	if q == nil {
-		return repo.ErrQualificationRequired
+		return qualification.ErrQualificationRequired
 	}
 	po, err := model.QualificationToPO(q)
 	if err != nil {
@@ -53,7 +53,7 @@ func (c *QualificationImp) Delete(ctx context.Context, id int64) error {
 		return err
 	}
 	if affected == 0 {
-		return fmt.Errorf("%w: %d", repo.ErrQualificationNotFound, id)
+		return fmt.Errorf("%w: %d", qualification.ErrQualificationNotFound, id)
 	}
 	return nil
 }
@@ -65,7 +65,7 @@ SELECT `+help.QualificationColumns+`
   FROM qualification
  WHERE id = ?`, id))
 	if errors.Is(err, sql.ErrNoRows) {
-		return qualification.Qualification{}, fmt.Errorf("%w: %d", repo.ErrQualificationNotFound, id)
+		return qualification.Qualification{}, fmt.Errorf("%w: %d", qualification.ErrQualificationNotFound, id)
 	}
 	if err != nil {
 		return qualification.Qualification{}, err

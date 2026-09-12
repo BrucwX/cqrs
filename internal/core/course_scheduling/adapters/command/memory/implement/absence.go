@@ -27,7 +27,7 @@ func NewAbsenceCommand(d *memory.Data) repo.AbsenceRecordCommand {
 // Save 保存缺勤记录（新增或更新）
 func (c *AbsenceCommand) Save(ctx context.Context, a *absence.AbsenceRecord) error {
 	if a == nil {
-		return repo.ErrAbsenceRequired
+		return absence.ErrAbsenceRequired
 	}
 	c.data.SaveAbsence(a)
 	return nil
@@ -36,7 +36,7 @@ func (c *AbsenceCommand) Save(ctx context.Context, a *absence.AbsenceRecord) err
 // Delete 删除缺勤记录
 func (c *AbsenceCommand) Delete(ctx context.Context, id int64) error {
 	if !c.data.DeleteAbsence(id) {
-		return fmt.Errorf("%w: %d", repo.ErrAbsenceNotFound, id)
+		return fmt.Errorf("%w: %d", absence.ErrAbsenceNotFound, id)
 	}
 	return nil
 }
@@ -48,7 +48,7 @@ func (c *AbsenceCommand) MustGet(ctx context.Context, id int64) (absence.Absence
 			return *item, nil
 		}
 	}
-	return absence.AbsenceRecord{}, fmt.Errorf("%w: %d", repo.ErrAbsenceNotFound, id)
+	return absence.AbsenceRecord{}, fmt.Errorf("%w: %d", absence.ErrAbsenceNotFound, id)
 }
 
 // GetAbsences 取该学员的全部缺勤记录。

@@ -9,7 +9,7 @@ import (
 // StudentInput 保存学员命令
 //
 // ID 为 nil 表示新增（学员 ID 由聚合生成）；
-// 非 nil 表示更新，指的学员不存在时报 repo.ErrStudentNotFound。
+// 非 nil 表示更新，指的学员不存在时报 student.ErrStudentNotFound。
 // 更新时只应用非 nil 的字段，nil 的字段保持原值。
 type StudentInput struct {
 	ID          *int64

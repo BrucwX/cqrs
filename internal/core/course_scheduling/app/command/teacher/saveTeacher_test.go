@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"cqrs/internal/core/course_scheduling/domain/aggregate/teacher"
-	repo "cqrs/internal/core/course_scheduling/domain/repo/command"
 )
 
 func strPtr(v string) *string { return &v }
@@ -192,8 +191,8 @@ func TestSaveTeacherUpdateMissing(t *testing.T) {
 	h, d := newHandler(t)
 
 	err := h.SaveTeacher(context.Background(), TeacherInput{ID: int64Ptr(999)})
-	if !errors.Is(err, repo.ErrTeacherNotFound) {
-		t.Errorf("err = %v, want %v", err, repo.ErrTeacherNotFound)
+	if !errors.Is(err, teacher.ErrTeacherNotFound) {
+		t.Errorf("err = %v, want %v", err, teacher.ErrTeacherNotFound)
 	}
 	if teachers := d.Teachers(); len(teachers) != 0 {
 		t.Errorf("被拒绝时不应新建，讲师数量 = %d", len(teachers))
