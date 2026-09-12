@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"cqrs/internal/core/course_scheduling/adapters/command/mysql"
+	"cqrs/internal/core/course_scheduling/adapters/command/mysql/implement/help"
 	"cqrs/internal/core/course_scheduling/adapters/command/mysql/model"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/classroom"
 	repo "cqrs/internal/core/course_scheduling/domain/repo/command"
@@ -21,9 +22,6 @@ var _ repo.ClassroomCommand = (*ClassroomImp)(nil)
 func NewClassroomImp(d *mysql.Data) repo.ClassroomCommand {
 	return &ClassroomImp{data: d}
 }
-
-// classroomColumns 列清单与建表脚本一致，SELECT 时按此顺序 Scan。
-const classroomColumns = `id, building, floor, room, capacity, allocated, status`
 
 // Create 新增教室。
 func (c *ClassroomImp) Create(ctx context.Context, cl *classroom.Classroom) error {
@@ -42,7 +40,7 @@ VALUES (?, ?, ?, ?, ?, ?, ?)`,
 
 // Update 按 ID 取出教室交给 updateFn 改，改完写回。
 //
-// 教室不存在时由 load 报 ErrClassroomNotFound。
+// 教室不存在时由 MustGet 报 ErrClassroomNotFound。
 func (c *ClassroomImp) Update(
 	ctx context.Context,
 	id string,
@@ -90,14 +88,10 @@ func (c *ClassroomImp) Delete(ctx context.Context, id string) error {
 
 // MustGet 取教室聚合本身；不存在时报 ErrClassroomNotFound。
 func (c *ClassroomImp) MustGet(ctx context.Context, id string) (classroom.Classroom, error) {
-	po := &model.Classroom{}
-	err := c.data.Conn(ctx).QueryRowContext(ctx, `
-SELECT `+classroomColumns+`
+	po, err := help.ScanClassroom(c.data.Conn(ctx).QueryRowContext(ctx, `
+SELECT `+help.ClassroomColumns+`
   FROM classroom
- WHERE id = ?`, id).Scan(
-		&po.ID, &po.Building, &po.Floor, &po.Room,
-		&po.Capacity, &po.Allocated, &po.Status,
-	)
+ WHERE id = ?`, id))
 	if errors.Is(err, sql.ErrNoRows) {
 		return classroom.Classroom{}, fmt.Errorf("%w: %s", repo.ErrClassroomNotFound, id)
 	}

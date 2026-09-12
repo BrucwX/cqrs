@@ -38,19 +38,17 @@ func bootstrapCmdTestDB(t *testing.T) {
 	if _, err := db.Exec("CREATE DATABASE IF NOT EXISTS " + cmdTestDB + " CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"); err != nil {
 		t.Skipf("跳过集成测试：无法建测试库（%v）", err)
 	}
-	if _, err := db.Exec(`
-CREATE TABLE IF NOT EXISTS ` + cmdTestDB + `.classroom (
-  id           varchar(36)       NOT NULL,
-  building     varchar(64)       NOT NULL,
-  floor        int               NOT NULL,
-  room         varchar(32)       NOT NULL,
-  capacity     int               NOT NULL,
-  allocated    int               NOT NULL DEFAULT 0,
-  status       tinyint unsigned  NOT NULL,
-  lock_version bigint unsigned   NOT NULL DEFAULT 0,
-  PRIMARY KEY (id)
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4`); err != nil {
-		t.Skipf("跳过集成测试：无法建 classroom 表（%v）", err)
+
+	// 按主库（course_scheduling，由建表脚本建好并灌入种子）的结构复制空表。
+	tables := []string{
+		"course_type", "classroom", "student", "teacher", "course",
+		"course_slot", "course_slot_change", "course_enrollment",
+		"absence_record", "student_makeup", "qualification",
+	}
+	for _, tbl := range tables {
+		if _, err := db.Exec("CREATE TABLE IF NOT EXISTS " + cmdTestDB + "." + tbl + " LIKE course_scheduling." + tbl); err != nil {
+			t.Skipf("跳过集成测试：无法建表 %s（%v）", tbl, err)
+		}
 	}
 }
 
