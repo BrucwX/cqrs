@@ -25,7 +25,7 @@ func NewClassroomCommand(d *memory.Data) repo.ClassroomCommand {
 }
 
 // Create 新增教室
-func (c *ClassroomCommand) Create(cl *classroom.Classroom) error {
+func (c *ClassroomCommand) Create(ctx context.Context, cl *classroom.Classroom) error {
 	if cl == nil {
 		return repo.ErrClassroomRequired
 	}
@@ -37,7 +37,7 @@ func (c *ClassroomCommand) Create(cl *classroom.Classroom) error {
 //
 // 教室不存在时由 MustGet 报 ErrClassroomNotFound。
 func (c *ClassroomCommand) Update(ctx context.Context, id string, updateFn func(ctx context.Context, cl *classroom.Classroom) (*classroom.Classroom, error)) error {
-	current, err := c.MustGet(id)
+	current, err := c.MustGet(ctx, id)
 	if err != nil {
 		return err
 	}
@@ -55,7 +55,7 @@ func (c *ClassroomCommand) Update(ctx context.Context, id string, updateFn func(
 }
 
 // Delete 删除教室
-func (c *ClassroomCommand) Delete(id string) error {
+func (c *ClassroomCommand) Delete(ctx context.Context, id string) error {
 	if !c.data.DeleteClassroom(id) {
 		return fmt.Errorf("%w: %s", repo.ErrClassroomNotFound, id)
 	}
@@ -63,7 +63,7 @@ func (c *ClassroomCommand) Delete(id string) error {
 }
 
 // MustGet 取教室聚合本身；不存在时报 ErrClassroomNotFound。
-func (c *ClassroomCommand) MustGet(id string) (classroom.Classroom, error) {
+func (c *ClassroomCommand) MustGet(ctx context.Context, id string) (classroom.Classroom, error) {
 	item, ok := c.data.ClassroomByID(id)
 	if !ok {
 		return classroom.Classroom{}, fmt.Errorf("%w: %s", repo.ErrClassroomNotFound, id)

@@ -1,6 +1,7 @@
 package implement
 
 import (
+	"context"
 	"fmt"
 
 	"cqrs/internal/core/course_scheduling/adapters/command/memory"
@@ -24,7 +25,7 @@ func NewAbsenceCommand(d *memory.Data) repo.AbsenceRecordCommand {
 }
 
 // Save 保存缺勤记录（新增或更新）
-func (c *AbsenceCommand) Save(a *absence.AbsenceRecord) error {
+func (c *AbsenceCommand) Save(ctx context.Context, a *absence.AbsenceRecord) error {
 	if a == nil {
 		return repo.ErrAbsenceRequired
 	}
@@ -33,7 +34,7 @@ func (c *AbsenceCommand) Save(a *absence.AbsenceRecord) error {
 }
 
 // Delete 删除缺勤记录
-func (c *AbsenceCommand) Delete(id int64) error {
+func (c *AbsenceCommand) Delete(ctx context.Context, id int64) error {
 	if !c.data.DeleteAbsence(id) {
 		return fmt.Errorf("%w: %d", repo.ErrAbsenceNotFound, id)
 	}
@@ -41,7 +42,7 @@ func (c *AbsenceCommand) Delete(id int64) error {
 }
 
 // GetAbsences 取该学员的全部缺勤记录。
-func (c *AbsenceCommand) GetAbsences(studentID int64) ([]absence.AbsenceRecord, error) {
+func (c *AbsenceCommand) GetAbsences(ctx context.Context, studentID int64) ([]absence.AbsenceRecord, error) {
 	out := make([]absence.AbsenceRecord, 0)
 	for _, item := range c.data.Absences() {
 		if item.StudentID() == studentID {

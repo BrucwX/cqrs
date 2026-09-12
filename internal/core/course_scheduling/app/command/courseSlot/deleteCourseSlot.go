@@ -12,5 +12,5 @@ func (h *Handler) DeleteCourseSlot(ctx context.Context, id string) (err error) {
 	}
 	defer func() { err = h.tx.End(ctx, err) }()
 
-	return h.SlotCmd.Delete(id)
+	return h.SlotCmd.Delete(ctx, id)
 }

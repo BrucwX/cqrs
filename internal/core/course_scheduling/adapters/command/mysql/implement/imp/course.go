@@ -18,7 +18,7 @@ func NewCourseImp(d *mysql.Data) repo.CourseCommand {
 	return &CourseImp{data: d}
 }
 
-func (c *CourseImp) Create(crs *course.Course) error {
+func (c *CourseImp) Create(ctx context.Context, crs *course.Course) error {
 	panic("implement me")
 }
 
@@ -30,18 +30,18 @@ func (c *CourseImp) Update(
 	panic("implement me")
 }
 
-func (c *CourseImp) Delete(id string) error {
+func (c *CourseImp) Delete(ctx context.Context, id string) error {
 	panic("implement me")
 }
 
-func (c *CourseImp) Get(id string) (*course.Course, error) {
+func (c *CourseImp) Get(ctx context.Context, id string) (*course.Course, error) {
 	panic("implement me")
 }
 
-func (c *CourseImp) GetCourse(courseID string) (course.Course, error) {
+func (c *CourseImp) GetCourse(ctx context.Context, courseID string) (course.Course, error) {
 	panic("implement me")
 }
 
-func (c *CourseImp) GetCourses(courseTypeID string) ([]course.Course, error) {
+func (c *CourseImp) GetCourses(ctx context.Context, courseTypeID string) ([]course.Course, error) {
 	panic("implement me")
 }

@@ -25,7 +25,7 @@ func NewCourseSlotCommand(d *memory.Data) repo.CourseSlotCommand {
 }
 
 // Save 保存课表槽位（新增或更新）
-func (c *CourseSlotCommand) Save(cs *courseSlot.CourseSlot) error {
+func (c *CourseSlotCommand) Save(ctx context.Context, cs *courseSlot.CourseSlot) error {
 	if cs == nil {
 		return repo.ErrCourseSlotRequired
 	}
@@ -34,7 +34,7 @@ func (c *CourseSlotCommand) Save(cs *courseSlot.CourseSlot) error {
 }
 
 // Delete 删除课表槽位
-func (c *CourseSlotCommand) Delete(id string) error {
+func (c *CourseSlotCommand) Delete(ctx context.Context, id string) error {
 	if !c.data.DeleteCourseSlot(id) {
 		return fmt.Errorf("%w: %s", repo.ErrCourseSlotNotFound, id)
 	}
@@ -98,7 +98,7 @@ func (c *CourseSlotCommand) AssignClassroom(ctx context.Context, slotIDs []strin
 // --- 排期读取（按返回值的聚合根归到本接口）---
 
 // GetSlots 按 ID 取本次要排的槽位，顺序与入参一致；少一个就报 not found。
-func (c *CourseSlotCommand) GetSlots(slotIDs []string) (courseSlot.CourseSlots, error) {
+func (c *CourseSlotCommand) GetSlots(ctx context.Context, slotIDs []string) (courseSlot.CourseSlots, error) {
 	out := make(courseSlot.CourseSlots, 0, len(slotIDs))
 	for _, id := range slotIDs {
 		item, ok := c.data.CourseSlotByID(id)
@@ -111,7 +111,7 @@ func (c *CourseSlotCommand) GetSlots(slotIDs []string) (courseSlot.CourseSlots, 
 }
 
 // GetTeacherSlots 取该讲师现有的全部排期。
-func (c *CourseSlotCommand) GetTeacherSlots(teacherID int64) (courseSlot.CourseSlots, error) {
+func (c *CourseSlotCommand) GetTeacherSlots(ctx context.Context, teacherID int64) (courseSlot.CourseSlots, error) {
 	out := make(courseSlot.CourseSlots, 0)
 	for _, cs := range c.data.CourseSlots() {
 		if cs.TeacherID() == teacherID {
@@ -122,7 +122,7 @@ func (c *CourseSlotCommand) GetTeacherSlots(teacherID int64) (courseSlot.CourseS
 }
 
 // GetClassroomSlots 取该教室现有的全部排期。
-func (c *CourseSlotCommand) GetClassroomSlots(classroomID string) (courseSlot.CourseSlots, error) {
+func (c *CourseSlotCommand) GetClassroomSlots(ctx context.Context, classroomID string) (courseSlot.CourseSlots, error) {
 	out := make(courseSlot.CourseSlots, 0)
 	for _, cs := range c.data.CourseSlots() {
 		if cs.ClassroomID() == classroomID {
@@ -133,7 +133,7 @@ func (c *CourseSlotCommand) GetClassroomSlots(classroomID string) (courseSlot.Co
 }
 
 // GetCourseSlots 取该课程现有的全部排期。
-func (c *CourseSlotCommand) GetCourseSlots(courseID string) (courseSlot.CourseSlots, error) {
+func (c *CourseSlotCommand) GetCourseSlots(ctx context.Context, courseID string) (courseSlot.CourseSlots, error) {
 	return c.slotsOfCourses(courseID), nil
 }
 
@@ -141,7 +141,7 @@ func (c *CourseSlotCommand) GetCourseSlots(courseID string) (courseSlot.CourseSl
 //
 // 已退课 / 已结业的记录不计入；结果里会包含目标课程自身的排期，
 // 所以重复选课会表现为与自身槽位重叠。
-func (c *CourseSlotCommand) GetStudentSlots(studentID int64) (courseSlot.CourseSlots, error) {
+func (c *CourseSlotCommand) GetStudentSlots(ctx context.Context, studentID int64) (courseSlot.CourseSlots, error) {
 	courseIDs := make([]string, 0)
 	for _, e := range c.data.Enrollments() {
 		if e.StudentID() == studentID && e.IsActive() {

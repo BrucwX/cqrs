@@ -107,10 +107,10 @@ func TestDeleteAbsence(t *testing.T) {
 		t.Fatalf("RecordAbsence: %v", err)
 	}
 
-	if err := h.AbsenceCmd.Delete(got.ID()); err != nil {
+	if err := h.AbsenceCmd.Delete(context.Background(), got.ID()); err != nil {
 		t.Errorf("Delete(existing) = %v, want nil", err)
 	}
-	if err := h.AbsenceCmd.Delete(got.ID()); !errors.Is(err, repo.ErrAbsenceNotFound) {
+	if err := h.AbsenceCmd.Delete(context.Background(), got.ID()); !errors.Is(err, repo.ErrAbsenceNotFound) {
 		t.Errorf("Delete(missing) = %v, want %v", err, repo.ErrAbsenceNotFound)
 	}
 }

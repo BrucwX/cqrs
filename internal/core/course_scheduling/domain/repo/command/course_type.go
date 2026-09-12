@@ -1,6 +1,7 @@
 package command
 
 import (
+	"context"
 	"errors"
 
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseType"
@@ -17,5 +18,5 @@ var (
 // 授资质时要知道课程属于哪个类型。课程类型本身还没有增删改的用例。
 type CourseTypeCommand interface {
 	// GetCourseType 取某门课程归属的课程类型
-	GetCourseType(courseID string) (courseType.CourseType, error)
+	GetCourseType(ctx context.Context, courseID string) (courseType.CourseType, error)
 }

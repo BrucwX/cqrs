@@ -25,7 +25,7 @@ func NewCourseCommand(d *memory.Data) repo.CourseCommand {
 }
 
 // Create 新增课程
-func (c *CourseCommand) Create(crs *course.Course) error {
+func (c *CourseCommand) Create(ctx context.Context, crs *course.Course) error {
 	if crs == nil {
 		return repo.ErrCourseRequired
 	}
@@ -35,7 +35,7 @@ func (c *CourseCommand) Create(crs *course.Course) error {
 
 // Update 按 ID 取出课程交给 updateFn 改，改完写回
 func (c *CourseCommand) Update(ctx context.Context, id string, updateFn func(ctx context.Context, crs *course.Course) (*course.Course, error)) error {
-	current, err := c.Get(id)
+	current, err := c.Get(ctx, id)
 	if err != nil {
 		return err
 	}
@@ -56,7 +56,7 @@ func (c *CourseCommand) Update(ctx context.Context, id string, updateFn func(ctx
 }
 
 // Delete 删除课程
-func (c *CourseCommand) Delete(id string) error {
+func (c *CourseCommand) Delete(ctx context.Context, id string) error {
 	if !c.data.DeleteCourse(id) {
 		return fmt.Errorf("%w: %s", repo.ErrCourseNotFound, id)
 	}
@@ -64,7 +64,7 @@ func (c *CourseCommand) Delete(id string) error {
 }
 
 // Get 取课程；不存在时返回 (nil, nil)。
-func (c *CourseCommand) Get(id string) (*course.Course, error) {
+func (c *CourseCommand) Get(ctx context.Context, id string) (*course.Course, error) {
 	item, ok := c.data.CourseByID(id)
 	if !ok {
 		return nil, nil
@@ -76,7 +76,7 @@ func (c *CourseCommand) Get(id string) (*course.Course, error) {
 //
 // 与 Get 的差别：Get 找不到时是 (nil, nil)（给「查到了没」的调用方），
 // GetCourse 是规则判定要用的，找不到必须报错。
-func (c *CourseCommand) GetCourse(courseID string) (course.Course, error) {
+func (c *CourseCommand) GetCourse(ctx context.Context, courseID string) (course.Course, error) {
 	item, ok := c.data.CourseByID(courseID)
 	if !ok {
 		return course.Course{}, fmt.Errorf("%w: %s", repo.ErrCourseNotFound, courseID)
@@ -85,7 +85,7 @@ func (c *CourseCommand) GetCourse(courseID string) (course.Course, error) {
 }
 
 // GetCourses 取某课程类型下的全部课程。
-func (c *CourseCommand) GetCourses(courseTypeID string) ([]course.Course, error) {
+func (c *CourseCommand) GetCourses(ctx context.Context, courseTypeID string) ([]course.Course, error) {
 	out := make([]course.Course, 0)
 	for _, item := range c.data.Courses() {
 		if item.CourseTypeID() == courseTypeID {

@@ -18,11 +18,11 @@ func NewCourseSlotChangeImp(d *mysql.Data) repo.CourseSlotChangeCommand {
 	return &CourseSlotChangeImp{data: d}
 }
 
-func (c *CourseSlotChangeImp) Save(csc *courseSlotChange.CourseSlotChange) error {
+func (c *CourseSlotChangeImp) Save(ctx context.Context, csc *courseSlotChange.CourseSlotChange) error {
 	panic("implement me")
 }
 
-func (c *CourseSlotChangeImp) Delete(id int64) error {
+func (c *CourseSlotChangeImp) Delete(ctx context.Context, id int64) error {
 	panic("implement me")
 }
 
@@ -30,6 +30,6 @@ func (c *CourseSlotChangeImp) Change(ctx context.Context, csc *courseSlotChange.
 	panic("implement me")
 }
 
-func (c *CourseSlotChangeImp) GetOtherSlotChanges(id int64) ([]*courseSlotChange.CourseSlotChange, error) {
+func (c *CourseSlotChangeImp) GetOtherSlotChanges(ctx context.Context, id int64) ([]*courseSlotChange.CourseSlotChange, error) {
 	panic("implement me")
 }

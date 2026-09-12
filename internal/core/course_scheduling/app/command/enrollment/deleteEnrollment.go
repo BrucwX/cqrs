@@ -13,5 +13,5 @@ func (h *Handler) DeleteEnrollment(ctx context.Context, id int64) (err error) {
 	}
 	defer func() { err = h.tx.End(ctx, err) }()
 
-	return h.EnrollmentCmd.Delete(id)
+	return h.EnrollmentCmd.Delete(ctx, id)
 }

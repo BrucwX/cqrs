@@ -25,7 +25,7 @@ func NewStudentCommand(d *memory.Data) repo.StudentCommand {
 }
 
 // Create 新增学员
-func (c *StudentCommand) Create(s *student.Student) error {
+func (c *StudentCommand) Create(ctx context.Context, s *student.Student) error {
 	if s == nil {
 		return repo.ErrStudentRequired
 	}
@@ -35,7 +35,7 @@ func (c *StudentCommand) Create(s *student.Student) error {
 
 // Update 按 ID 取出学员交给 updateFn 改，改完写回
 func (c *StudentCommand) Update(ctx context.Context, id int64, updateFn func(ctx context.Context, s *student.Student) (*student.Student, error)) error {
-	current, err := c.Get(id)
+	current, err := c.Get(ctx, id)
 	if err != nil {
 		return err
 	}
@@ -56,7 +56,7 @@ func (c *StudentCommand) Update(ctx context.Context, id int64, updateFn func(ctx
 }
 
 // Delete 删除学员
-func (c *StudentCommand) Delete(id int64) error {
+func (c *StudentCommand) Delete(ctx context.Context, id int64) error {
 	if !c.data.DeleteStudent(id) {
 		return fmt.Errorf("%w: %d", repo.ErrStudentNotFound, id)
 	}
@@ -64,7 +64,7 @@ func (c *StudentCommand) Delete(id int64) error {
 }
 
 // Get 取学员；不存在时返回 (nil, nil)。
-func (c *StudentCommand) Get(id int64) (*student.Student, error) {
+func (c *StudentCommand) Get(ctx context.Context, id int64) (*student.Student, error) {
 	item, ok := c.data.StudentByID(id)
 	if !ok {
 		return nil, nil

@@ -37,7 +37,7 @@ func (h *Handler) SaveStudent(ctx context.Context, cmd StudentInput) (err error)
 		if err != nil {
 			return err
 		}
-		return h.StudentCmd.Create(created)
+		return h.StudentCmd.Create(ctx, created)
 	}
 
 	return h.StudentCmd.Update(

@@ -25,7 +25,7 @@ func NewEnrollmentCommand(d *memory.Data) repo.CourseEnrollmentCommand {
 }
 
 // Save 保存课程注册（新增或更新）
-func (c *EnrollmentCommand) Save(e *enrollment.CourseEnrollment) error {
+func (c *EnrollmentCommand) Save(ctx context.Context, e *enrollment.CourseEnrollment) error {
 	if e == nil {
 		return repo.ErrEnrollmentRequired
 	}
@@ -34,7 +34,7 @@ func (c *EnrollmentCommand) Save(e *enrollment.CourseEnrollment) error {
 }
 
 // Delete 删除课程注册
-func (c *EnrollmentCommand) Delete(id int64) error {
+func (c *EnrollmentCommand) Delete(ctx context.Context, id int64) error {
 	if !c.data.DeleteEnrollment(id) {
 		return fmt.Errorf("%w: %d", repo.ErrEnrollmentNotFound, id)
 	}
@@ -49,11 +49,11 @@ func (c *EnrollmentCommand) Enroll(ctx context.Context, e *enrollment.CourseEnro
 		return repo.ErrEnrollmentRequired
 	}
 
-	return c.Save(e)
+	return c.Save(ctx, e)
 }
 
 // GetEnrollments 取该学员的全部报名记录。
-func (c *EnrollmentCommand) GetEnrollments(studentID int64) ([]enrollment.CourseEnrollment, error) {
+func (c *EnrollmentCommand) GetEnrollments(ctx context.Context, studentID int64) ([]enrollment.CourseEnrollment, error) {
 	out := make([]enrollment.CourseEnrollment, 0)
 	for _, item := range c.data.Enrollments() {
 		if item.StudentID() == studentID {

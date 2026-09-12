@@ -20,11 +20,11 @@ func NewCourseSlotImp(d *mysql.Data) repo.CourseSlotCommand {
 	return &CourseSlotImp{data: d}
 }
 
-func (c *CourseSlotImp) Save(cs *courseSlot.CourseSlot) error {
+func (c *CourseSlotImp) Save(ctx context.Context, cs *courseSlot.CourseSlot) error {
 	panic("implement me")
 }
 
-func (c *CourseSlotImp) Delete(id string) error {
+func (c *CourseSlotImp) Delete(ctx context.Context, id string) error {
 	panic("implement me")
 }
 
@@ -42,22 +42,22 @@ func (c *CourseSlotImp) AssignClassroom(ctx context.Context, slotIDs []string, c
 
 // --- 排期读取（按返回值的聚合根归到本接口）---
 
-func (c *CourseSlotImp) GetSlots(slotIDs []string) (courseSlot.CourseSlots, error) {
+func (c *CourseSlotImp) GetSlots(ctx context.Context, slotIDs []string) (courseSlot.CourseSlots, error) {
 	panic("implement me")
 }
 
-func (c *CourseSlotImp) GetTeacherSlots(teacherID int64) (courseSlot.CourseSlots, error) {
+func (c *CourseSlotImp) GetTeacherSlots(ctx context.Context, teacherID int64) (courseSlot.CourseSlots, error) {
 	panic("implement me")
 }
 
-func (c *CourseSlotImp) GetClassroomSlots(classroomID string) (courseSlot.CourseSlots, error) {
+func (c *CourseSlotImp) GetClassroomSlots(ctx context.Context, classroomID string) (courseSlot.CourseSlots, error) {
 	panic("implement me")
 }
 
-func (c *CourseSlotImp) GetCourseSlots(courseID string) (courseSlot.CourseSlots, error) {
+func (c *CourseSlotImp) GetCourseSlots(ctx context.Context, courseID string) (courseSlot.CourseSlots, error) {
 	panic("implement me")
 }
 
-func (c *CourseSlotImp) GetStudentSlots(studentID int64) (courseSlot.CourseSlots, error) {
+func (c *CourseSlotImp) GetStudentSlots(ctx context.Context, studentID int64) (courseSlot.CourseSlots, error) {
 	panic("implement me")
 }

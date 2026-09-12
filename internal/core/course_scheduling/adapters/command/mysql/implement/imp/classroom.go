@@ -18,7 +18,7 @@ func NewClassroomImp(d *mysql.Data) repo.ClassroomCommand {
 	return &ClassroomImp{data: d}
 }
 
-func (c *ClassroomImp) Create(cl *classroom.Classroom) error {
+func (c *ClassroomImp) Create(ctx context.Context, cl *classroom.Classroom) error {
 	panic("implement me")
 }
 
@@ -30,10 +30,10 @@ func (c *ClassroomImp) Update(
 	panic("implement me")
 }
 
-func (c *ClassroomImp) Delete(id string) error {
+func (c *ClassroomImp) Delete(ctx context.Context, id string) error {
 	panic("implement me")
 }
 
-func (c *ClassroomImp) MustGet(id string) (classroom.Classroom, error) {
+func (c *ClassroomImp) MustGet(ctx context.Context, id string) (classroom.Classroom, error) {
 	panic("implement me")
 }

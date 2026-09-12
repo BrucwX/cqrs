@@ -10,12 +10,12 @@ import "context"
 // 重复选课也会被这里拦下：目标课程本身就在学员的在学课程里，两个集合里的
 // 那份槽位是同一批，逐槽自比必然重叠。
 func (s *Service) CheckStudent(ctx context.Context, studentID int64, courseID string) (bool, error) {
-	target, err := s.SlotCmd.GetCourseSlots(courseID)
+	target, err := s.SlotCmd.GetCourseSlots(ctx, courseID)
 	if err != nil {
 		return false, err
 	}
 
-	student, err := s.SlotCmd.GetStudentSlots(studentID)
+	student, err := s.SlotCmd.GetStudentSlots(ctx, studentID)
 	if err != nil {
 		return false, err
 	}

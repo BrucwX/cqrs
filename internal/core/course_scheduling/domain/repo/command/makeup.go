@@ -1,6 +1,7 @@
 package command
 
 import (
+	"context"
 	"errors"
 	"time"
 
@@ -19,12 +20,12 @@ var (
 // StudentMakeupCommand 补课申请命令接口
 type StudentMakeupCommand interface {
 	// Save 保存补课申请（新增或更新）
-	Save(m *makeup.StudentMakeup) error
+	Save(ctx context.Context, m *makeup.StudentMakeup) error
 	// Delete 删除补课申请
-	Delete(id int64) error
+	Delete(ctx context.Context, id int64) error
 	// GetMakeupsForTarget 取补到同一节课上的全部补课预约
 	//
 	// 「同一节课」按槽位 + 日期两把钥匙认：同一个周排槽位在别的日期上是另一堂
 	// 课，不抢这间教室的座位。状态不过滤，要不要算上由调用方决定。
-	GetMakeupsForTarget(targetSlotID string, targetDate time.Time) ([]makeup.StudentMakeup, error)
+	GetMakeupsForTarget(ctx context.Context, targetSlotID string, targetDate time.Time) ([]makeup.StudentMakeup, error)
 }

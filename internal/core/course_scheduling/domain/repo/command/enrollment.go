@@ -19,9 +19,9 @@ var (
 // CourseEnrollmentCommand 课程注册命令接口
 type CourseEnrollmentCommand interface {
 	// Save 保存课程注册（新增或更新，不做检查）
-	Save(e *enrollment.CourseEnrollment) error
+	Save(ctx context.Context, e *enrollment.CourseEnrollment) error
 	// Delete 删除课程注册
-	Delete(id int64) error
+	Delete(ctx context.Context, id int64) error
 	// Enroll 学员选课
 	//
 	// 只管写：把这条注册记录落库。准入判定（选课窗口 / 容量 / 时间冲突）
@@ -29,5 +29,5 @@ type CourseEnrollmentCommand interface {
 	// 判定通过才调过来。所以这里没有回调，也没有「传 nil 表示不检查」这类分支。
 	Enroll(ctx context.Context, e *enrollment.CourseEnrollment) error
 	// GetEnrollments 取该学员的全部报名记录
-	GetEnrollments(studentID int64) ([]enrollment.CourseEnrollment, error)
+	GetEnrollments(ctx context.Context, studentID int64) ([]enrollment.CourseEnrollment, error)
 }

@@ -1,6 +1,7 @@
 package implement
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -25,7 +26,7 @@ func NewMakeupCommand(d *memory.Data) repo.StudentMakeupCommand {
 }
 
 // Save 保存补课预约（新增或更新）
-func (c *MakeupCommand) Save(m *makeup.StudentMakeup) error {
+func (c *MakeupCommand) Save(ctx context.Context, m *makeup.StudentMakeup) error {
 	if m == nil {
 		return repo.ErrMakeupRequired
 	}
@@ -34,7 +35,7 @@ func (c *MakeupCommand) Save(m *makeup.StudentMakeup) error {
 }
 
 // Delete 删除补课预约
-func (c *MakeupCommand) Delete(id int64) error {
+func (c *MakeupCommand) Delete(ctx context.Context, id int64) error {
 	if !c.data.DeleteMakeup(id) {
 		return fmt.Errorf("%w: %d", repo.ErrMakeupNotFound, id)
 	}
@@ -44,7 +45,7 @@ func (c *MakeupCommand) Delete(id int64) error {
 // GetMakeupsForTarget 取补到同一节课上的全部补课预约。
 //
 // 按槽位 + 日期两把钥匙匹配，状态不过滤。
-func (c *MakeupCommand) GetMakeupsForTarget(targetSlotID string, targetDate time.Time) ([]makeup.StudentMakeup, error) {
+func (c *MakeupCommand) GetMakeupsForTarget(ctx context.Context, targetSlotID string, targetDate time.Time) ([]makeup.StudentMakeup, error) {
 	out := make([]makeup.StudentMakeup, 0)
 	for _, item := range c.data.Makeups() {
 		if item.TargetSlotID() != targetSlotID || !item.TargetDate().Equal(targetDate) {

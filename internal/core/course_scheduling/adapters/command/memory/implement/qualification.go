@@ -37,7 +37,7 @@ func (c *QualificationCommand) GrantQualification(ctx context.Context, q *qualif
 }
 
 // Delete 删除授课资质
-func (c *QualificationCommand) Delete(id int64) error {
+func (c *QualificationCommand) Delete(ctx context.Context, id int64) error {
 	if !c.data.DeleteQualification(id) {
 		return fmt.Errorf("%w: %d", repo.ErrQualificationNotFound, id)
 	}
@@ -45,7 +45,7 @@ func (c *QualificationCommand) Delete(id int64) error {
 }
 
 // GetQualifications 取该讲师持有的全部资质。
-func (c *QualificationCommand) GetQualifications(teacherID int64) ([]qualification.Qualification, error) {
+func (c *QualificationCommand) GetQualifications(ctx context.Context, teacherID int64) ([]qualification.Qualification, error) {
 	out := make([]qualification.Qualification, 0)
 	for _, item := range c.data.Qualifications() {
 		if item.TeacherID() == teacherID {

@@ -28,7 +28,7 @@ type QualificationCommand interface {
 	// 回调，也没有「传 nil 表示不检查」这类分支。
 	GrantQualification(ctx context.Context, q *qualification.Qualification) error
 	// Delete 删除授课资质
-	Delete(id int64) error
+	Delete(ctx context.Context, id int64) error
 	// GetQualifications 取该讲师持有的全部资质
-	GetQualifications(teacherID int64) ([]qualification.Qualification, error)
+	GetQualifications(ctx context.Context, teacherID int64) ([]qualification.Qualification, error)
 }

@@ -25,10 +25,10 @@ var (
 // 判定通过才调过来。所以这里没有回调，也没有「传 nil 表示不检查」这类分支。
 type CourseSlotCommand interface {
 	// Save 保存课表槽位（新增或更新）
-	Save(cs *courseSlot.CourseSlot) error
+	Save(ctx context.Context, cs *courseSlot.CourseSlot) error
 
 	// Delete 删除课表槽位
-	Delete(id string) error
+	Delete(ctx context.Context, id string) error
 
 	// AssignTeacher 给指定课表槽位们配置老师
 	AssignTeacher(ctx context.Context, slotIDs []string, teacherID int64) error
@@ -42,13 +42,13 @@ type CourseSlotCommand interface {
 	// --- 下面都是「取排期」，按返回值的聚合根归到本接口 ---
 
 	// GetSlots 按 ID 取本次要排的槽位，顺序与入参一致；少一个就报 not found
-	GetSlots(slotIDs []string) (courseSlot.CourseSlots, error)
+	GetSlots(ctx context.Context, slotIDs []string) (courseSlot.CourseSlots, error)
 	// GetTeacherSlots 取该讲师现有的全部排期
-	GetTeacherSlots(teacherID int64) (courseSlot.CourseSlots, error)
+	GetTeacherSlots(ctx context.Context, teacherID int64) (courseSlot.CourseSlots, error)
 	// GetClassroomSlots 取该教室现有的全部排期
-	GetClassroomSlots(classroomID string) (courseSlot.CourseSlots, error)
+	GetClassroomSlots(ctx context.Context, classroomID string) (courseSlot.CourseSlots, error)
 	// GetCourseSlots 取该课程现有的全部排期
-	GetCourseSlots(courseID string) (courseSlot.CourseSlots, error)
+	GetCourseSlots(ctx context.Context, courseID string) (courseSlot.CourseSlots, error)
 	// GetStudentSlots 取该学员在学课程的全部排期
-	GetStudentSlots(studentID int64) (courseSlot.CourseSlots, error)
+	GetStudentSlots(ctx context.Context, studentID int64) (courseSlot.CourseSlots, error)
 }

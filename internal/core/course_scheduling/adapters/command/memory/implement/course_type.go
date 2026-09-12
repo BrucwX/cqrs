@@ -1,6 +1,7 @@
 package implement
 
 import (
+	"context"
 	"fmt"
 
 	"cqrs/internal/core/course_scheduling/adapters/command/memory"
@@ -26,7 +27,7 @@ func NewCourseTypeCommand(d *memory.Data) repo.CourseTypeCommand {
 }
 
 // GetCourseType 取某门课程归属的课程类型。
-func (c *CourseTypeCommand) GetCourseType(courseID string) (courseType.CourseType, error) {
+func (c *CourseTypeCommand) GetCourseType(ctx context.Context, courseID string) (courseType.CourseType, error) {
 	courses := indexBy(c.data.Courses(), func(item *course.Course) string { return item.ID() })
 	item, ok := courses[courseID]
 	if !ok {

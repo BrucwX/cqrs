@@ -18,7 +18,7 @@ func NewTeacherImp(d *mysql.Data) repo.TeacherCommand {
 	return &TeacherImp{data: d}
 }
 
-func (c *TeacherImp) Create(t *teacher.Teacher) error {
+func (c *TeacherImp) Create(ctx context.Context, t *teacher.Teacher) error {
 	panic("implement me")
 }
 
@@ -30,14 +30,14 @@ func (c *TeacherImp) Update(
 	panic("implement me")
 }
 
-func (c *TeacherImp) Delete(id int64) error {
+func (c *TeacherImp) Delete(ctx context.Context, id int64) error {
 	panic("implement me")
 }
 
-func (c *TeacherImp) Get(id int64) (*teacher.Teacher, error) {
+func (c *TeacherImp) Get(ctx context.Context, id int64) (*teacher.Teacher, error) {
 	panic("implement me")
 }
 
-func (c *TeacherImp) GetTeacher(teacherID int64) (teacher.Teacher, error) {
+func (c *TeacherImp) MustGet(ctx context.Context, teacherID int64) (teacher.Teacher, error) {
 	panic("implement me")
 }

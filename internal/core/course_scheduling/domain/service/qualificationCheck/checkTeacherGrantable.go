@@ -16,22 +16,22 @@ import "context"
 // 讲师不存在时报 not found —— 调用方传错了 ID 应该报出来，
 // 而不是当成「不够格」悄悄拦下。
 func (s *Service) CheckTeacherGrantable(ctx context.Context, teacherID int64, courseTypeID string) (bool, error) {
-	t, err := s.teachers.GetTeacher(teacherID)
+	t, err := s.teachers.MustGet(ctx, teacherID)
 	if err != nil {
 		return false, err
 	}
 
-	courses, err := s.courses.GetCourses(courseTypeID)
+	courses, err := s.courses.GetCourses(ctx, courseTypeID)
 	if err != nil {
 		return false, err
 	}
 
-	enrollments, err := s.enrollments.GetEnrollments(t.StudentID())
+	enrollments, err := s.enrollments.GetEnrollments(ctx, t.StudentID())
 	if err != nil {
 		return false, err
 	}
 
-	absences, err := s.absences.GetAbsences(t.StudentID())
+	absences, err := s.absences.GetAbsences(ctx, t.StudentID())
 	if err != nil {
 		return false, err
 	}

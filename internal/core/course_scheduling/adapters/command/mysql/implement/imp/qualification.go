@@ -22,10 +22,10 @@ func (c *QualificationImp) GrantQualification(ctx context.Context, q *qualificat
 	panic("implement me")
 }
 
-func (c *QualificationImp) Delete(id int64) error {
+func (c *QualificationImp) Delete(ctx context.Context, id int64) error {
 	panic("implement me")
 }
 
-func (c *QualificationImp) GetQualifications(teacherID int64) ([]qualification.Qualification, error) {
+func (c *QualificationImp) GetQualifications(ctx context.Context, teacherID int64) ([]qualification.Qualification, error) {
 	panic("implement me")
 }

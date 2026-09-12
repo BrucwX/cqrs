@@ -10,18 +10,18 @@ import "context"
 // 教室不存在时报 not found —— 调用方传错了 ID 应该报出来，
 // 而不是当成「装不下」或者「装得下」悄悄放行。
 func (s *Service) Check(ctx context.Context, classroomID string, slotIDs []string) (bool, error) {
-	cr, err := s.classrooms.MustGet(classroomID)
+	cr, err := s.classrooms.MustGet(ctx, classroomID)
 	if err != nil {
 		return false, err
 	}
 
-	slots, err := s.slots.GetSlots(slotIDs)
+	slots, err := s.slots.GetSlots(ctx, slotIDs)
 	if err != nil {
 		return false, err
 	}
 
 	for _, slot := range slots {
-		crs, err := s.courses.GetCourse(slot.CourseID())
+		crs, err := s.courses.GetCourse(ctx, slot.CourseID())
 		if err != nil {
 			return false, err
 		}

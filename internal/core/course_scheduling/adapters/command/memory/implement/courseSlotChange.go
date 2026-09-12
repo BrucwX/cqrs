@@ -25,7 +25,7 @@ func NewCourseSlotChangeCommand(d *memory.Data) repo.CourseSlotChangeCommand {
 }
 
 // Save 保存课表变更（新增或更新）
-func (c *CourseSlotChangeCommand) Save(csc *courseSlotChange.CourseSlotChange) error {
+func (c *CourseSlotChangeCommand) Save(ctx context.Context, csc *courseSlotChange.CourseSlotChange) error {
 	if csc == nil {
 		return repo.ErrSlotChangeRequired
 	}
@@ -34,7 +34,7 @@ func (c *CourseSlotChangeCommand) Save(csc *courseSlotChange.CourseSlotChange) e
 }
 
 // Delete 删除课表变更
-func (c *CourseSlotChangeCommand) Delete(id int64) error {
+func (c *CourseSlotChangeCommand) Delete(ctx context.Context, id int64) error {
 	if !c.data.DeleteCourseSlotChange(id) {
 		return fmt.Errorf("%w: %d", repo.ErrSlotChangeNotFound, id)
 	}
@@ -49,11 +49,11 @@ func (c *CourseSlotChangeCommand) Change(ctx context.Context, csc *courseSlotCha
 		return repo.ErrSlotChangeRequired
 	}
 
-	return c.Save(csc)
+	return c.Save(ctx, csc)
 }
 
 // GetOtherSlotChanges 取除该变更单以外的全部换课记录。
-func (c *CourseSlotChangeCommand) GetOtherSlotChanges(id int64) ([]*courseSlotChange.CourseSlotChange, error) {
+func (c *CourseSlotChangeCommand) GetOtherSlotChanges(ctx context.Context, id int64) ([]*courseSlotChange.CourseSlotChange, error) {
 	all := c.data.CourseSlotChanges()
 
 	out := make([]*courseSlotChange.CourseSlotChange, 0, len(all))

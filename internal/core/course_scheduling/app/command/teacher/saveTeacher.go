@@ -38,7 +38,7 @@ func (h *Handler) SaveTeacher(ctx context.Context, cmd TeacherInput) (err error)
 		if err != nil {
 			return err
 		}
-		return h.TeacherCmd.Create(created)
+		return h.TeacherCmd.Create(ctx, created)
 	}
 
 	return h.TeacherCmd.Update(

@@ -19,9 +19,9 @@ var (
 // CourseSlotChangeCommand 课表变更命令接口
 type CourseSlotChangeCommand interface {
 	// Save 保存课表变更（新增或更新，不做检查）
-	Save(csc *courseSlotChange.CourseSlotChange) error
+	Save(ctx context.Context, csc *courseSlotChange.CourseSlotChange) error
 	// Delete 删除课表变更
-	Delete(id int64) error
+	Delete(ctx context.Context, id int64) error
 	// Change 登记一次临时换课
 	//
 	// 只管写：把这张变更单落库。冲突判定（目标讲师 / 教室在目标时段是否已被占用）
@@ -30,5 +30,5 @@ type CourseSlotChangeCommand interface {
 	Change(ctx context.Context, csc *courseSlotChange.CourseSlotChange) error
 	// todo 这里不应该取这个，应该取 和 CourseSlotChange 有交集的换课记录
 	// GetOtherSlotChanges 取除该变更单以外的全部换课记录
-	GetOtherSlotChanges(id int64) ([]*courseSlotChange.CourseSlotChange, error)
+	GetOtherSlotChanges(ctx context.Context, id int64) ([]*courseSlotChange.CourseSlotChange, error)
 }

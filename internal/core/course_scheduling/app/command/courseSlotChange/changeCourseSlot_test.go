@@ -295,10 +295,10 @@ func TestDeleteCourseSlotChange(t *testing.T) {
 		t.Fatalf("ChangeCourseSlot: %v", err)
 	}
 
-	if err := h.ChangeCmd.Delete(got.ID()); err != nil {
+	if err := h.ChangeCmd.Delete(context.Background(), got.ID()); err != nil {
 		t.Errorf("Delete(existing) = %v, want nil", err)
 	}
-	if err := h.ChangeCmd.Delete(got.ID()); !errors.Is(err, repo.ErrSlotChangeNotFound) {
+	if err := h.ChangeCmd.Delete(context.Background(), got.ID()); !errors.Is(err, repo.ErrSlotChangeNotFound) {
 		t.Errorf("Delete(missing) = %v, want %v", err, repo.ErrSlotChangeNotFound)
 	}
 }

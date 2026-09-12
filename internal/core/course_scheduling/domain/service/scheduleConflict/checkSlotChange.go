@@ -19,12 +19,12 @@ import (
 func (s *Service) CheckSlotChange(ctx context.Context, csc *courseSlotChange.CourseSlotChange) (bool, error) {
 	target := csc.TargetPlan()
 
-	teacherSlots, err := s.SlotCmd.GetTeacherSlots(target.TeacherID())
+	teacherSlots, err := s.SlotCmd.GetTeacherSlots(ctx, target.TeacherID())
 	if err != nil {
 		return false, err
 	}
 
-	classroomSlots, err := s.SlotCmd.GetClassroomSlots(target.ClassroomID())
+	classroomSlots, err := s.SlotCmd.GetClassroomSlots(ctx, target.ClassroomID())
 	if err != nil {
 		return false, err
 	}
@@ -45,7 +45,7 @@ func (s *Service) CheckSlotChange(ctx context.Context, csc *courseSlotChange.Cou
 	}
 
 	// 2) 换课记录：别的临时换课已经把该讲师 / 该教室占在同一时间段
-	others, err := s.changes.GetOtherSlotChanges(csc.ID())
+	others, err := s.changes.GetOtherSlotChanges(ctx, csc.ID())
 	if err != nil {
 		return false, err
 	}

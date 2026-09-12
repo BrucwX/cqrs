@@ -17,7 +17,7 @@ var (
 // ClassroomCommand 教室命令接口
 type ClassroomCommand interface {
 	// Create 新增教室
-	Create(c *classroom.Classroom) error
+	Create(ctx context.Context, c *classroom.Classroom) error
 	// Update 更新教室：按 ID 取出已有教室交给 updateFn 改，改完写回
 	//
 	// 教室不存在时报 ErrClassroomNotFound。
@@ -27,7 +27,7 @@ type ClassroomCommand interface {
 		updateFn func(ctx context.Context, cl *classroom.Classroom) (*classroom.Classroom, error),
 	) error
 	// Delete 删除教室
-	Delete(id string) error
+	Delete(ctx context.Context, id string) error
 	// MustGet 取教室聚合本身；不存在时返回 ErrClassroomNotFound
-	MustGet(id string) (classroom.Classroom, error)
+	MustGet(ctx context.Context, id string) (classroom.Classroom, error)
 }

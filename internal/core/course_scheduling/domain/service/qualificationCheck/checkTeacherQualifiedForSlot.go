@@ -14,7 +14,7 @@ import (
 //
 // 槽位不存在时报 not found —— 别把「传错槽位」当成「没资质」。
 func (s *Service) CheckTeacherQualifiedForSlot(ctx context.Context, teacherID int64, slotID string) (bool, error) {
-	slots, err := s.slots.GetSlots([]string{slotID})
+	slots, err := s.slots.GetSlots(ctx, []string{slotID})
 	if err != nil {
 		return false, err
 	}

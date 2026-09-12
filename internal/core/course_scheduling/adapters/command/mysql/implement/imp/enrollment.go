@@ -18,11 +18,11 @@ func NewCourseEnrollmentImp(d *mysql.Data) repo.CourseEnrollmentCommand {
 	return &CourseEnrollmentImp{data: d}
 }
 
-func (c *CourseEnrollmentImp) Save(e *enrollment.CourseEnrollment) error {
+func (c *CourseEnrollmentImp) Save(ctx context.Context, e *enrollment.CourseEnrollment) error {
 	panic("implement me")
 }
 
-func (c *CourseEnrollmentImp) Delete(id int64) error {
+func (c *CourseEnrollmentImp) Delete(ctx context.Context, id int64) error {
 	panic("implement me")
 }
 
@@ -30,6 +30,6 @@ func (c *CourseEnrollmentImp) Enroll(ctx context.Context, e *enrollment.CourseEn
 	panic("implement me")
 }
 
-func (c *CourseEnrollmentImp) GetEnrollments(studentID int64) ([]enrollment.CourseEnrollment, error) {
+func (c *CourseEnrollmentImp) GetEnrollments(ctx context.Context, studentID int64) ([]enrollment.CourseEnrollment, error) {
 	panic("implement me")
 }

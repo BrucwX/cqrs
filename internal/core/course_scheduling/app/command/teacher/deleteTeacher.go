@@ -12,5 +12,5 @@ func (h *Handler) DeleteTeacher(ctx context.Context, id int64) (err error) {
 	}
 	defer func() { err = h.tx.End(ctx, err) }()
 
-	return h.TeacherCmd.Delete(id)
+	return h.TeacherCmd.Delete(ctx, id)
 }

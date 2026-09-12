@@ -6,7 +6,7 @@ import "context"
 //
 // 先把课程解析成它所属的课程类型，再交给 CheckTeacherQualifiedForCourseType 判。
 func (s *Service) CheckTeacherQualified(ctx context.Context, teacherID int64, courseID string) (bool, error) {
-	cty, err := s.courseTypes.GetCourseType(courseID)
+	cty, err := s.courseTypes.GetCourseType(ctx, courseID)
 	if err != nil {
 		return false, err
 	}

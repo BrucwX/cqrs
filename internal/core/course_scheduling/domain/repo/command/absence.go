@@ -1,6 +1,7 @@
 package command
 
 import (
+	"context"
 	"errors"
 
 	"cqrs/internal/core/course_scheduling/domain/aggregate/absence"
@@ -19,9 +20,9 @@ var (
 // 不看是哪个用例在用）。
 type AbsenceRecordCommand interface {
 	// Save 保存缺勤记录（新增或更新）
-	Save(a *absence.AbsenceRecord) error
+	Save(ctx context.Context, a *absence.AbsenceRecord) error
 	// Delete 删除缺勤记录
-	Delete(id int64) error
+	Delete(ctx context.Context, id int64) error
 	// GetAbsences 取该学员的全部缺勤记录
-	GetAbsences(studentID int64) ([]absence.AbsenceRecord, error)
+	GetAbsences(ctx context.Context, studentID int64) ([]absence.AbsenceRecord, error)
 }

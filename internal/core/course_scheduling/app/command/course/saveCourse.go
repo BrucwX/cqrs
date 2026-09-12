@@ -35,7 +35,7 @@ func (h *Handler) SaveCourse(ctx context.Context, cmd CourseInput) (err error) {
 		if err != nil {
 			return err
 		}
-		return h.CourseCmd.Create(created)
+		return h.CourseCmd.Create(ctx, created)
 	}
 
 	return h.CourseCmd.Update(

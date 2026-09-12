@@ -21,7 +21,7 @@ import (
 // 目标槽位不存在时报 not found；槽位还没排教室时报 classroom not found ——
 // 两种都是「传错 ID」或「这节排期还没排好」，不该当成「装不下」悄悄拦下。
 func (s *Service) CheckMakeup(ctx context.Context, targetSlotID string, targetDate time.Time) (bool, error) {
-	slots, err := s.slots.GetSlots([]string{targetSlotID})
+	slots, err := s.slots.GetSlots(ctx, []string{targetSlotID})
 	if err != nil {
 		return false, err
 	}
@@ -30,12 +30,12 @@ func (s *Service) CheckMakeup(ctx context.Context, targetSlotID string, targetDa
 	}
 	target := slots[0]
 
-	crs, err := s.courses.GetCourse(target.CourseID())
+	crs, err := s.courses.GetCourse(ctx, target.CourseID())
 	if err != nil {
 		return false, err
 	}
 
-	cr, err := s.classrooms.MustGet(target.ClassroomID())
+	cr, err := s.classrooms.MustGet(ctx, target.ClassroomID())
 	if err != nil {
 		return false, err
 	}
@@ -44,7 +44,7 @@ func (s *Service) CheckMakeup(ctx context.Context, targetSlotID string, targetDa
 	seats := crs.Capacity().Max() + 1
 
 	// 再加已经约在同一节课上的其他补课学员，只算还等着上课的
-	others, err := s.makeups.GetMakeupsForTarget(targetSlotID, targetDate)
+	others, err := s.makeups.GetMakeupsForTarget(ctx, targetSlotID, targetDate)
 	if err != nil {
 		return false, err
 	}

@@ -1,6 +1,7 @@
 package imp
 
 import (
+	"context"
 	"time"
 
 	"cqrs/internal/core/course_scheduling/adapters/command/mysql"
@@ -18,14 +19,14 @@ func NewStudentMakeupImp(d *mysql.Data) repo.StudentMakeupCommand {
 	return &StudentMakeupImp{data: d}
 }
 
-func (c *StudentMakeupImp) Save(m *makeup.StudentMakeup) error {
+func (c *StudentMakeupImp) Save(ctx context.Context, m *makeup.StudentMakeup) error {
 	panic("implement me")
 }
 
-func (c *StudentMakeupImp) Delete(id int64) error {
+func (c *StudentMakeupImp) Delete(ctx context.Context, id int64) error {
 	panic("implement me")
 }
 
-func (c *StudentMakeupImp) GetMakeupsForTarget(targetSlotID string, targetDate time.Time) ([]makeup.StudentMakeup, error) {
+func (c *StudentMakeupImp) GetMakeupsForTarget(ctx context.Context, targetSlotID string, targetDate time.Time) ([]makeup.StudentMakeup, error) {
 	panic("implement me")
 }
