@@ -8,6 +8,7 @@ import (
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlot"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseType"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/qualification"
+	"cqrs/internal/core/course_scheduling/domain/aggregate/teacher"
 	repo "cqrs/internal/core/course_scheduling/domain/repo/command"
 )
 
@@ -25,6 +26,29 @@ var _ repo.AssignTeacherRepo = (*AssignTeacherRepo)(nil)
 // NewAssignTeacherRepo 创建排讲师冲突检查的数据来源。
 func NewAssignTeacherRepo(d *memory.Data) repo.AssignTeacherRepo {
 	return &AssignTeacherRepo{data: d}
+}
+
+// GetSlots 按 ID 取本次要排的槽位，顺序与入参一致；少一个就报 not found。
+func (r *AssignTeacherRepo) GetSlots(slotIDs []string) (courseSlot.CourseSlots, error) {
+	out := make(courseSlot.CourseSlots, 0, len(slotIDs))
+	for _, id := range slotIDs {
+		cs, ok := r.data.CourseSlotByID(id)
+		if !ok {
+			return nil, fmt.Errorf("%w: %s", repo.ErrCourseSlotNotFound, id)
+		}
+		out = append(out, *cs)
+	}
+	return out, nil
+}
+
+// GetTeacher 按 ID 取讲师本人，取不到报 not found。
+func (r *AssignTeacherRepo) GetTeacher(teacherID int64) (teacher.Teacher, error) {
+	for _, item := range r.data.Teachers() {
+		if item.ID() == teacherID {
+			return *item, nil
+		}
+	}
+	return teacher.Teacher{}, fmt.Errorf("%w: %d", repo.ErrTeacherNotFound, teacherID)
 }
 
 // GetTeacherSlots 取该讲师现有的全部排期。

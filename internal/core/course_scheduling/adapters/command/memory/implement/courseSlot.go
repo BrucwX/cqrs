@@ -8,7 +8,6 @@ import (
 	"cqrs/internal/core/course_scheduling/domain/aggregate/classroom"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/course"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlot"
-	"cqrs/internal/core/course_scheduling/domain/aggregate/teacher"
 	repo "cqrs/internal/core/course_scheduling/domain/repo/command"
 )
 
@@ -46,27 +45,23 @@ func (c *CourseSlotCommand) Delete(id string) error {
 
 // AssignTeacher 给指定课表槽位们配置老师
 //
-// 先把该讲师聚合取出来交给调用方判定；传 nil 表示不做冲突检查。
-// 冲突时整批中止，不写入任何槽位。
-func (c *CourseSlotCommand) AssignTeacher(ctx context.Context, slotIDs []string, teacherID int64, checkConflictFn func(ctx context.Context, slots []courseSlot.CourseSlot, t teacher.Teacher) (bool, error)) error {
-	slots, err := c.loadSlots(slotIDs)
-	if err != nil {
-		return err
-	}
-
+// 仓库不认识规则：只把「槽位 ID + 讲师 ID」交给调用方注入的 checkConflictFn
+// 判定（传 nil 表示不做冲突检查）。判定通过才逐个写；冲突则整批中止，
+// 一个槽位都不写。
+func (c *CourseSlotCommand) AssignTeacher(ctx context.Context, slotIDs []string, teacherID int64, checkConflictFn func(ctx context.Context, slotIDs []string, teacherID int64) (bool, error)) error {
 	if checkConflictFn != nil {
-		teacher, err := c.teacherByID(teacherID)
-		if err != nil {
-			return err
-		}
-
-		conflict, err := checkConflictFn(ctx, slotValues(slots), teacher)
+		conflict, err := checkConflictFn(ctx, slotIDs, teacherID)
 		if err != nil {
 			return err
 		}
 		if conflict {
 			return fmt.Errorf("%w: teacher %d", repo.ErrCourseSlotConflict, teacherID)
 		}
+	}
+
+	slots, err := c.loadSlots(slotIDs)
+	if err != nil {
+		return err
 	}
 
 	for _, cs := range slots {
@@ -147,16 +142,6 @@ func (c *CourseSlotCommand) AssignClassroom(ctx context.Context, slotIDs []strin
 }
 
 // --- 内部实现 ---
-
-// teacherByID 取讲师聚合，取不到报 not found。
-func (c *CourseSlotCommand) teacherByID(id int64) (teacher.Teacher, error) {
-	for _, item := range c.data.Teachers() {
-		if item.ID() == id {
-			return *item, nil
-		}
-	}
-	return teacher.Teacher{}, fmt.Errorf("%w: %d", repo.ErrTeacherNotFound, id)
-}
 
 // loadSlots 按 ID 取出槽位指针；任何一个不存在就整体失败（不做部分写入）。
 func (c *CourseSlotCommand) loadSlots(slotIDs []string) ([]*courseSlot.CourseSlot, error) {

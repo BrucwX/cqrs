@@ -9,9 +9,9 @@ import (
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlot"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseType"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/qualification"
+	"cqrs/internal/core/course_scheduling/domain/aggregate/teacher"
 	repo "cqrs/internal/core/course_scheduling/domain/repo/command"
 )
-
 
 type AssignTeacherImp struct {
 	data *mysql.Data
@@ -23,6 +23,14 @@ var _ repo.AssignTeacherRepo = (*AssignTeacherImp)(nil)
 // NewClassroomQuery 创建 MySQL 版教室查询。
 func NewAssignTeacherImp(d *mysql.Data) repo.AssignTeacherRepo {
 	return &AssignTeacherImp{data: d}
+}
+
+func (c *AssignTeacherImp) GetSlots(slotIDs []string) (courseSlot.CourseSlots, error) {
+	panic("implement me")
+}
+
+func (c *AssignTeacherImp) GetTeacher(teacherID int64) (teacher.Teacher, error) {
+	panic("implement me")
 }
 
 func (c *AssignTeacherImp) GetTeacherSlots(teacherID int64) (courseSlot.CourseSlots, error) {

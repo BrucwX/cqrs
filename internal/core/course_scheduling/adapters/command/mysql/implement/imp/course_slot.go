@@ -7,7 +7,6 @@ import (
 	"cqrs/internal/core/course_scheduling/domain/aggregate/classroom"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/course"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlot"
-	"cqrs/internal/core/course_scheduling/domain/aggregate/teacher"
 	repo "cqrs/internal/core/course_scheduling/domain/repo/command"
 )
 
@@ -32,7 +31,7 @@ func (c *CourseSlotImp) Delete(id string) error {
 }
 
 func (c *CourseSlotImp) AssignTeacher(ctx context.Context, slotIDs []string, teacherID int64,
-	checkConflictFn func(ctx context.Context, slots []courseSlot.CourseSlot, t teacher.Teacher) (bool, error)) error {
+	checkConflictFn func(ctx context.Context, slotIDs []string, teacherID int64) (bool, error)) error {
 	panic("implement me")
 }
 

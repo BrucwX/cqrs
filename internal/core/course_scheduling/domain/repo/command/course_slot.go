@@ -7,7 +7,6 @@ import (
 	"cqrs/internal/core/course_scheduling/domain/aggregate/classroom"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/course"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlot"
-	"cqrs/internal/core/course_scheduling/domain/aggregate/teacher"
 )
 
 var (
@@ -22,8 +21,10 @@ var (
 // CourseSlotCommand 课表槽位命令接口
 //
 // 槽位 ID 是聚合生成的 UUID（string），所以 slotIDs 用 []string。
-// 三个 AssignXxx 都把「本次要排的槽位 + 目标聚合」交给调用方注入的
-// checkConflictFn 判定，仓库自己不认识业务规则。
+// AssignTeacher 只把「本次要排的槽位 ID + 讲师 ID」交给调用方注入的
+// checkConflictFn 判定：仓库既不认识业务规则，也不替调用方查数据 ——
+// 判定要用的聚合由调用方自己按 ID 取（见 AssignTeacherRepo）。
+// AssignCourse / AssignClassroom 暂时还是把「槽位 + 目标聚合」传进去。
 type CourseSlotCommand interface {
 	// Save 保存课表槽位（新增或更新）
 	Save(cs *courseSlot.CourseSlot) error
@@ -35,7 +36,7 @@ type CourseSlotCommand interface {
 	//
 	// 传 nil 表示不做检查。冲突时整批中止，不写入任何槽位。
 	AssignTeacher(ctx context.Context, slotIDs []string, teacherID int64,
-		checkConflictFn func(ctx context.Context, slots []courseSlot.CourseSlot, t teacher.Teacher) (bool, error)) error
+		checkConflictFn func(ctx context.Context, slotIDs []string, teacherID int64) (bool, error)) error
 
 	// AssignCourse 给指定课表槽位们配置课程
 	//
