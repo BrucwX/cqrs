@@ -4,8 +4,9 @@ import (
 	"testing"
 	"time"
 
-	"cqrs/internal/core/course_scheduling/adapters/memory"
-	memorycmd "cqrs/internal/core/course_scheduling/adapters/memory/command"
+	commandmemory "cqrs/internal/core/course_scheduling/adapters/command/memory"
+	memorycmd "cqrs/internal/core/course_scheduling/adapters/command/memory/implement"
+	"cqrs/internal/core/course_scheduling/adapters/memorystore"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/classroom"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/course"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlot"
@@ -32,9 +33,12 @@ const (
 )
 
 // fixture 是一份搭好的内存数据 + 处理器。
+//
+// data 是完整 store（测试靠它塞数据、做断言），handler 里的仓库拿到的
+// 则是收窄后的写侧面。
 type fixture struct {
 	handler   *Handler
-	data      *memory.Data
+	data      *memorystore.Data
 	teacher   teacher.Teacher
 	course    *course.Course
 	room      *classroom.Classroom
@@ -48,7 +52,7 @@ type fixture struct {
 func newFixture(t *testing.T, withQualification bool) *fixture {
 	t.Helper()
 
-	d, cleanup, err := memory.NewData(nil)
+	d, cleanup, err := memorystore.NewData(nil)
 	if err != nil {
 		t.Fatalf("new data: %v", err)
 	}
@@ -103,12 +107,13 @@ func newFixture(t *testing.T, withQualification bool) *fixture {
 		d.SeedQualification(q)
 	}
 
+	data := commandmemory.NewData(d)
 	return &fixture{
 		handler: NewHandler(
-			memorycmd.NewCourseSlotCommand(d),
-			memorycmd.NewAssignTeacherRepo(d),
-			memorycmd.NewAssignCourseRepo(d),
-			memorycmd.NewAssignClassroomRepo(d),
+			memorycmd.NewCourseSlotCommand(data),
+			memorycmd.NewAssignTeacherRepo(data),
+			memorycmd.NewAssignCourseRepo(data),
+			memorycmd.NewAssignClassroomRepo(data),
 		),
 		data:      d,
 		teacher:   *teach,

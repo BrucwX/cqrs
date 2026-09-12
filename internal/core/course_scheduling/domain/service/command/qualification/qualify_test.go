@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"cqrs/internal/core/course_scheduling/adapters/memory"
+	"cqrs/internal/core/course_scheduling/adapters/memorystore"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/absence"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/course"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/enrollment"
@@ -27,7 +27,7 @@ const (
 )
 
 // seedTeacher 造一个讲师，并给他一个「作为学员上课」的 ID。
-func seedTeacher(t *testing.T, d *memory.Data, id, studentID int64) {
+func seedTeacher(t *testing.T, d *memorystore.Data, id, studentID int64) {
 	t.Helper()
 
 	now := time.Now()
@@ -37,7 +37,7 @@ func seedTeacher(t *testing.T, d *memory.Data, id, studentID int64) {
 }
 
 // seedCourse 造一门属于某课程类型的课程（授证判定只关心课程 ID 与类型）。
-func seedCourse(t *testing.T, d *memory.Data, id, courseTypeID string) {
+func seedCourse(t *testing.T, d *memorystore.Data, id, courseTypeID string) {
 	t.Helper()
 
 	now := time.Now()
@@ -60,7 +60,7 @@ func seedCourse(t *testing.T, d *memory.Data, id, courseTypeID string) {
 }
 
 // seedEnrollment 造一条该讲师（以学员身份参训）的报名记录。
-func seedEnrollment(t *testing.T, d *memory.Data, id int64, courseID string, status enrollment.Status) {
+func seedEnrollment(t *testing.T, d *memorystore.Data, id int64, courseID string, status enrollment.Status) {
 	t.Helper()
 
 	now := time.Now()
@@ -70,7 +70,7 @@ func seedEnrollment(t *testing.T, d *memory.Data, id int64, courseID string, sta
 }
 
 // seedAbsence 造一条该讲师在某门课上的缺勤记录。
-func seedAbsence(t *testing.T, d *memory.Data, id int64, courseID string) {
+func seedAbsence(t *testing.T, d *memorystore.Data, id int64, courseID string) {
 	t.Helper()
 
 	now := time.Now()

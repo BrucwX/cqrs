@@ -3,8 +3,8 @@ module cqrs
 go 1.25.7
 
 require (
+	github.com/go-sql-driver/mysql v1.10.1
 	github.com/google/wire v0.6.0
-	go.einride.tech/aip v0.86.3
 	go.uber.org/automaxprocs v1.6.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20260519071638-aa98bba5eb94
 	google.golang.org/grpc v1.81.1
@@ -12,6 +12,7 @@ require (
 )
 
 require (
+	filippo.io/edwards25519 v1.2.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/gorilla/websocket v1.5.3 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect

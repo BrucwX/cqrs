@@ -6,22 +6,27 @@ import (
 	"testing"
 	"time"
 
-	"cqrs/internal/core/course_scheduling/adapters/memory"
-	memorycmd "cqrs/internal/core/course_scheduling/adapters/memory/command"
+	commandmemory "cqrs/internal/core/course_scheduling/adapters/command/memory"
+	memorycmd "cqrs/internal/core/course_scheduling/adapters/command/memory/implement"
+	"cqrs/internal/core/course_scheduling/adapters/memorystore"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/teacher"
 	repo "cqrs/internal/core/course_scheduling/domain/repo/command"
 )
 
-func newHandler(t *testing.T) (*Handler, *memory.Data) {
+// newHandler 装配一个跑在干净内存存储上的命令处理器。
+//
+// 返回完整 store 给测试塞数据/做断言，仓库拿到的则是收窄后的写侧面。
+func newHandler(t *testing.T) (*Handler, *memorystore.Data) {
 	t.Helper()
 
-	d, cleanup, err := memory.NewData(nil)
+	store, cleanup, err := memorystore.NewData(nil)
 	if err != nil {
 		t.Fatalf("new data: %v", err)
 	}
 	t.Cleanup(cleanup)
 
-	return NewHandler(memorycmd.NewTeacherCommand(d)), d
+	data := commandmemory.NewData(store)
+	return NewHandler(memorycmd.NewTeacherCommand(data)), store
 }
 
 func newTeacher(t *testing.T) *teacher.Teacher {

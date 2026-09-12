@@ -6,9 +6,11 @@ import (
 	"testing"
 	"time"
 
-	"cqrs/internal/core/course_scheduling/adapters/memory"
-	memorycmd "cqrs/internal/core/course_scheduling/adapters/memory/command"
-	memoryquery "cqrs/internal/core/course_scheduling/adapters/memory/query"
+	commandmemory "cqrs/internal/core/course_scheduling/adapters/command/memory"
+	memorycmd "cqrs/internal/core/course_scheduling/adapters/command/memory/implement"
+	"cqrs/internal/core/course_scheduling/adapters/memorystore"
+	querymemory "cqrs/internal/core/course_scheduling/adapters/query/memory"
+	memoryquery "cqrs/internal/core/course_scheduling/adapters/query/memory/implement"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/course"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlot"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/enrollment"
@@ -36,10 +38,10 @@ const (
 
 // newData 造一份干净的内存数据：
 // 7 门课 + 7 条排期 + 学员 A 的 3 条注册记录（courseTaken/courseDupe 在学，courseRetake 已退课）。
-func newData(t *testing.T) *memory.Data {
+func newData(t *testing.T) *memorystore.Data {
 	t.Helper()
 
-	d, cleanup, err := memory.NewData(nil)
+	d, cleanup, err := memorystore.NewData(nil)
 	if err != nil {
 		t.Fatalf("new data: %v", err)
 	}
@@ -170,13 +172,19 @@ func TestStudentEnroll_Rejected(t *testing.T) {
 
 // --- 测试辅助 ---
 
-func newHandler(d *memory.Data) *Handler {
+// newHandler 装配一个处理器：写侧仓库拿写侧窄面，读侧仓库拿读侧窄面。
+//
+// 这个用例两侧都用（报要和查在读侧），所以两个窄面各收一次。
+func newHandler(d *memorystore.Data) *Handler {
+	cmdData := commandmemory.NewData(d)
+	queryData := querymemory.NewData(d)
+
 	return NewHandler(
-		memorycmd.NewEnrollmentCommand(d),
-		memoryquery.NewCourseEnrollmentQuery(d),
-		memoryquery.NewStudentQuery(d),
-		memoryquery.NewCourseQuery(d),
-		memorycmd.NewEnrollRepo(d),
+		memorycmd.NewEnrollmentCommand(cmdData),
+		memoryquery.NewCourseEnrollmentQuery(queryData),
+		memoryquery.NewStudentQuery(queryData),
+		memoryquery.NewCourseQuery(queryData),
+		memorycmd.NewEnrollRepo(cmdData),
 	)
 }
 
