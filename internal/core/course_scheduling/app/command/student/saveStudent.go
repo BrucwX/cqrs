@@ -44,7 +44,7 @@ func (h *Handler) SaveStudent(ctx context.Context, cmd StudentInput) (err error)
 		ctx,
 		*cmd.ID,
 		func(_ context.Context, s *student.Student) (*student.Student, error) {
-			if err := s.Update(cmd.Contact, cmd.Status); err != nil {
+			if err := s.Update(cmd.Name, cmd.StudentType, cmd.Contact, cmd.Status); err != nil {
 				return nil, err
 			}
 			return s, nil

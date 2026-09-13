@@ -120,6 +120,33 @@ func TestSaveTeacherCreatesOnLeave(t *testing.T) {
 	}
 }
 
+// TestSaveTeacherUpdatesName 更新姓名（与职衔并列的基础档案字段）。
+func TestSaveTeacherUpdatesName(t *testing.T) {
+	h, d := newHandler(t)
+
+	contact := newContact(t)
+	if err := h.SaveTeacher(context.Background(), TeacherInput{
+		Name:    strPtr("李娜"),
+		Title:   strPtr("讲师"),
+		Contact: &contact,
+	}); err != nil {
+		t.Fatalf("SaveTeacher: %v", err)
+	}
+	id := d.Teachers()[0].ID()
+
+	newName := "李娜娜"
+	if err := h.SaveTeacher(context.Background(), TeacherInput{
+		ID:   &id,
+		Name: &newName,
+	}); err != nil {
+		t.Fatalf("SaveTeacher(update): %v", err)
+	}
+
+	if got, _ := d.TeacherByID(id); got.Name() != newName {
+		t.Errorf("name = %q, want %q", got.Name(), newName)
+	}
+}
+
 // TestSaveTeacherUpdatesPartially 更新时只改命令里给出的字段。
 func TestSaveTeacherUpdatesPartially(t *testing.T) {
 	h, d := newHandler(t)

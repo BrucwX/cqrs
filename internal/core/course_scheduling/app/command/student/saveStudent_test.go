@@ -79,6 +79,38 @@ func TestSaveStudentUpdatesContact(t *testing.T) {
 	}
 }
 
+// TestSaveStudentUpdatesProfile 更新姓名与类型，其余字段保持原值。
+func TestSaveStudentUpdatesProfile(t *testing.T) {
+	h, d := newHandler(t)
+
+	external := student.TypeExternal
+	if err := h.SaveStudent(context.Background(), StudentInput{
+		Name:        strPtr("陈晨"),
+		StudentType: &external,
+	}); err != nil {
+		t.Fatalf("SaveStudent: %v", err)
+	}
+	id := d.Students()[0].ID()
+
+	newName := "陈晨晨"
+	internal := student.TypeInternal
+	if err := h.SaveStudent(context.Background(), StudentInput{
+		ID:          &id,
+		Name:        &newName,
+		StudentType: &internal,
+	}); err != nil {
+		t.Fatalf("SaveStudent(update): %v", err)
+	}
+
+	got, _ := d.StudentByID(id)
+	if got.Name() != newName {
+		t.Errorf("name = %q, want %q", got.Name(), newName)
+	}
+	if got.StudentType() != student.TypeInternal {
+		t.Errorf("studentType = %v, want %v", got.StudentType(), student.TypeInternal)
+	}
+}
+
 // TestSaveStudentChangesStatus 封禁 / 解封 / 注销。
 func TestSaveStudentChangesStatus(t *testing.T) {
 	h, d := newHandler(t)

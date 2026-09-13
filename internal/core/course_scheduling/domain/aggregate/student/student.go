@@ -148,7 +148,17 @@ func (s *Student) ChangeStatus(status Status) error {
 }
 
 // Update 按非 nil 的字段更新学员，nil 的字段保持原值。
-func (s *Student) Update(contact *ContactInfo, status *Status) error {
+//
+// 姓名、类型直接替换（空名字视为没给）；联系方式、状态走各自的行为方法。
+func (s *Student) Update(name *string, studentType *StudentType, contact *ContactInfo, status *Status) error {
+	if name != nil && *name != "" {
+		s.name = *name
+		s.updatedAt = time.Now()
+	}
+	if studentType != nil {
+		s.studentType = *studentType
+		s.updatedAt = time.Now()
+	}
 	if contact != nil {
 		s.UpdateContact(*contact)
 	}

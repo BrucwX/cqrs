@@ -178,12 +178,18 @@ func (t *Teacher) ChangeStatus(status Status) error {
 
 // Update 按非 nil 的字段更新讲师，nil 的字段保持原值。
 //
+// 姓名、职衔直接替换（空名字视为没给）；学员 ID 是身份，更新时改不动。
 // 先切状态（唯一可能失败的一步），再改资料，避免失败时留下改了一半的对象。
-func (t *Teacher) Update(title *string, contact *ContactInfo, status *Status) error {
+func (t *Teacher) Update(name *string, title *string, contact *ContactInfo, status *Status) error {
 	if status != nil {
 		if err := t.ChangeStatus(*status); err != nil {
 			return err
 		}
+	}
+
+	if name != nil && *name != "" {
+		t.name = *name
+		t.updatedAt = time.Now()
 	}
 
 	if title != nil || contact != nil {
