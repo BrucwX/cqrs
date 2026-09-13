@@ -37,10 +37,10 @@ func (h *Handler) SaveStudent(ctx context.Context, cmd StudentInput) (err error)
 		if err != nil {
 			return err
 		}
-		return h.StudentCmd.Create(ctx, created)
+		return h.StudentCmd.CreateStudent(ctx, created)
 	}
 
-	return h.StudentCmd.Update(
+	return h.StudentCmd.UpdateStudent(
 		ctx,
 		*cmd.ID,
 		func(_ context.Context, s *student.Student) (*student.Student, error) {

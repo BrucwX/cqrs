@@ -14,14 +14,14 @@ import (
 // 那是调用方的事（见 domain/service 的 schedule.Conflict / qualification.Check），
 // 判定通过才调过来。所以这里没有回调，也没有「传 nil 表示不检查」这类分支。
 type CourseSlotCommand interface {
-	// Save 保存课表槽位（新增或更新）
-	Save(ctx context.Context, cs *courseSlot.CourseSlot) error
+	// SaveCourseSlot 保存课表槽位（新增或更新）
+	SaveCourseSlot(ctx context.Context, cs *courseSlot.CourseSlot) error
 
-	// Delete 删除课表槽位
-	Delete(ctx context.Context, id string) error
+	// DeleteCourseSlot 删除课表槽位
+	DeleteCourseSlot(ctx context.Context, id string) error
 
-	// MustGet 取课表槽位聚合；不存在时报 ErrCourseSlotNotFound
-	MustGet(ctx context.Context, id string) (courseSlot.CourseSlot, error)
+	// MustGetCourseSlot 取课表槽位聚合；不存在时报 ErrCourseSlotNotFound
+	MustGetCourseSlot(ctx context.Context, id string) (courseSlot.CourseSlot, error)
 
 	// AssignTeacher 给指定课表槽位们配置老师
 	AssignTeacher(ctx context.Context, slotIDs []string, teacherID int64) error

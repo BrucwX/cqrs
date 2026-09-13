@@ -24,8 +24,8 @@ func NewAbsenceCommand(d *command.Data) repo.AbsenceRecordCommand {
 	return &AbsenceCommand{data: d}
 }
 
-// Save 保存缺勤记录（新增或更新）
-func (c *AbsenceCommand) Save(ctx context.Context, a *absence.AbsenceRecord) error {
+// SaveAbsence 保存缺勤记录（新增或更新）
+func (c *AbsenceCommand) SaveAbsence(ctx context.Context, a *absence.AbsenceRecord) error {
 	if a == nil {
 		return absence.ErrAbsenceRequired
 	}
@@ -33,16 +33,16 @@ func (c *AbsenceCommand) Save(ctx context.Context, a *absence.AbsenceRecord) err
 	return nil
 }
 
-// Delete 删除缺勤记录
-func (c *AbsenceCommand) Delete(ctx context.Context, id int64) error {
+// DeleteAbsence 删除缺勤记录
+func (c *AbsenceCommand) DeleteAbsence(ctx context.Context, id int64) error {
 	if !c.data.DeleteAbsence(id) {
 		return fmt.Errorf("%w: %d", absence.ErrAbsenceNotFound, id)
 	}
 	return nil
 }
 
-// MustGet 取缺勤记录聚合；不存在时报 ErrAbsenceNotFound。
-func (c *AbsenceCommand) MustGet(ctx context.Context, id int64) (absence.AbsenceRecord, error) {
+// MustGetAbsence 取缺勤记录聚合；不存在时报 ErrAbsenceNotFound。
+func (c *AbsenceCommand) MustGetAbsence(ctx context.Context, id int64) (absence.AbsenceRecord, error) {
 	for _, item := range c.data.Absences() {
 		if item.ID() == id {
 			return *item, nil

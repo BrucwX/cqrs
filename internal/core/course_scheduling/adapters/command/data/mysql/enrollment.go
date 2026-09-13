@@ -1,4 +1,4 @@
-package imp
+package mysql
 
 import (
 	"context"
@@ -6,25 +6,13 @@ import (
 	"errors"
 	"fmt"
 
-	"cqrs/internal/core/course_scheduling/adapters/command/mysql"
-	"cqrs/internal/core/course_scheduling/adapters/command/mysql/implement/help"
-	"cqrs/internal/core/course_scheduling/adapters/command/mysql/model"
+	"cqrs/internal/core/course_scheduling/adapters/command/data/mysql/help"
+	"cqrs/internal/core/course_scheduling/adapters/command/data/mysql/model"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/enrollment"
-	repo "cqrs/internal/core/course_scheduling/domain/repo/command"
 )
 
-type CourseEnrollmentImp struct {
-	data *mysql.Data
-}
-
-var _ repo.CourseEnrollmentCommand = (*CourseEnrollmentImp)(nil)
-
-func NewCourseEnrollmentImp(d *mysql.Data) repo.CourseEnrollmentCommand {
-	return &CourseEnrollmentImp{data: d}
-}
-
 // Save 保存课程注册（新增或更新，不做检查）。
-func (c *CourseEnrollmentImp) Save(ctx context.Context, e *enrollment.CourseEnrollment) error {
+func (c *MysqlData) SaveEnrollment(ctx context.Context, e *enrollment.CourseEnrollment) error {
 	if e == nil {
 		return enrollment.ErrEnrollmentRequired
 	}
@@ -33,7 +21,7 @@ func (c *CourseEnrollmentImp) Save(ctx context.Context, e *enrollment.CourseEnro
 		return err
 	}
 
-	_, err = c.data.Conn(ctx).ExecContext(ctx, `
+	_, err = c.Conn(ctx).ExecContext(ctx, `
 INSERT INTO course_enrollment
   (id, student_id, course_id, status, enrolled_at, completed_at, dropped_at, updated_at)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -49,8 +37,8 @@ ON DUPLICATE KEY UPDATE
 }
 
 // Delete 删除课程注册；不存在时报 ErrEnrollmentNotFound。
-func (c *CourseEnrollmentImp) Delete(ctx context.Context, id int64) error {
-	res, err := c.data.Conn(ctx).ExecContext(ctx, `DELETE FROM course_enrollment WHERE id = ?`, id)
+func (c *MysqlData) DeleteEnrollment(ctx context.Context, id int64) error {
+	res, err := c.Conn(ctx).ExecContext(ctx, `DELETE FROM course_enrollment WHERE id = ?`, id)
 	if err != nil {
 		return err
 	}
@@ -65,8 +53,8 @@ func (c *CourseEnrollmentImp) Delete(ctx context.Context, id int64) error {
 }
 
 // MustGet 取课程注册聚合；不存在时报 ErrEnrollmentNotFound。
-func (c *CourseEnrollmentImp) MustGet(ctx context.Context, id int64) (enrollment.CourseEnrollment, error) {
-	po, err := help.ScanEnrollment(c.data.Conn(ctx).QueryRowContext(ctx, `
+func (c *MysqlData) MustGetEnrollment(ctx context.Context, id int64) (enrollment.CourseEnrollment, error) {
+	po, err := help.ScanEnrollment(c.Conn(ctx).QueryRowContext(ctx, `
 SELECT `+help.EnrollmentColumns+`
   FROM course_enrollment
  WHERE id = ?`, id))
@@ -84,16 +72,16 @@ SELECT `+help.EnrollmentColumns+`
 }
 
 // Enroll 学员选课：准入判定由调用方做完，这里只落库。
-func (c *CourseEnrollmentImp) Enroll(ctx context.Context, e *enrollment.CourseEnrollment) error {
+func (c *MysqlData) Enroll(ctx context.Context, e *enrollment.CourseEnrollment) error {
 	if e == nil {
 		return enrollment.ErrEnrollmentRequired
 	}
-	return c.Save(ctx, e)
+	return c.SaveEnrollment(ctx, e)
 }
 
 // GetEnrollments 取该学员的全部报名记录。
-func (c *CourseEnrollmentImp) GetEnrollments(ctx context.Context, studentID int64) ([]enrollment.CourseEnrollment, error) {
-	rows, err := c.data.Conn(ctx).QueryContext(ctx, `
+func (c *MysqlData) GetEnrollments(ctx context.Context, studentID int64) ([]enrollment.CourseEnrollment, error) {
+	rows, err := c.Conn(ctx).QueryContext(ctx, `
 SELECT `+help.EnrollmentColumns+`
   FROM course_enrollment
  WHERE student_id = ?

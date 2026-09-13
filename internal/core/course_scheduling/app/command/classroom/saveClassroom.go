@@ -34,10 +34,10 @@ func (h *Handler) SaveClassroom(ctx context.Context, cmd ClassroomInput) (err er
 		if err != nil {
 			return err
 		}
-		return h.ClassroomCmd.Create(ctx, created)
+		return h.ClassroomCmd.CreateClassroom(ctx, created)
 	}
 
-	return h.ClassroomCmd.Update(
+	return h.ClassroomCmd.UpdateClassroom(
 		ctx,
 		*cmd.ID,
 		func(_ context.Context, cl *classroom.Classroom) (*classroom.Classroom, error) {

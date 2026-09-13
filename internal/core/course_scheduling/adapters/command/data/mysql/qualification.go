@@ -1,4 +1,4 @@
-package imp
+package mysql
 
 import (
 	"context"
@@ -6,25 +6,13 @@ import (
 	"errors"
 	"fmt"
 
-	"cqrs/internal/core/course_scheduling/adapters/command/mysql"
-	"cqrs/internal/core/course_scheduling/adapters/command/mysql/implement/help"
-	"cqrs/internal/core/course_scheduling/adapters/command/mysql/model"
+	"cqrs/internal/core/course_scheduling/adapters/command/data/mysql/help"
+	"cqrs/internal/core/course_scheduling/adapters/command/data/mysql/model"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/qualification"
-	repo "cqrs/internal/core/course_scheduling/domain/repo/command"
 )
 
-type QualificationImp struct {
-	data *mysql.Data
-}
-
-var _ repo.QualificationCommand = (*QualificationImp)(nil)
-
-func NewQualificationImp(d *mysql.Data) repo.QualificationCommand {
-	return &QualificationImp{data: d}
-}
-
 // GrantQualification 授予授课资质：够不够格由调用方判完，这里只落库。
-func (c *QualificationImp) GrantQualification(ctx context.Context, q *qualification.Qualification) error {
+func (c *MysqlData) GrantQualification(ctx context.Context, q *qualification.Qualification) error {
 	if q == nil {
 		return qualification.ErrQualificationRequired
 	}
@@ -33,7 +21,7 @@ func (c *QualificationImp) GrantQualification(ctx context.Context, q *qualificat
 		return err
 	}
 
-	_, err = c.data.Conn(ctx).ExecContext(ctx, `
+	_, err = c.Conn(ctx).ExecContext(ctx, `
 INSERT INTO qualification
   (id, teacher_id, course_type_id, certified_at, status, updated_at)
 VALUES (?, ?, ?, ?, ?, ?)`,
@@ -43,8 +31,8 @@ VALUES (?, ?, ?, ?, ?, ?)`,
 }
 
 // Delete 删除授课资质；不存在时报 ErrQualificationNotFound。
-func (c *QualificationImp) Delete(ctx context.Context, id int64) error {
-	res, err := c.data.Conn(ctx).ExecContext(ctx, `DELETE FROM qualification WHERE id = ?`, id)
+func (c *MysqlData) DeleteQualification(ctx context.Context, id int64) error {
+	res, err := c.Conn(ctx).ExecContext(ctx, `DELETE FROM qualification WHERE id = ?`, id)
 	if err != nil {
 		return err
 	}
@@ -59,8 +47,8 @@ func (c *QualificationImp) Delete(ctx context.Context, id int64) error {
 }
 
 // MustGet 取授课资质聚合；不存在时报 ErrQualificationNotFound。
-func (c *QualificationImp) MustGet(ctx context.Context, id int64) (qualification.Qualification, error) {
-	po, err := help.ScanQualification(c.data.Conn(ctx).QueryRowContext(ctx, `
+func (c *MysqlData) MustGetQualification(ctx context.Context, id int64) (qualification.Qualification, error) {
+	po, err := help.ScanQualification(c.Conn(ctx).QueryRowContext(ctx, `
 SELECT `+help.QualificationColumns+`
   FROM qualification
  WHERE id = ?`, id))
@@ -78,8 +66,8 @@ SELECT `+help.QualificationColumns+`
 }
 
 // GetQualifications 取该讲师持有的全部资质。
-func (c *QualificationImp) GetQualifications(ctx context.Context, teacherID int64) ([]qualification.Qualification, error) {
-	rows, err := c.data.Conn(ctx).QueryContext(ctx, `
+func (c *MysqlData) GetQualifications(ctx context.Context, teacherID int64) ([]qualification.Qualification, error) {
+	rows, err := c.Conn(ctx).QueryContext(ctx, `
 SELECT `+help.QualificationColumns+`
   FROM qualification
  WHERE teacher_id = ?

@@ -1,4 +1,4 @@
-package imp
+package mysql
 
 import (
 	"context"
@@ -6,25 +6,13 @@ import (
 	"errors"
 	"fmt"
 
-	"cqrs/internal/core/course_scheduling/adapters/command/mysql"
-	"cqrs/internal/core/course_scheduling/adapters/command/mysql/implement/help"
-	"cqrs/internal/core/course_scheduling/adapters/command/mysql/model"
+	"cqrs/internal/core/course_scheduling/adapters/command/data/mysql/help"
+	"cqrs/internal/core/course_scheduling/adapters/command/data/mysql/model"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/classroom"
-	repo "cqrs/internal/core/course_scheduling/domain/repo/command"
 )
 
-type ClassroomImp struct {
-	data *mysql.Data
-}
-
-var _ repo.ClassroomCommand = (*ClassroomImp)(nil)
-
-func NewClassroomImp(d *mysql.Data) repo.ClassroomCommand {
-	return &ClassroomImp{data: d}
-}
-
 // Create 新增教室。
-func (c *ClassroomImp) Create(ctx context.Context, cl *classroom.Classroom) error {
+func (c *MysqlData) CreateClassroom(ctx context.Context, cl *classroom.Classroom) error {
 	if cl == nil {
 		return classroom.ErrClassroomRequired
 	}
@@ -33,7 +21,7 @@ func (c *ClassroomImp) Create(ctx context.Context, cl *classroom.Classroom) erro
 		return err
 	}
 
-	_, err = c.data.Conn(ctx).ExecContext(ctx, `
+	_, err = c.Conn(ctx).ExecContext(ctx, `
 INSERT INTO classroom (id, building, floor, room, capacity, allocated, status)
 VALUES (?, ?, ?, ?, ?, ?, ?)`,
 		po.ID, po.Building, po.Floor, po.Room, po.Capacity, po.Allocated, po.Status,
@@ -44,12 +32,12 @@ VALUES (?, ?, ?, ?, ?, ?, ?)`,
 // Update 按 ID 取出教室交给 updateFn 改，改完写回。
 //
 // 教室不存在时由 MustGet 报 ErrClassroomNotFound。
-func (c *ClassroomImp) Update(
+func (c *MysqlData) UpdateClassroom(
 	ctx context.Context,
 	id string,
 	updateFn func(ctx context.Context, cl *classroom.Classroom) (*classroom.Classroom, error),
 ) error {
-	cl, err := c.MustGet(ctx, id)
+	cl, err := c.MustGetClassroom(ctx, id)
 	if err != nil {
 		return err
 	}
@@ -66,7 +54,7 @@ func (c *ClassroomImp) Update(
 	if err != nil {
 		return err
 	}
-	_, err = c.data.Conn(ctx).ExecContext(ctx, `
+	_, err = c.Conn(ctx).ExecContext(ctx, `
 UPDATE classroom
    SET building = ?, floor = ?, room = ?, capacity = ?, allocated = ?, status = ?
  WHERE id = ?`,
@@ -77,8 +65,8 @@ UPDATE classroom
 }
 
 // Delete 删除教室；不存在时报 ErrClassroomNotFound。
-func (c *ClassroomImp) Delete(ctx context.Context, id string) error {
-	res, err := c.data.Conn(ctx).ExecContext(ctx, `DELETE FROM classroom WHERE id = ?`, id)
+func (c *MysqlData) DeleteClassroom(ctx context.Context, id string) error {
+	res, err := c.Conn(ctx).ExecContext(ctx, `DELETE FROM classroom WHERE id = ?`, id)
 	if err != nil {
 		return err
 	}
@@ -93,8 +81,8 @@ func (c *ClassroomImp) Delete(ctx context.Context, id string) error {
 }
 
 // MustGet 取教室聚合本身；不存在时报 ErrClassroomNotFound。
-func (c *ClassroomImp) MustGet(ctx context.Context, id string) (classroom.Classroom, error) {
-	po, err := help.ScanClassroom(c.data.Conn(ctx).QueryRowContext(ctx, `
+func (c *MysqlData) MustGetClassroom(ctx context.Context, id string) (classroom.Classroom, error) {
+	po, err := help.ScanClassroom(c.Conn(ctx).QueryRowContext(ctx, `
 SELECT `+help.ClassroomColumns+`
   FROM classroom
  WHERE id = ?`, id))

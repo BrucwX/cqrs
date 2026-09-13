@@ -1,4 +1,4 @@
-package imp
+package mysql
 
 import (
 	"context"
@@ -28,16 +28,16 @@ var (
 
 func TestReposRoundTrip(t *testing.T) {
 	t.Run("student", func(t *testing.T) {
-		c := NewStudentImp(newCommandData(t))
+		c := newCommandData(t)
 		contact, _ := student.NewContactInfo("13800009001", "it@example.com")
 		do := student.Reconstitute(9900001, "集成学员", student.TypeExternal, contact, 1, itNow, itNow)
 
-		if err := c.Create(context.Background(), do); err != nil {
+		if err := c.CreateStudent(context.Background(), do); err != nil {
 			t.Fatalf("Create: %v", err)
 		}
-		t.Cleanup(func() { _ = c.Delete(context.Background(), do.ID()) })
+		t.Cleanup(func() { _ = c.DeleteStudent(context.Background(), do.ID()) })
 
-		got, err := c.MustGet(context.Background(), do.ID())
+		got, err := c.MustGetStudent(context.Background(), do.ID())
 		if err != nil {
 			t.Fatalf("MustGet: %v", err)
 		}
@@ -47,16 +47,16 @@ func TestReposRoundTrip(t *testing.T) {
 	})
 
 	t.Run("teacher", func(t *testing.T) {
-		c := NewTeacherImp(newCommandData(t))
+		c := newCommandData(t)
 		contact, _ := teacher.NewContactInfo("13900009002", "")
 		do := teacher.Reconstitute(9900002, 9900001, "集成讲师", "金牌", contact, 1, itNow, itNow)
 
-		if err := c.Create(context.Background(), do); err != nil {
+		if err := c.CreateTeacher(context.Background(), do); err != nil {
 			t.Fatalf("Create: %v", err)
 		}
-		t.Cleanup(func() { _ = c.Delete(context.Background(), do.ID()) })
+		t.Cleanup(func() { _ = c.DeleteTeacher(context.Background(), do.ID()) })
 
-		got, err := c.MustGet(context.Background(), do.ID())
+		got, err := c.MustGetTeacher(context.Background(), do.ID())
 		if err != nil {
 			t.Fatalf("MustGet: %v", err)
 		}
@@ -66,18 +66,18 @@ func TestReposRoundTrip(t *testing.T) {
 	})
 
 	t.Run("course", func(t *testing.T) {
-		c := NewCourseImp(newCommandData(t))
+		c := newCommandData(t)
 		capacity, _ := course.NewCapacity(30, 5)
 		period, _ := course.NewCoursePeriod(itNow, itEnd, 40, 4)
 		window := course.NewEnrollmentWindow(itNow, itEnd, itStart)
 		do := course.Reconstitute("it-course-1", "it-ct-1", capacity, window, period)
 
-		if err := c.Create(context.Background(), do); err != nil {
+		if err := c.CreateCourse(context.Background(), do); err != nil {
 			t.Fatalf("Create: %v", err)
 		}
-		t.Cleanup(func() { _ = c.Delete(context.Background(), do.ID()) })
+		t.Cleanup(func() { _ = c.DeleteCourse(context.Background(), do.ID()) })
 
-		got, err := c.MustGet(context.Background(), do.ID())
+		got, err := c.MustGetCourse(context.Background(), do.ID())
 		if err != nil {
 			t.Fatalf("MustGet: %v", err)
 		}
@@ -87,18 +87,18 @@ func TestReposRoundTrip(t *testing.T) {
 	})
 
 	t.Run("course_slot", func(t *testing.T) {
-		c := NewCourseSlotImp(newCommandData(t))
+		c := newCommandData(t)
 		s, _ := courseSlot.NewDayTime(16, 0)
 		e, _ := courseSlot.NewDayTime(18, 30)
 		tr, _ := courseSlot.NewDayTimeRange(s, e)
 		do := courseSlot.Reconstitute("it-slot-1", "it-course-1", time.Wednesday, tr, -1, "", itNow, itNow)
 
-		if err := c.Save(context.Background(), do); err != nil {
+		if err := c.SaveCourseSlot(context.Background(), do); err != nil {
 			t.Fatalf("Save: %v", err)
 		}
-		t.Cleanup(func() { _ = c.Delete(context.Background(), do.ID()) })
+		t.Cleanup(func() { _ = c.DeleteCourseSlot(context.Background(), do.ID()) })
 
-		got, err := c.MustGet(context.Background(), do.ID())
+		got, err := c.MustGetCourseSlot(context.Background(), do.ID())
 		if err != nil {
 			t.Fatalf("MustGet: %v", err)
 		}
@@ -109,7 +109,7 @@ func TestReposRoundTrip(t *testing.T) {
 		if err := c.AssignTeacher(context.Background(), []string{do.ID()}, 9900002); err != nil {
 			t.Fatalf("AssignTeacher: %v", err)
 		}
-		got, err = c.MustGet(context.Background(), do.ID())
+		got, err = c.MustGetCourseSlot(context.Background(), do.ID())
 		if err != nil {
 			t.Fatalf("MustGet(after assign): %v", err)
 		}
@@ -119,17 +119,17 @@ func TestReposRoundTrip(t *testing.T) {
 	})
 
 	t.Run("course_slot_change", func(t *testing.T) {
-		c := NewCourseSlotChangeImp(newCommandData(t))
+		c := newCommandData(t)
 		original := courseSlotChange.NewOriginalPlan("it-slot-1", itStart, 9900002, "R101", "16:00", "18:00")
 		target, _ := courseSlotChange.NewTargetPlan(itStart, itEnd, 9900002, "R102")
 		do := courseSlotChange.Reconstitute(9900003, "it-course-1", 9900001, 2, original, target, "集成换课", itNow, itNow)
 
-		if err := c.Save(context.Background(), do); err != nil {
+		if err := c.SaveCourseSlotChange(context.Background(), do); err != nil {
 			t.Fatalf("Save: %v", err)
 		}
-		t.Cleanup(func() { _ = c.Delete(context.Background(), do.ID()) })
+		t.Cleanup(func() { _ = c.DeleteCourseSlotChange(context.Background(), do.ID()) })
 
-		got, err := c.MustGet(context.Background(), do.ID())
+		got, err := c.MustGetCourseSlotChange(context.Background(), do.ID())
 		if err != nil {
 			t.Fatalf("MustGet: %v", err)
 		}
@@ -139,15 +139,15 @@ func TestReposRoundTrip(t *testing.T) {
 	})
 
 	t.Run("enrollment", func(t *testing.T) {
-		c := NewCourseEnrollmentImp(newCommandData(t))
+		c := newCommandData(t)
 		do := enrollment.Reconstitute(9900004, 9900001, "it-course-1", 1, itNow, time.Time{}, time.Time{}, itNow)
 
-		if err := c.Save(context.Background(), do); err != nil {
+		if err := c.SaveEnrollment(context.Background(), do); err != nil {
 			t.Fatalf("Save: %v", err)
 		}
-		t.Cleanup(func() { _ = c.Delete(context.Background(), do.ID()) })
+		t.Cleanup(func() { _ = c.DeleteEnrollment(context.Background(), do.ID()) })
 
-		got, err := c.MustGet(context.Background(), do.ID())
+		got, err := c.MustGetEnrollment(context.Background(), do.ID())
 		if err != nil {
 			t.Fatalf("MustGet: %v", err)
 		}
@@ -162,15 +162,15 @@ func TestReposRoundTrip(t *testing.T) {
 	})
 
 	t.Run("absence", func(t *testing.T) {
-		c := NewAbsenceRecordImp(newCommandData(t))
+		c := newCommandData(t)
 		do := absence.Reconstitute(9900005, 9900001, "it-course-1", "it-slot-1", itStart, 2, 3, "集成缺勤", itNow, itNow)
 
-		if err := c.Save(context.Background(), do); err != nil {
+		if err := c.SaveAbsence(context.Background(), do); err != nil {
 			t.Fatalf("Save: %v", err)
 		}
-		t.Cleanup(func() { _ = c.Delete(context.Background(), do.ID()) })
+		t.Cleanup(func() { _ = c.DeleteAbsence(context.Background(), do.ID()) })
 
-		got, err := c.MustGet(context.Background(), do.ID())
+		got, err := c.MustGetAbsence(context.Background(), do.ID())
 		if err != nil {
 			t.Fatalf("MustGet: %v", err)
 		}
@@ -180,15 +180,15 @@ func TestReposRoundTrip(t *testing.T) {
 	})
 
 	t.Run("makeup", func(t *testing.T) {
-		c := NewStudentMakeupImp(newCommandData(t))
+		c := newCommandData(t)
 		do := makeup.Reconstitute(9900006, 9900001, "it-course-1", "it-slot-1", itStart, "it-slot-1", itEnd, 2, 1, itEnd, itNow, itNow)
 
-		if err := c.Save(context.Background(), do); err != nil {
+		if err := c.SaveMakeup(context.Background(), do); err != nil {
 			t.Fatalf("Save: %v", err)
 		}
-		t.Cleanup(func() { _ = c.Delete(context.Background(), do.ID()) })
+		t.Cleanup(func() { _ = c.DeleteMakeup(context.Background(), do.ID()) })
 
-		got, err := c.MustGet(context.Background(), do.ID())
+		got, err := c.MustGetMakeup(context.Background(), do.ID())
 		if err != nil {
 			t.Fatalf("MustGet: %v", err)
 		}
@@ -198,15 +198,15 @@ func TestReposRoundTrip(t *testing.T) {
 	})
 
 	t.Run("qualification", func(t *testing.T) {
-		c := NewQualificationImp(newCommandData(t))
+		c := newCommandData(t)
 		do := qualification.Reconstitute(9900007, 9900002, "it-ct-1", itNow, 1, itNow)
 
 		if err := c.GrantQualification(context.Background(), do); err != nil {
 			t.Fatalf("GrantQualification: %v", err)
 		}
-		t.Cleanup(func() { _ = c.Delete(context.Background(), do.ID()) })
+		t.Cleanup(func() { _ = c.DeleteQualification(context.Background(), do.ID()) })
 
-		got, err := c.MustGet(context.Background(), do.ID())
+		got, err := c.MustGetQualification(context.Background(), do.ID())
 		if err != nil {
 			t.Fatalf("MustGet: %v", err)
 		}
@@ -217,7 +217,7 @@ func TestReposRoundTrip(t *testing.T) {
 
 	t.Run("course_type", func(t *testing.T) {
 		data := newCommandData(t)
-		c := NewCourseTypeImp(data)
+		c := data
 		do := courseType.Reconstitute("it-ct-1", "集成类型", "desc", itNow, itNow)
 
 		// 课程类型接口没有写方法，这里用裸 SQL 造一行再读回。
@@ -231,7 +231,7 @@ func TestReposRoundTrip(t *testing.T) {
 				`DELETE FROM course_type WHERE id = ?`, do.ID())
 		})
 
-		got, err := c.MustGet(context.Background(), do.ID())
+		got, err := c.MustGetCourseType(context.Background(), do.ID())
 		if err != nil {
 			t.Fatalf("MustGet: %v", err)
 		}

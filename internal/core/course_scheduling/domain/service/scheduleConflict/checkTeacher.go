@@ -7,7 +7,7 @@ import "context"
 // 讲师不存在时报 not found —— 调用方传错了 ID 应该报出来，
 // 而不是当成「没冲突」悄悄放行。
 func (s *Service) CheckTeacher(ctx context.Context, teacherID int64, slotIDs []string) (bool, error) {
-	if _, err := s.teachers.MustGet(ctx, teacherID); err != nil {
+	if _, err := s.teachers.MustGetTeacher(ctx, teacherID); err != nil {
 		return false, err
 	}
 

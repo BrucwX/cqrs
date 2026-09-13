@@ -24,8 +24,8 @@ func NewCourseSlotChangeCommand(d *command.Data) repo.CourseSlotChangeCommand {
 	return &CourseSlotChangeCommand{data: d}
 }
 
-// Save 保存课表变更（新增或更新）
-func (c *CourseSlotChangeCommand) Save(ctx context.Context, csc *courseSlotChange.CourseSlotChange) error {
+// SaveCourseSlotChange 保存课表变更（新增或更新）
+func (c *CourseSlotChangeCommand) SaveCourseSlotChange(ctx context.Context, csc *courseSlotChange.CourseSlotChange) error {
 	if csc == nil {
 		return courseSlotChange.ErrSlotChangeRequired
 	}
@@ -33,16 +33,16 @@ func (c *CourseSlotChangeCommand) Save(ctx context.Context, csc *courseSlotChang
 	return nil
 }
 
-// Delete 删除课表变更
-func (c *CourseSlotChangeCommand) Delete(ctx context.Context, id int64) error {
+// DeleteCourseSlotChange 删除课表变更
+func (c *CourseSlotChangeCommand) DeleteCourseSlotChange(ctx context.Context, id int64) error {
 	if !c.data.DeleteCourseSlotChange(id) {
 		return fmt.Errorf("%w: %d", courseSlotChange.ErrSlotChangeNotFound, id)
 	}
 	return nil
 }
 
-// MustGet 取课表变更聚合；不存在时报 ErrSlotChangeNotFound。
-func (c *CourseSlotChangeCommand) MustGet(ctx context.Context, id int64) (courseSlotChange.CourseSlotChange, error) {
+// MustGetCourseSlotChange 取课表变更聚合；不存在时报 ErrSlotChangeNotFound。
+func (c *CourseSlotChangeCommand) MustGetCourseSlotChange(ctx context.Context, id int64) (courseSlotChange.CourseSlotChange, error) {
 	for _, item := range c.data.CourseSlotChanges() {
 		if item.ID() == id {
 			return *item, nil
@@ -59,7 +59,7 @@ func (c *CourseSlotChangeCommand) Change(ctx context.Context, csc *courseSlotCha
 		return courseSlotChange.ErrSlotChangeRequired
 	}
 
-	return c.Save(ctx, csc)
+	return c.SaveCourseSlotChange(ctx, csc)
 }
 
 // GetOtherSlotChanges 取除该变更单以外的全部换课记录。

@@ -36,16 +36,16 @@ func (c *QualificationCommand) GrantQualification(ctx context.Context, q *qualif
 	return nil
 }
 
-// Delete 删除授课资质
-func (c *QualificationCommand) Delete(ctx context.Context, id int64) error {
+// DeleteQualification 删除授课资质
+func (c *QualificationCommand) DeleteQualification(ctx context.Context, id int64) error {
 	if !c.data.DeleteQualification(id) {
 		return fmt.Errorf("%w: %d", qualification.ErrQualificationNotFound, id)
 	}
 	return nil
 }
 
-// MustGet 取授课资质聚合；不存在时报 ErrQualificationNotFound。
-func (c *QualificationCommand) MustGet(ctx context.Context, id int64) (qualification.Qualification, error) {
+// MustGetQualification 取授课资质聚合；不存在时报 ErrQualificationNotFound。
+func (c *QualificationCommand) MustGetQualification(ctx context.Context, id int64) (qualification.Qualification, error) {
 	for _, item := range c.data.Qualifications() {
 		if item.ID() == id {
 			return *item, nil

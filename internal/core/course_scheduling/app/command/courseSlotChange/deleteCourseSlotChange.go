@@ -12,5 +12,5 @@ func (h *Handler) DeleteCourseSlotChange(ctx context.Context, id int64) (err err
 	}
 	defer func() { err = h.tx.End(ctx, err) }()
 
-	return h.ChangeCmd.Delete(ctx, id)
+	return h.ChangeCmd.DeleteCourseSlotChange(ctx, id)
 }

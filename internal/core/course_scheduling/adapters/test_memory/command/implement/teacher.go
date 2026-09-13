@@ -24,8 +24,8 @@ func NewTeacherCommand(d *command.Data) repo.TeacherCommand {
 	return &TeacherCommand{data: d}
 }
 
-// Create 新增讲师
-func (c *TeacherCommand) Create(ctx context.Context, t *teacher.Teacher) error {
+// CreateTeacher 新增讲师
+func (c *TeacherCommand) CreateTeacher(ctx context.Context, t *teacher.Teacher) error {
 	if t == nil {
 		return teacher.ErrTeacherRequired
 	}
@@ -33,9 +33,9 @@ func (c *TeacherCommand) Create(ctx context.Context, t *teacher.Teacher) error {
 	return nil
 }
 
-// Update 按 ID 取出讲师交给 updateFn 改，改完写回
-func (c *TeacherCommand) Update(ctx context.Context, id int64, updateFn func(ctx context.Context, t *teacher.Teacher) (*teacher.Teacher, error)) error {
-	current, err := c.Get(ctx, id)
+// UpdateTeacher 按 ID 取出讲师交给 updateFn 改，改完写回
+func (c *TeacherCommand) UpdateTeacher(ctx context.Context, id int64, updateFn func(ctx context.Context, t *teacher.Teacher) (*teacher.Teacher, error)) error {
+	current, err := c.GetTeacher(ctx, id)
 	if err != nil {
 		return err
 	}
@@ -55,16 +55,16 @@ func (c *TeacherCommand) Update(ctx context.Context, id int64, updateFn func(ctx
 	return nil
 }
 
-// Delete 删除讲师
-func (c *TeacherCommand) Delete(ctx context.Context, id int64) error {
+// DeleteTeacher 删除讲师
+func (c *TeacherCommand) DeleteTeacher(ctx context.Context, id int64) error {
 	if !c.data.DeleteTeacher(id) {
 		return fmt.Errorf("%w: %d", teacher.ErrTeacherNotFound, id)
 	}
 	return nil
 }
 
-// Get 取讲师；不存在时返回 (nil, nil)。
-func (c *TeacherCommand) Get(ctx context.Context, id int64) (*teacher.Teacher, error) {
+// GetTeacher 取讲师；不存在时返回 (nil, nil)。
+func (c *TeacherCommand) GetTeacher(ctx context.Context, id int64) (*teacher.Teacher, error) {
 	item, ok := c.data.TeacherByID(id)
 	if !ok {
 		return nil, nil
@@ -72,11 +72,11 @@ func (c *TeacherCommand) Get(ctx context.Context, id int64) (*teacher.Teacher, e
 	return item, nil
 }
 
-// MustGet 取讲师聚合本身；取不到报 ErrTeacherNotFound。
+// MustGetTeacher 取讲师聚合本身；取不到报 ErrTeacherNotFound。
 //
 // 与 Get 的差别：Get 找不到时是 (nil, nil)（给「查到了没」的调用方），
-// MustGet 是规则判定要用的，找不到必须报错。
-func (c *TeacherCommand) MustGet(ctx context.Context, teacherID int64) (teacher.Teacher, error) {
+// MustGetTeacher 是规则判定要用的，找不到必须报错。
+func (c *TeacherCommand) MustGetTeacher(ctx context.Context, teacherID int64) (teacher.Teacher, error) {
 	item, ok := c.data.TeacherByID(teacherID)
 	if !ok {
 		return teacher.Teacher{}, fmt.Errorf("%w: %d", teacher.ErrTeacherNotFound, teacherID)

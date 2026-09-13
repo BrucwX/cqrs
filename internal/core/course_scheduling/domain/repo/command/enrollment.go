@@ -8,12 +8,12 @@ import (
 
 // CourseEnrollmentCommand 课程注册命令接口
 type CourseEnrollmentCommand interface {
-	// Save 保存课程注册（新增或更新，不做检查）
-	Save(ctx context.Context, e *enrollment.CourseEnrollment) error
-	// Delete 删除课程注册
-	Delete(ctx context.Context, id int64) error
-	// MustGet 取课程注册聚合；不存在时报 ErrEnrollmentNotFound
-	MustGet(ctx context.Context, id int64) (enrollment.CourseEnrollment, error)
+	// SaveEnrollment 保存课程注册（新增或更新，不做检查）
+	SaveEnrollment(ctx context.Context, e *enrollment.CourseEnrollment) error
+	// DeleteEnrollment 删除课程注册
+	DeleteEnrollment(ctx context.Context, id int64) error
+	// MustGetEnrollment 取课程注册聚合；不存在时报 ErrEnrollmentNotFound
+	MustGetEnrollment(ctx context.Context, id int64) (enrollment.CourseEnrollment, error)
 	// Enroll 学员选课
 	//
 	// 只管写：把这条注册记录落库。准入判定（选课窗口 / 容量 / 时间冲突）

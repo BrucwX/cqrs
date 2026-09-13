@@ -25,8 +25,8 @@ func NewMakeupCommand(d *command.Data) repo.StudentMakeupCommand {
 	return &MakeupCommand{data: d}
 }
 
-// Save 保存补课预约（新增或更新）
-func (c *MakeupCommand) Save(ctx context.Context, m *makeup.StudentMakeup) error {
+// SaveMakeup 保存补课预约（新增或更新）
+func (c *MakeupCommand) SaveMakeup(ctx context.Context, m *makeup.StudentMakeup) error {
 	if m == nil {
 		return makeup.ErrMakeupRequired
 	}
@@ -34,16 +34,16 @@ func (c *MakeupCommand) Save(ctx context.Context, m *makeup.StudentMakeup) error
 	return nil
 }
 
-// Delete 删除补课预约
-func (c *MakeupCommand) Delete(ctx context.Context, id int64) error {
+// DeleteMakeup 删除补课预约
+func (c *MakeupCommand) DeleteMakeup(ctx context.Context, id int64) error {
 	if !c.data.DeleteMakeup(id) {
 		return fmt.Errorf("%w: %d", makeup.ErrMakeupNotFound, id)
 	}
 	return nil
 }
 
-// MustGet 取补课预约聚合；不存在时报 ErrMakeupNotFound。
-func (c *MakeupCommand) MustGet(ctx context.Context, id int64) (makeup.StudentMakeup, error) {
+// MustGetMakeup 取补课预约聚合；不存在时报 ErrMakeupNotFound。
+func (c *MakeupCommand) MustGetMakeup(ctx context.Context, id int64) (makeup.StudentMakeup, error) {
 	for _, item := range c.data.Makeups() {
 		if item.ID() == id {
 			return *item, nil

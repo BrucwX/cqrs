@@ -1,6 +1,6 @@
 package help
 
-import "cqrs/internal/core/course_scheduling/adapters/command/mysql/model"
+import "cqrs/internal/core/course_scheduling/adapters/command/data/mysql/model"
 
 // Scanner 抽象 *sql.Rows 与 *sql.Row 共有的 Scan 能力，让同一段扫行代码
 // 既能用于 Query（多行）也能用于 QueryRow（单行）。

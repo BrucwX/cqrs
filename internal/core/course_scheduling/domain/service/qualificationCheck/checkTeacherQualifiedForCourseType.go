@@ -10,7 +10,7 @@ import "context"
 // 讲师不存在时报 not found —— 调用方传错了 ID 应该报出来，
 // 而不是当成「没资质」悄悄拦下。
 func (s *Service) CheckTeacherQualifiedForCourseType(ctx context.Context, teacherID int64, courseTypeID string) (bool, error) {
-	t, err := s.teachers.MustGet(ctx, teacherID)
+	t, err := s.teachers.MustGetTeacher(ctx, teacherID)
 	if err != nil {
 		return false, err
 	}

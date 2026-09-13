@@ -42,7 +42,7 @@ func (h *Handler) RecordAbsence(ctx context.Context, cmd RecordAbsence) (record 
 		return nil, err
 	}
 
-	if err = h.AbsenceCmd.Save(ctx, record); err != nil {
+	if err = h.AbsenceCmd.SaveAbsence(ctx, record); err != nil {
 		return nil, err
 	}
 

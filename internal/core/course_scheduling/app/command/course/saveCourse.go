@@ -35,10 +35,10 @@ func (h *Handler) SaveCourse(ctx context.Context, cmd CourseInput) (err error) {
 		if err != nil {
 			return err
 		}
-		return h.CourseCmd.Create(ctx, created)
+		return h.CourseCmd.CreateCourse(ctx, created)
 	}
 
-	return h.CourseCmd.Update(
+	return h.CourseCmd.UpdateCourse(
 		ctx,
 		*cmd.ID,
 		func(_ context.Context, crs *course.Course) (*course.Course, error) {

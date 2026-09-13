@@ -1,4 +1,4 @@
-package imp
+package mysql
 
 import (
 	"context"
@@ -7,25 +7,13 @@ import (
 	"fmt"
 	"time"
 
-	"cqrs/internal/core/course_scheduling/adapters/command/mysql"
-	"cqrs/internal/core/course_scheduling/adapters/command/mysql/implement/help"
-	"cqrs/internal/core/course_scheduling/adapters/command/mysql/model"
+	"cqrs/internal/core/course_scheduling/adapters/command/data/mysql/help"
+	"cqrs/internal/core/course_scheduling/adapters/command/data/mysql/model"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/makeup"
-	repo "cqrs/internal/core/course_scheduling/domain/repo/command"
 )
 
-type StudentMakeupImp struct {
-	data *mysql.Data
-}
-
-var _ repo.StudentMakeupCommand = (*StudentMakeupImp)(nil)
-
-func NewStudentMakeupImp(d *mysql.Data) repo.StudentMakeupCommand {
-	return &StudentMakeupImp{data: d}
-}
-
 // Save 保存补课预约（新增或更新）。
-func (c *StudentMakeupImp) Save(ctx context.Context, m *makeup.StudentMakeup) error {
+func (c *MysqlData) SaveMakeup(ctx context.Context, m *makeup.StudentMakeup) error {
 	if m == nil {
 		return makeup.ErrMakeupRequired
 	}
@@ -34,7 +22,7 @@ func (c *StudentMakeupImp) Save(ctx context.Context, m *makeup.StudentMakeup) er
 		return err
 	}
 
-	_, err = c.data.Conn(ctx).ExecContext(ctx, `
+	_, err = c.Conn(ctx).ExecContext(ctx, `
 INSERT INTO student_makeup
   (id, student_id, course_id, original_slot_id, original_date, target_slot_id, target_date,
    makeup_hours, status, completed_at, created_at, updated_at)
@@ -53,8 +41,8 @@ ON DUPLICATE KEY UPDATE
 }
 
 // Delete 删除补课预约；不存在时报 ErrMakeupNotFound。
-func (c *StudentMakeupImp) Delete(ctx context.Context, id int64) error {
-	res, err := c.data.Conn(ctx).ExecContext(ctx, `DELETE FROM student_makeup WHERE id = ?`, id)
+func (c *MysqlData) DeleteMakeup(ctx context.Context, id int64) error {
+	res, err := c.Conn(ctx).ExecContext(ctx, `DELETE FROM student_makeup WHERE id = ?`, id)
 	if err != nil {
 		return err
 	}
@@ -69,8 +57,8 @@ func (c *StudentMakeupImp) Delete(ctx context.Context, id int64) error {
 }
 
 // MustGet 取补课预约聚合；不存在时报 ErrMakeupNotFound。
-func (c *StudentMakeupImp) MustGet(ctx context.Context, id int64) (makeup.StudentMakeup, error) {
-	po, err := help.ScanMakeup(c.data.Conn(ctx).QueryRowContext(ctx, `
+func (c *MysqlData) MustGetMakeup(ctx context.Context, id int64) (makeup.StudentMakeup, error) {
+	po, err := help.ScanMakeup(c.Conn(ctx).QueryRowContext(ctx, `
 SELECT `+help.MakeupColumns+`
   FROM student_makeup
  WHERE id = ?`, id))
@@ -88,8 +76,8 @@ SELECT `+help.MakeupColumns+`
 }
 
 // GetMakeupsForTarget 取补到同一节课上的全部补课预约。
-func (c *StudentMakeupImp) GetMakeupsForTarget(ctx context.Context, targetSlotID string, targetDate time.Time) ([]makeup.StudentMakeup, error) {
-	rows, err := c.data.Conn(ctx).QueryContext(ctx, `
+func (c *MysqlData) GetMakeupsForTarget(ctx context.Context, targetSlotID string, targetDate time.Time) ([]makeup.StudentMakeup, error) {
+	rows, err := c.Conn(ctx).QueryContext(ctx, `
 SELECT `+help.MakeupColumns+`
   FROM student_makeup
  WHERE target_slot_id = ? AND target_date = ?

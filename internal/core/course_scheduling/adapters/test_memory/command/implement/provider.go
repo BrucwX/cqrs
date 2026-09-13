@@ -8,7 +8,7 @@ import (
 
 // ProviderSet 是写侧内存实现的 provider 集合。
 //
-// 与 MySQL 那套（adapters/command/mysql）一一对应：二者实现同一批
+// 与 MySQL 那套（adapters/command/data/mysql）一一对应：二者实现同一批
 // domain/repo/command 接口，可以整体互换。
 //
 // command.NewData 把共享的内存存储收窄成写侧面（能读也能写），下面这些仓库

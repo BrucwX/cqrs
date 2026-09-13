@@ -24,8 +24,8 @@ func NewCourseSlotCommand(d *command.Data) repo.CourseSlotCommand {
 	return &CourseSlotCommand{data: d}
 }
 
-// Save 保存课表槽位（新增或更新）
-func (c *CourseSlotCommand) Save(ctx context.Context, cs *courseSlot.CourseSlot) error {
+// SaveCourseSlot 保存课表槽位（新增或更新）
+func (c *CourseSlotCommand) SaveCourseSlot(ctx context.Context, cs *courseSlot.CourseSlot) error {
 	if cs == nil {
 		return courseSlot.ErrCourseSlotRequired
 	}
@@ -33,16 +33,16 @@ func (c *CourseSlotCommand) Save(ctx context.Context, cs *courseSlot.CourseSlot)
 	return nil
 }
 
-// Delete 删除课表槽位
-func (c *CourseSlotCommand) Delete(ctx context.Context, id string) error {
+// DeleteCourseSlot 删除课表槽位
+func (c *CourseSlotCommand) DeleteCourseSlot(ctx context.Context, id string) error {
 	if !c.data.DeleteCourseSlot(id) {
 		return fmt.Errorf("%w: %s", courseSlot.ErrCourseSlotNotFound, id)
 	}
 	return nil
 }
 
-// MustGet 取课表槽位聚合；不存在时报 ErrCourseSlotNotFound。
-func (c *CourseSlotCommand) MustGet(ctx context.Context, id string) (courseSlot.CourseSlot, error) {
+// MustGetCourseSlot 取课表槽位聚合；不存在时报 ErrCourseSlotNotFound。
+func (c *CourseSlotCommand) MustGetCourseSlot(ctx context.Context, id string) (courseSlot.CourseSlot, error) {
 	item, ok := c.data.CourseSlotByID(id)
 	if !ok {
 		return courseSlot.CourseSlot{}, fmt.Errorf("%w: %s", courseSlot.ErrCourseSlotNotFound, id)

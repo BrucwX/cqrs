@@ -55,7 +55,7 @@ func (h *Handler) RecordMakeup(ctx context.Context, cmd RecordMakeup) (record *m
 		return nil, fmt.Errorf("%w: target slot %s", makeup.ErrMakeupConflict, cmd.TargetSlotID)
 	}
 
-	if err := h.MakeupCmd.Save(ctx, record); err != nil {
+	if err := h.MakeupCmd.SaveMakeup(ctx, record); err != nil {
 		return nil, err
 	}
 

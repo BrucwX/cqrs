@@ -30,12 +30,12 @@ func (s *Service) CheckMakeup(ctx context.Context, targetSlotID string, targetDa
 	}
 	target := slots[0]
 
-	crs, err := s.courses.MustGet(ctx, target.CourseID())
+	crs, err := s.courses.MustGetCourse(ctx, target.CourseID())
 	if err != nil {
 		return false, err
 	}
 
-	cr, err := s.classrooms.MustGet(ctx, target.ClassroomID())
+	cr, err := s.classrooms.MustGetClassroom(ctx, target.ClassroomID())
 	if err != nil {
 		return false, err
 	}

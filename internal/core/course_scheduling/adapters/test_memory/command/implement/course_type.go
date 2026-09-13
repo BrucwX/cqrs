@@ -26,8 +26,8 @@ func NewCourseTypeCommand(d *command.Data) repo.CourseTypeCommand {
 	return &CourseTypeCommand{data: d}
 }
 
-// MustGet 取课程类型聚合；不存在时报 ErrCourseTypeNotFound。
-func (c *CourseTypeCommand) MustGet(ctx context.Context, id string) (courseType.CourseType, error) {
+// MustGetCourseType 取课程类型聚合；不存在时报 ErrCourseTypeNotFound。
+func (c *CourseTypeCommand) MustGetCourseType(ctx context.Context, id string) (courseType.CourseType, error) {
 	for _, item := range c.data.CourseTypes() {
 		if item.ID() == id {
 			return *item, nil

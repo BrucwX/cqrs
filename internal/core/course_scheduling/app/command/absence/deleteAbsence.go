@@ -12,5 +12,5 @@ func (h *Handler) DeleteAbsence(ctx context.Context, id int64) (err error) {
 	}
 	defer func() { err = h.tx.End(ctx, err) }()
 
-	return h.AbsenceCmd.Delete(ctx, id)
+	return h.AbsenceCmd.DeleteAbsence(ctx, id)
 }

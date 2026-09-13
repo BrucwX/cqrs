@@ -17,10 +17,10 @@ type QualificationCommand interface {
 	// 调过来之前判完（见 domain/service/qualification 的 Check.CheckTeacherGrantable），所以这里没有
 	// 回调，也没有「传 nil 表示不检查」这类分支。
 	GrantQualification(ctx context.Context, q *qualification.Qualification) error
-	// Delete 删除授课资质
-	Delete(ctx context.Context, id int64) error
-	// MustGet 取授课资质聚合；不存在时报 ErrQualificationNotFound
-	MustGet(ctx context.Context, id int64) (qualification.Qualification, error)
+	// DeleteQualification 删除授课资质
+	DeleteQualification(ctx context.Context, id int64) error
+	// MustGetQualification 取授课资质聚合；不存在时报 ErrQualificationNotFound
+	MustGetQualification(ctx context.Context, id int64) (qualification.Qualification, error)
 	// GetQualifications 取该讲师持有的全部资质
 	GetQualifications(ctx context.Context, teacherID int64) ([]qualification.Qualification, error)
 }

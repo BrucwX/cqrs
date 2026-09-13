@@ -1,4 +1,4 @@
-package imp
+package mysql
 
 import (
 	"context"
@@ -6,25 +6,13 @@ import (
 	"errors"
 	"fmt"
 
-	"cqrs/internal/core/course_scheduling/adapters/command/mysql"
-	"cqrs/internal/core/course_scheduling/adapters/command/mysql/implement/help"
-	"cqrs/internal/core/course_scheduling/adapters/command/mysql/model"
+	"cqrs/internal/core/course_scheduling/adapters/command/data/mysql/help"
+	"cqrs/internal/core/course_scheduling/adapters/command/data/mysql/model"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/teacher"
-	repo "cqrs/internal/core/course_scheduling/domain/repo/command"
 )
 
-type TeacherImp struct {
-	data *mysql.Data
-}
-
-var _ repo.TeacherCommand = (*TeacherImp)(nil)
-
-func NewTeacherImp(d *mysql.Data) repo.TeacherCommand {
-	return &TeacherImp{data: d}
-}
-
 // Create 新增讲师。
-func (c *TeacherImp) Create(ctx context.Context, t *teacher.Teacher) error {
+func (c *MysqlData) CreateTeacher(ctx context.Context, t *teacher.Teacher) error {
 	if t == nil {
 		return teacher.ErrTeacherRequired
 	}
@@ -33,7 +21,7 @@ func (c *TeacherImp) Create(ctx context.Context, t *teacher.Teacher) error {
 		return err
 	}
 
-	_, err = c.data.Conn(ctx).ExecContext(ctx, `
+	_, err = c.Conn(ctx).ExecContext(ctx, `
 INSERT INTO teacher
   (id, student_id, name, title, phone, email, status, created_at, updated_at)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -43,12 +31,12 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 }
 
 // Update 按 ID 取出讲师交给 updateFn 改，改完写回。
-func (c *TeacherImp) Update(
+func (c *MysqlData) UpdateTeacher(
 	ctx context.Context,
 	id int64,
 	updateFn func(ctx context.Context, t *teacher.Teacher) (*teacher.Teacher, error),
 ) error {
-	t, err := c.MustGet(ctx, id)
+	t, err := c.MustGetTeacher(ctx, id)
 	if err != nil {
 		return err
 	}
@@ -65,7 +53,7 @@ func (c *TeacherImp) Update(
 	if err != nil {
 		return err
 	}
-	_, err = c.data.Conn(ctx).ExecContext(ctx, `
+	_, err = c.Conn(ctx).ExecContext(ctx, `
 UPDATE teacher
    SET student_id = ?, name = ?, title = ?, phone = ?, email = ?, status = ?, updated_at = ?
  WHERE id = ?`,
@@ -75,8 +63,8 @@ UPDATE teacher
 }
 
 // Delete 删除讲师；不存在时报 ErrTeacherNotFound。
-func (c *TeacherImp) Delete(ctx context.Context, id int64) error {
-	res, err := c.data.Conn(ctx).ExecContext(ctx, `DELETE FROM teacher WHERE id = ?`, id)
+func (c *MysqlData) DeleteTeacher(ctx context.Context, id int64) error {
+	res, err := c.Conn(ctx).ExecContext(ctx, `DELETE FROM teacher WHERE id = ?`, id)
 	if err != nil {
 		return err
 	}
@@ -91,8 +79,8 @@ func (c *TeacherImp) Delete(ctx context.Context, id int64) error {
 }
 
 // Get 取讲师；不存在时返回 (nil, nil)。
-func (c *TeacherImp) Get(ctx context.Context, id int64) (*teacher.Teacher, error) {
-	do, err := c.MustGet(ctx, id)
+func (c *MysqlData) GetTeacher(ctx context.Context, id int64) (*teacher.Teacher, error) {
+	do, err := c.MustGetTeacher(ctx, id)
 	if errors.Is(err, teacher.ErrTeacherNotFound) {
 		return nil, nil
 	}
@@ -103,8 +91,8 @@ func (c *TeacherImp) Get(ctx context.Context, id int64) (*teacher.Teacher, error
 }
 
 // MustGet 取讲师聚合本身；不存在时报 ErrTeacherNotFound。
-func (c *TeacherImp) MustGet(ctx context.Context, id int64) (teacher.Teacher, error) {
-	po, err := help.ScanTeacher(c.data.Conn(ctx).QueryRowContext(ctx, `
+func (c *MysqlData) MustGetTeacher(ctx context.Context, id int64) (teacher.Teacher, error) {
+	po, err := help.ScanTeacher(c.Conn(ctx).QueryRowContext(ctx, `
 SELECT `+help.TeacherColumns+`
   FROM teacher
  WHERE id = ?`, id))

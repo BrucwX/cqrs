@@ -13,5 +13,5 @@ func (h *Handler) DeleteMakeup(ctx context.Context, id int64) (err error) {
 	}
 	defer func() { err = h.tx.End(ctx, err) }()
 
-	return h.MakeupCmd.Delete(ctx, id)
+	return h.MakeupCmd.DeleteMakeup(ctx, id)
 }

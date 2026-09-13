@@ -1,4 +1,4 @@
-package imp
+package mysql
 
 import (
 	"context"
@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"cqrs/internal/conf"
-	"cqrs/internal/core/course_scheduling/adapters/command/mysql"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/classroom"
 	repo "cqrs/internal/core/course_scheduling/domain/repo/command"
 )
@@ -52,12 +51,12 @@ func bootstrapCmdTestDB(t *testing.T) {
 	}
 }
 
-func newCommandData(t *testing.T) *mysql.Data {
+func newCommandData(t *testing.T) *MysqlData {
 	t.Helper()
 
 	bootstrapCmdTestDB(t)
 
-	data, cleanup, err := mysql.NewData(&conf.Data{
+	data, cleanup, err := NewMysqlData(&conf.Data{
 		Database: &conf.Data_Database{Driver: "mysql", Source: cmdTestDSN()},
 	})
 	if err != nil {
@@ -85,11 +84,11 @@ func newTestClassroom(t *testing.T) *classroom.Classroom {
 func createAndTrack(t *testing.T, c repo.ClassroomCommand) *classroom.Classroom {
 	t.Helper()
 	cl := newTestClassroom(t)
-	if err := c.Create(context.Background(), cl); err != nil {
+	if err := c.CreateClassroom(context.Background(), cl); err != nil {
 		t.Fatalf("Create: %v", err)
 	}
 	t.Cleanup(func() {
-		if err := c.Delete(context.Background(), cl.ID()); err != nil && !errors.Is(err, classroom.ErrClassroomNotFound) {
+		if err := c.DeleteClassroom(context.Background(), cl.ID()); err != nil && !errors.Is(err, classroom.ErrClassroomNotFound) {
 			t.Errorf("cleanup delete: %v", err)
 		}
 	})
@@ -98,10 +97,10 @@ func createAndTrack(t *testing.T, c repo.ClassroomCommand) *classroom.Classroom 
 
 // TestClassroomImpCreateAndGet 新增后能原样读回。
 func TestClassroomImpCreateAndGet(t *testing.T) {
-	c := NewClassroomImp(newCommandData(t))
+	c := newCommandData(t)
 	cl := createAndTrack(t, c)
 
-	got, err := c.MustGet(context.Background(), cl.ID())
+	got, err := c.MustGetClassroom(context.Background(), cl.ID())
 	if err != nil {
 		t.Fatalf("MustGet: %v", err)
 	}
@@ -121,11 +120,11 @@ func TestClassroomImpCreateAndGet(t *testing.T) {
 
 // TestClassroomImpUpdate 更新后字段生效。
 func TestClassroomImpUpdate(t *testing.T) {
-	c := NewClassroomImp(newCommandData(t))
+	c := newCommandData(t)
 	cl := createAndTrack(t, c)
 
 	newCap := 25
-	err := c.Update(context.Background(), cl.ID(), func(_ context.Context, cur *classroom.Classroom) (*classroom.Classroom, error) {
+	err := c.UpdateClassroom(context.Background(), cl.ID(), func(_ context.Context, cur *classroom.Classroom) (*classroom.Classroom, error) {
 		if err := cur.Update(nil, &newCap, nil); err != nil {
 			return nil, err
 		}
@@ -135,7 +134,7 @@ func TestClassroomImpUpdate(t *testing.T) {
 		t.Fatalf("Update: %v", err)
 	}
 
-	got, err := c.MustGet(context.Background(), cl.ID())
+	got, err := c.MustGetClassroom(context.Background(), cl.ID())
 	if err != nil {
 		t.Fatalf("MustGet: %v", err)
 	}
@@ -146,16 +145,16 @@ func TestClassroomImpUpdate(t *testing.T) {
 
 // TestClassroomImpDelete 删除后取不到，重复删报 NotFound。
 func TestClassroomImpDelete(t *testing.T) {
-	c := NewClassroomImp(newCommandData(t))
+	c := newCommandData(t)
 	cl := createAndTrack(t, c)
 
-	if err := c.Delete(context.Background(), cl.ID()); err != nil {
+	if err := c.DeleteClassroom(context.Background(), cl.ID()); err != nil {
 		t.Fatalf("Delete: %v", err)
 	}
-	if _, err := c.MustGet(context.Background(), cl.ID()); !errors.Is(err, classroom.ErrClassroomNotFound) {
+	if _, err := c.MustGetClassroom(context.Background(), cl.ID()); !errors.Is(err, classroom.ErrClassroomNotFound) {
 		t.Fatalf("MustGet(after delete) = %v, want ErrClassroomNotFound", err)
 	}
-	if err := c.Delete(context.Background(), cl.ID()); !errors.Is(err, classroom.ErrClassroomNotFound) {
+	if err := c.DeleteClassroom(context.Background(), cl.ID()); !errors.Is(err, classroom.ErrClassroomNotFound) {
 		t.Fatalf("Delete(twice) = %v, want ErrClassroomNotFound", err)
 	}
 }
@@ -163,10 +162,10 @@ func TestClassroomImpDelete(t *testing.T) {
 // TestClassroomImpTransaction 事务提交可见、回滚不可见。
 func TestClassroomImpTransaction(t *testing.T) {
 	data := newCommandData(t)
-	c := NewClassroomImp(data)
+	c := data
 	cl := newTestClassroom(t)
 	t.Cleanup(func() {
-		_ = c.Delete(context.Background(), cl.ID())
+		_ = c.DeleteClassroom(context.Background(), cl.ID())
 	})
 
 	// 回滚：End 收到非 nil err，Create 的写入应被撤销。
@@ -174,13 +173,13 @@ func TestClassroomImpTransaction(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Begin: %v", err)
 	}
-	if err := c.Create(ctx, cl); err != nil {
+	if err := c.CreateClassroom(ctx, cl); err != nil {
 		t.Fatalf("Create(rollback): %v", err)
 	}
 	if err := data.End(ctx, errors.New("boom")); err == nil {
 		t.Fatal("End should surface the injected error")
 	}
-	if _, err := c.MustGet(context.Background(), cl.ID()); !errors.Is(err, classroom.ErrClassroomNotFound) {
+	if _, err := c.MustGetClassroom(context.Background(), cl.ID()); !errors.Is(err, classroom.ErrClassroomNotFound) {
 		t.Fatalf("MustGet(after rollback) = %v, want ErrClassroomNotFound", err)
 	}
 
@@ -189,13 +188,13 @@ func TestClassroomImpTransaction(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Begin(commit): %v", err)
 	}
-	if err := c.Create(ctx, cl); err != nil {
+	if err := c.CreateClassroom(ctx, cl); err != nil {
 		t.Fatalf("Create(commit): %v", err)
 	}
 	if err := data.End(ctx, nil); err != nil {
 		t.Fatalf("End(commit): %v", err)
 	}
-	if _, err := c.MustGet(context.Background(), cl.ID()); err != nil {
+	if _, err := c.MustGetClassroom(context.Background(), cl.ID()); err != nil {
 		t.Fatalf("MustGet(after commit) = %v, want nil", err)
 	}
 }

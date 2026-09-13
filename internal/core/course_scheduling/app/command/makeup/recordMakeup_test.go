@@ -313,10 +313,10 @@ func TestDeleteMakeup(t *testing.T) {
 		t.Fatalf("RecordMakeup: %v", err)
 	}
 
-	if err := f.handler.MakeupCmd.Delete(context.Background(), got.ID()); err != nil {
+	if err := f.handler.MakeupCmd.DeleteMakeup(context.Background(), got.ID()); err != nil {
 		t.Errorf("Delete(existing) = %v, want nil", err)
 	}
-	if err := f.handler.MakeupCmd.Delete(context.Background(), got.ID()); !errors.Is(err, makeup.ErrMakeupNotFound) {
+	if err := f.handler.MakeupCmd.DeleteMakeup(context.Background(), got.ID()); !errors.Is(err, makeup.ErrMakeupNotFound) {
 		t.Errorf("Delete(missing) = %v, want %v", err, makeup.ErrMakeupNotFound)
 	}
 }

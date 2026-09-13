@@ -1,4 +1,4 @@
-package imp
+package mysql
 
 import (
 	"context"
@@ -6,25 +6,13 @@ import (
 	"errors"
 	"fmt"
 
-	"cqrs/internal/core/course_scheduling/adapters/command/mysql"
-	"cqrs/internal/core/course_scheduling/adapters/command/mysql/implement/help"
-	"cqrs/internal/core/course_scheduling/adapters/command/mysql/model"
+	"cqrs/internal/core/course_scheduling/adapters/command/data/mysql/help"
+	"cqrs/internal/core/course_scheduling/adapters/command/data/mysql/model"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/course"
-	repo "cqrs/internal/core/course_scheduling/domain/repo/command"
 )
 
-type CourseImp struct {
-	data *mysql.Data
-}
-
-var _ repo.CourseCommand = (*CourseImp)(nil)
-
-func NewCourseImp(d *mysql.Data) repo.CourseCommand {
-	return &CourseImp{data: d}
-}
-
 // Create 新增课程。
-func (c *CourseImp) Create(ctx context.Context, crs *course.Course) error {
+func (c *MysqlData) CreateCourse(ctx context.Context, crs *course.Course) error {
 	if crs == nil {
 		return course.ErrCourseRequired
 	}
@@ -33,7 +21,7 @@ func (c *CourseImp) Create(ctx context.Context, crs *course.Course) error {
 		return err
 	}
 
-	_, err = c.data.Conn(ctx).ExecContext(ctx, `
+	_, err = c.Conn(ctx).ExecContext(ctx, `
 INSERT INTO course
   (id, course_type_id, capacity_max, capacity_enrolled, enroll_start_at, enroll_end_at, drop_deadline,
    period_start_at, period_end_at, total_hours, completed_hours)
@@ -46,12 +34,12 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 }
 
 // Update 按 ID 取出课程交给 updateFn 改，改完写回。
-func (c *CourseImp) Update(
+func (c *MysqlData) UpdateCourse(
 	ctx context.Context,
 	id string,
 	updateFn func(ctx context.Context, crs *course.Course) (*course.Course, error),
 ) error {
-	cl, err := c.MustGet(ctx, id)
+	cl, err := c.MustGetCourse(ctx, id)
 	if err != nil {
 		return err
 	}
@@ -68,7 +56,7 @@ func (c *CourseImp) Update(
 	if err != nil {
 		return err
 	}
-	_, err = c.data.Conn(ctx).ExecContext(ctx, `
+	_, err = c.Conn(ctx).ExecContext(ctx, `
 UPDATE course
    SET course_type_id = ?, capacity_max = ?, capacity_enrolled = ?,
        enroll_start_at = ?, enroll_end_at = ?, drop_deadline = ?,
@@ -83,8 +71,8 @@ UPDATE course
 }
 
 // Delete 删除课程；不存在时报 ErrCourseNotFound。
-func (c *CourseImp) Delete(ctx context.Context, id string) error {
-	res, err := c.data.Conn(ctx).ExecContext(ctx, `DELETE FROM course WHERE id = ?`, id)
+func (c *MysqlData) DeleteCourse(ctx context.Context, id string) error {
+	res, err := c.Conn(ctx).ExecContext(ctx, `DELETE FROM course WHERE id = ?`, id)
 	if err != nil {
 		return err
 	}
@@ -99,8 +87,8 @@ func (c *CourseImp) Delete(ctx context.Context, id string) error {
 }
 
 // Get 取课程；不存在时返回 (nil, nil)。
-func (c *CourseImp) Get(ctx context.Context, id string) (*course.Course, error) {
-	do, err := c.MustGet(ctx, id)
+func (c *MysqlData) GetCourse(ctx context.Context, id string) (*course.Course, error) {
+	do, err := c.MustGetCourse(ctx, id)
 	if errors.Is(err, course.ErrCourseNotFound) {
 		return nil, nil
 	}
@@ -111,8 +99,8 @@ func (c *CourseImp) Get(ctx context.Context, id string) (*course.Course, error) 
 }
 
 // MustGet 取课程聚合本身；取不到报 ErrCourseNotFound。
-func (c *CourseImp) MustGet(ctx context.Context, id string) (course.Course, error) {
-	po, err := help.ScanCourse(c.data.Conn(ctx).QueryRowContext(ctx, `
+func (c *MysqlData) MustGetCourse(ctx context.Context, id string) (course.Course, error) {
+	po, err := help.ScanCourse(c.Conn(ctx).QueryRowContext(ctx, `
 SELECT `+help.CourseColumns+`
   FROM course
  WHERE id = ?`, id))
@@ -130,8 +118,8 @@ SELECT `+help.CourseColumns+`
 }
 
 // GetCourses 取某课程类型下的全部课程。
-func (c *CourseImp) GetCourses(ctx context.Context, courseTypeID string) ([]course.Course, error) {
-	rows, err := c.data.Conn(ctx).QueryContext(ctx, `
+func (c *MysqlData) GetCourses(ctx context.Context, courseTypeID string) ([]course.Course, error) {
+	rows, err := c.Conn(ctx).QueryContext(ctx, `
 SELECT `+help.CourseColumns+`
   FROM course
  WHERE course_type_id = ?

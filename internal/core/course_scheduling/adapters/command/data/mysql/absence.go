@@ -1,4 +1,4 @@
-package imp
+package mysql
 
 import (
 	"context"
@@ -6,25 +6,13 @@ import (
 	"errors"
 	"fmt"
 
-	"cqrs/internal/core/course_scheduling/adapters/command/mysql"
-	"cqrs/internal/core/course_scheduling/adapters/command/mysql/implement/help"
-	"cqrs/internal/core/course_scheduling/adapters/command/mysql/model"
+	"cqrs/internal/core/course_scheduling/adapters/command/data/mysql/help"
+	"cqrs/internal/core/course_scheduling/adapters/command/data/mysql/model"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/absence"
-	repo "cqrs/internal/core/course_scheduling/domain/repo/command"
 )
 
-type AbsenceRecordImp struct {
-	data *mysql.Data
-}
-
-var _ repo.AbsenceRecordCommand = (*AbsenceRecordImp)(nil)
-
-func NewAbsenceRecordImp(d *mysql.Data) repo.AbsenceRecordCommand {
-	return &AbsenceRecordImp{data: d}
-}
-
 // Save 保存缺勤记录（新增或更新）。
-func (c *AbsenceRecordImp) Save(ctx context.Context, a *absence.AbsenceRecord) error {
+func (c *MysqlData) SaveAbsence(ctx context.Context, a *absence.AbsenceRecord) error {
 	if a == nil {
 		return absence.ErrAbsenceRequired
 	}
@@ -33,7 +21,7 @@ func (c *AbsenceRecordImp) Save(ctx context.Context, a *absence.AbsenceRecord) e
 		return err
 	}
 
-	_, err = c.data.Conn(ctx).ExecContext(ctx, `
+	_, err = c.Conn(ctx).ExecContext(ctx, `
 INSERT INTO absence_record
   (id, student_id, course_id, course_slot_id, schedule_date, missed_hours, absence_type, reason, created_at, updated_at)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -49,8 +37,8 @@ ON DUPLICATE KEY UPDATE
 }
 
 // Delete 删除缺勤记录；不存在时报 ErrAbsenceNotFound。
-func (c *AbsenceRecordImp) Delete(ctx context.Context, id int64) error {
-	res, err := c.data.Conn(ctx).ExecContext(ctx, `DELETE FROM absence_record WHERE id = ?`, id)
+func (c *MysqlData) DeleteAbsence(ctx context.Context, id int64) error {
+	res, err := c.Conn(ctx).ExecContext(ctx, `DELETE FROM absence_record WHERE id = ?`, id)
 	if err != nil {
 		return err
 	}
@@ -65,8 +53,8 @@ func (c *AbsenceRecordImp) Delete(ctx context.Context, id int64) error {
 }
 
 // MustGet 取缺勤记录聚合；不存在时报 ErrAbsenceNotFound。
-func (c *AbsenceRecordImp) MustGet(ctx context.Context, id int64) (absence.AbsenceRecord, error) {
-	po, err := help.ScanAbsence(c.data.Conn(ctx).QueryRowContext(ctx, `
+func (c *MysqlData) MustGetAbsence(ctx context.Context, id int64) (absence.AbsenceRecord, error) {
+	po, err := help.ScanAbsence(c.Conn(ctx).QueryRowContext(ctx, `
 SELECT `+help.AbsenceColumns+`
   FROM absence_record
  WHERE id = ?`, id))
@@ -84,8 +72,8 @@ SELECT `+help.AbsenceColumns+`
 }
 
 // GetAbsences 取该学员的全部缺勤记录。
-func (c *AbsenceRecordImp) GetAbsences(ctx context.Context, studentID int64) ([]absence.AbsenceRecord, error) {
-	rows, err := c.data.Conn(ctx).QueryContext(ctx, `
+func (c *MysqlData) GetAbsences(ctx context.Context, studentID int64) ([]absence.AbsenceRecord, error) {
+	rows, err := c.Conn(ctx).QueryContext(ctx, `
 SELECT `+help.AbsenceColumns+`
   FROM absence_record
  WHERE student_id = ?

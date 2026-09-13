@@ -12,5 +12,5 @@ func (h *Handler) DeleteQualification(ctx context.Context, id int64) (err error)
 	}
 	defer func() { err = h.tx.End(ctx, err) }()
 
-	return h.QualificationCmd.Delete(ctx, id)
+	return h.QualificationCmd.DeleteQualification(ctx, id)
 }

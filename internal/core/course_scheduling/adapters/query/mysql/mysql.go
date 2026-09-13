@@ -3,7 +3,7 @@
 // 读侧只干一件事：把数据查出来。它连的是「读库」——
 //
 //	data.database.read_source  读库连接串（留空则回落到 source，单库环境只配一个就够）
-//	data.database.source       写库连接串，命令侧（adapters/command/mysql）用
+//	data.database.source       写库连接串，命令侧（adapters/command/data/mysql）用
 //
 // 读库和写库可以是同一个库，也可以是主从、甚至两套不同的库，所以读侧自带
 // 自己的一份 model 与连接，不和写侧共用任何东西。

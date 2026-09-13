@@ -1,4 +1,4 @@
-package imp
+package mysql
 
 import (
 	"context"
@@ -6,25 +6,13 @@ import (
 	"errors"
 	"fmt"
 
-	"cqrs/internal/core/course_scheduling/adapters/command/mysql"
-	"cqrs/internal/core/course_scheduling/adapters/command/mysql/implement/help"
-	"cqrs/internal/core/course_scheduling/adapters/command/mysql/model"
+	"cqrs/internal/core/course_scheduling/adapters/command/data/mysql/help"
+	"cqrs/internal/core/course_scheduling/adapters/command/data/mysql/model"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlot"
-	repo "cqrs/internal/core/course_scheduling/domain/repo/command"
 )
 
-type CourseSlotImp struct {
-	data *mysql.Data
-}
-
-var _ repo.CourseSlotCommand = (*CourseSlotImp)(nil)
-
-func NewCourseSlotImp(d *mysql.Data) repo.CourseSlotCommand {
-	return &CourseSlotImp{data: d}
-}
-
 // Save 保存课表槽位（新增或更新）。
-func (c *CourseSlotImp) Save(ctx context.Context, cs *courseSlot.CourseSlot) error {
+func (c *MysqlData) SaveCourseSlot(ctx context.Context, cs *courseSlot.CourseSlot) error {
 	if cs == nil {
 		return courseSlot.ErrCourseSlotRequired
 	}
@@ -33,7 +21,7 @@ func (c *CourseSlotImp) Save(ctx context.Context, cs *courseSlot.CourseSlot) err
 		return err
 	}
 
-	_, err = c.data.Conn(ctx).ExecContext(ctx, `
+	_, err = c.Conn(ctx).ExecContext(ctx, `
 INSERT INTO course_slot
   (id, course_id, weekday, start_time, end_time, teacher_id, classroom_id, created_at, updated_at)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -49,8 +37,8 @@ ON DUPLICATE KEY UPDATE
 }
 
 // Delete 删除课表槽位；不存在时报 ErrCourseSlotNotFound。
-func (c *CourseSlotImp) Delete(ctx context.Context, id string) error {
-	res, err := c.data.Conn(ctx).ExecContext(ctx, `DELETE FROM course_slot WHERE id = ?`, id)
+func (c *MysqlData) DeleteCourseSlot(ctx context.Context, id string) error {
+	res, err := c.Conn(ctx).ExecContext(ctx, `DELETE FROM course_slot WHERE id = ?`, id)
 	if err != nil {
 		return err
 	}
@@ -65,8 +53,8 @@ func (c *CourseSlotImp) Delete(ctx context.Context, id string) error {
 }
 
 // MustGet 取课表槽位聚合；不存在时报 ErrCourseSlotNotFound。
-func (c *CourseSlotImp) MustGet(ctx context.Context, id string) (courseSlot.CourseSlot, error) {
-	po, err := help.ScanCourseSlot(c.data.Conn(ctx).QueryRowContext(ctx, `
+func (c *MysqlData) MustGetCourseSlot(ctx context.Context, id string) (courseSlot.CourseSlot, error) {
+	po, err := help.ScanCourseSlot(c.Conn(ctx).QueryRowContext(ctx, `
 SELECT `+help.CourseSlotColumns+`
   FROM course_slot
  WHERE id = ?`, id))
@@ -84,16 +72,16 @@ SELECT `+help.CourseSlotColumns+`
 }
 
 // AssignTeacher 给指定课表槽位们配置老师。
-func (c *CourseSlotImp) AssignTeacher(ctx context.Context, slotIDs []string, teacherID int64) error {
+func (c *MysqlData) AssignTeacher(ctx context.Context, slotIDs []string, teacherID int64) error {
 	for _, id := range slotIDs {
-		slot, err := c.MustGet(ctx, id)
+		slot, err := c.MustGetCourseSlot(ctx, id)
 		if err != nil {
 			return err
 		}
 		if err := slot.ChangeTeacher(teacherID); err != nil {
 			return err
 		}
-		if err := c.Save(ctx, &slot); err != nil {
+		if err := c.SaveCourseSlot(ctx, &slot); err != nil {
 			return err
 		}
 	}
@@ -101,16 +89,16 @@ func (c *CourseSlotImp) AssignTeacher(ctx context.Context, slotIDs []string, tea
 }
 
 // AssignCourse 给指定课表槽位们配置课程。
-func (c *CourseSlotImp) AssignCourse(ctx context.Context, slotIDs []string, courseID string) error {
+func (c *MysqlData) AssignCourse(ctx context.Context, slotIDs []string, courseID string) error {
 	for _, id := range slotIDs {
-		slot, err := c.MustGet(ctx, id)
+		slot, err := c.MustGetCourseSlot(ctx, id)
 		if err != nil {
 			return err
 		}
 		if err := slot.ChangeCourse(courseID); err != nil {
 			return err
 		}
-		if err := c.Save(ctx, &slot); err != nil {
+		if err := c.SaveCourseSlot(ctx, &slot); err != nil {
 			return err
 		}
 	}
@@ -118,16 +106,16 @@ func (c *CourseSlotImp) AssignCourse(ctx context.Context, slotIDs []string, cour
 }
 
 // AssignClassroom 给指定课表槽位们配置教室。
-func (c *CourseSlotImp) AssignClassroom(ctx context.Context, slotIDs []string, classroomID string) error {
+func (c *MysqlData) AssignClassroom(ctx context.Context, slotIDs []string, classroomID string) error {
 	for _, id := range slotIDs {
-		slot, err := c.MustGet(ctx, id)
+		slot, err := c.MustGetCourseSlot(ctx, id)
 		if err != nil {
 			return err
 		}
 		if err := slot.ChangeClassroom(classroomID); err != nil {
 			return err
 		}
-		if err := c.Save(ctx, &slot); err != nil {
+		if err := c.SaveCourseSlot(ctx, &slot); err != nil {
 			return err
 		}
 	}
@@ -135,10 +123,10 @@ func (c *CourseSlotImp) AssignClassroom(ctx context.Context, slotIDs []string, c
 }
 
 // GetSlots 按 ID 取槽位，顺序与入参一致；少一个就报 not found。
-func (c *CourseSlotImp) GetSlots(ctx context.Context, slotIDs []string) (courseSlot.CourseSlots, error) {
+func (c *MysqlData) GetSlots(ctx context.Context, slotIDs []string) (courseSlot.CourseSlots, error) {
 	out := make(courseSlot.CourseSlots, 0, len(slotIDs))
 	for _, id := range slotIDs {
-		slot, err := c.MustGet(ctx, id)
+		slot, err := c.MustGetCourseSlot(ctx, id)
 		if err != nil {
 			return nil, err
 		}
@@ -148,8 +136,8 @@ func (c *CourseSlotImp) GetSlots(ctx context.Context, slotIDs []string) (courseS
 }
 
 // GetTeacherSlots 取该讲师现有的全部排期。
-func (c *CourseSlotImp) GetTeacherSlots(ctx context.Context, teacherID int64) (courseSlot.CourseSlots, error) {
-	rows, err := c.data.Conn(ctx).QueryContext(ctx, `
+func (c *MysqlData) GetTeacherSlots(ctx context.Context, teacherID int64) (courseSlot.CourseSlots, error) {
+	rows, err := c.Conn(ctx).QueryContext(ctx, `
 SELECT `+help.CourseSlotColumns+`
   FROM course_slot
  WHERE teacher_id = ?
@@ -162,8 +150,8 @@ SELECT `+help.CourseSlotColumns+`
 }
 
 // GetClassroomSlots 取该教室现有的全部排期。
-func (c *CourseSlotImp) GetClassroomSlots(ctx context.Context, classroomID string) (courseSlot.CourseSlots, error) {
-	rows, err := c.data.Conn(ctx).QueryContext(ctx, `
+func (c *MysqlData) GetClassroomSlots(ctx context.Context, classroomID string) (courseSlot.CourseSlots, error) {
+	rows, err := c.Conn(ctx).QueryContext(ctx, `
 SELECT `+help.CourseSlotColumns+`
   FROM course_slot
  WHERE classroom_id = ?
@@ -176,8 +164,8 @@ SELECT `+help.CourseSlotColumns+`
 }
 
 // GetCourseSlots 取该课程现有的全部排期。
-func (c *CourseSlotImp) GetCourseSlots(ctx context.Context, courseID string) (courseSlot.CourseSlots, error) {
-	rows, err := c.data.Conn(ctx).QueryContext(ctx, `
+func (c *MysqlData) GetCourseSlots(ctx context.Context, courseID string) (courseSlot.CourseSlots, error) {
+	rows, err := c.Conn(ctx).QueryContext(ctx, `
 SELECT `+help.CourseSlotColumns+`
   FROM course_slot
  WHERE course_id = ?
@@ -190,8 +178,8 @@ SELECT `+help.CourseSlotColumns+`
 }
 
 // GetStudentSlots 取该学员在学课程的全部排期。
-func (c *CourseSlotImp) GetStudentSlots(ctx context.Context, studentID int64) (courseSlot.CourseSlots, error) {
-	rows, err := c.data.Conn(ctx).QueryContext(ctx, `
+func (c *MysqlData) GetStudentSlots(ctx context.Context, studentID int64) (courseSlot.CourseSlots, error) {
+	rows, err := c.Conn(ctx).QueryContext(ctx, `
 SELECT `+help.CourseSlotColumns+`
   FROM course_slot
  WHERE course_id IN (

@@ -1,4 +1,4 @@
-package imp
+package mysql
 
 import (
 	"context"
@@ -6,25 +6,13 @@ import (
 	"errors"
 	"fmt"
 
-	"cqrs/internal/core/course_scheduling/adapters/command/mysql"
-	"cqrs/internal/core/course_scheduling/adapters/command/mysql/implement/help"
-	"cqrs/internal/core/course_scheduling/adapters/command/mysql/model"
+	"cqrs/internal/core/course_scheduling/adapters/command/data/mysql/help"
+	"cqrs/internal/core/course_scheduling/adapters/command/data/mysql/model"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlotChange"
-	repo "cqrs/internal/core/course_scheduling/domain/repo/command"
 )
 
-type CourseSlotChangeImp struct {
-	data *mysql.Data
-}
-
-var _ repo.CourseSlotChangeCommand = (*CourseSlotChangeImp)(nil)
-
-func NewCourseSlotChangeImp(d *mysql.Data) repo.CourseSlotChangeCommand {
-	return &CourseSlotChangeImp{data: d}
-}
-
 // Save 保存课表变更（新增或更新，不做检查）。
-func (c *CourseSlotChangeImp) Save(ctx context.Context, csc *courseSlotChange.CourseSlotChange) error {
+func (c *MysqlData) SaveCourseSlotChange(ctx context.Context, csc *courseSlotChange.CourseSlotChange) error {
 	if csc == nil {
 		return courseSlotChange.ErrSlotChangeRequired
 	}
@@ -33,7 +21,7 @@ func (c *CourseSlotChangeImp) Save(ctx context.Context, csc *courseSlotChange.Co
 		return err
 	}
 
-	_, err = c.data.Conn(ctx).ExecContext(ctx, `
+	_, err = c.Conn(ctx).ExecContext(ctx, `
 INSERT INTO course_slot_change
   (id, course_id, applicant_id, change_type, original_slot_id, original_date,
    original_teacher_id, original_classroom_id, original_start_time, original_end_time,
@@ -59,8 +47,8 @@ ON DUPLICATE KEY UPDATE
 }
 
 // Delete 删除课表变更；不存在时报 ErrSlotChangeNotFound。
-func (c *CourseSlotChangeImp) Delete(ctx context.Context, id int64) error {
-	res, err := c.data.Conn(ctx).ExecContext(ctx, `DELETE FROM course_slot_change WHERE id = ?`, id)
+func (c *MysqlData) DeleteCourseSlotChange(ctx context.Context, id int64) error {
+	res, err := c.Conn(ctx).ExecContext(ctx, `DELETE FROM course_slot_change WHERE id = ?`, id)
 	if err != nil {
 		return err
 	}
@@ -75,8 +63,8 @@ func (c *CourseSlotChangeImp) Delete(ctx context.Context, id int64) error {
 }
 
 // MustGet 取课表变更聚合；不存在时报 ErrSlotChangeNotFound。
-func (c *CourseSlotChangeImp) MustGet(ctx context.Context, id int64) (courseSlotChange.CourseSlotChange, error) {
-	po, err := help.ScanCourseSlotChange(c.data.Conn(ctx).QueryRowContext(ctx, `
+func (c *MysqlData) MustGetCourseSlotChange(ctx context.Context, id int64) (courseSlotChange.CourseSlotChange, error) {
+	po, err := help.ScanCourseSlotChange(c.Conn(ctx).QueryRowContext(ctx, `
 SELECT `+help.CourseSlotChangeColumns+`
   FROM course_slot_change
  WHERE id = ?`, id))
@@ -94,16 +82,16 @@ SELECT `+help.CourseSlotChangeColumns+`
 }
 
 // Change 登记一次临时换课：冲突判定由调用方做完，这里只落库。
-func (c *CourseSlotChangeImp) Change(ctx context.Context, csc *courseSlotChange.CourseSlotChange) error {
+func (c *MysqlData) Change(ctx context.Context, csc *courseSlotChange.CourseSlotChange) error {
 	if csc == nil {
 		return courseSlotChange.ErrSlotChangeRequired
 	}
-	return c.Save(ctx, csc)
+	return c.SaveCourseSlotChange(ctx, csc)
 }
 
 // GetOtherSlotChanges 取除该变更单以外的全部换课记录。
-func (c *CourseSlotChangeImp) GetOtherSlotChanges(ctx context.Context, id int64) ([]*courseSlotChange.CourseSlotChange, error) {
-	rows, err := c.data.Conn(ctx).QueryContext(ctx, `
+func (c *MysqlData) GetOtherSlotChanges(ctx context.Context, id int64) ([]*courseSlotChange.CourseSlotChange, error) {
+	rows, err := c.Conn(ctx).QueryContext(ctx, `
 SELECT `+help.CourseSlotChangeColumns+`
   FROM course_slot_change
  WHERE id <> ?
