@@ -1,0 +1,107 @@
+syntax = "proto3";
+
+package v1.course_scheduling;
+
+import "v1/course_scheduling/common.proto";
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "cqrs/api/v1/course_scheduling/teacher;teacherv1";
+option java_multiple_files = true;
+option java_package = "io.grpc.examples.course_scheduling.v1";
+option java_outer_classname = "TeacherProto";
+
+// ============================================================
+// Teacher
+// ============================================================
+
+// TeacherStatus represents the lifecycle state of a teacher.
+enum TeacherStatus {
+  TEACHER_STATUS_UNSPECIFIED = 0;
+  TEACHER_STATUS_ACTIVE = 1;
+  TEACHER_STATUS_ON_LEAVE = 2;
+  TEACHER_STATUS_TERMINATED = 3;
+}
+
+// Teacher represents an instructor in the scheduling system.
+message Teacher {
+  // System-assigned ID.
+  int64 id = 1;
+  // Linked student-system ID (for when the teacher also enrolls as a student).
+  int64 student_id = 2;
+  // Teacher's full name.
+  string name = 3;
+  // Professional title (e.g. "Senior Trainer", "Gold Instructor").
+  string title = 4;
+  // Contact information.
+  ContactInfo contact = 5;
+  // Lifecycle status.
+  TeacherStatus status = 6;
+  // Record creation time.
+  google.protobuf.Timestamp created_at = 7;
+  // Last modification time.
+  google.protobuf.Timestamp updated_at = 8;
+}
+
+message TeacherSet {
+  repeated Teacher teachers = 1;
+  string next_page_token = 2;
+}
+
+message SaveTeacherRequest {
+  Teacher teacher = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message GetTeacherRequest {
+  int64 id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message ListTeachersRequest {
+  int32 page_size = 1;
+  string page_token = 2;
+  string filter = 3;
+  string order_by = 4;
+}
+
+message DeleteTeacherRequest {
+  int64 id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// TeacherService owns the teacher aggregate.
+service TeacherService {
+
+  // --- commands ---
+
+  // SaveTeacher creates or updates a teacher.
+  rpc SaveTeacher (SaveTeacherRequest) returns (Teacher) {
+    option (google.api.http) = {
+      post: "/v1/teachers"
+      body: "teacher"
+    };
+  }
+
+  // DeleteTeacher hard-deletes a teacher by ID.
+  rpc DeleteTeacher (DeleteTeacherRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/teachers/{id}"
+    };
+  }
+
+  // --- queries ---
+
+  // GetTeacher returns a single teacher by ID.
+  rpc GetTeacher (GetTeacherRequest) returns (Teacher) {
+    option (google.api.http) = {
+      get: "/v1/teachers/{id}"
+    };
+  }
+
+  // ListTeachers returns a page of teachers.
+  rpc ListTeachers (ListTeachersRequest) returns (TeacherSet) {
+    option (google.api.http) = {
+      get: "/v1/teachers"
+    };
+  }
+}

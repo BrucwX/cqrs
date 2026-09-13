@@ -1,0 +1,121 @@
+syntax = "proto3";
+
+package v1.course_scheduling;
+
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "cqrs/api/v1/course_scheduling/absence;absencev1";
+option java_multiple_files = true;
+option java_outer_classname = "AbsenceProto";
+option java_package = "io.grpc.examples.course_scheduling.v1";
+
+// ============================================================
+// AbsenceRecord
+// ============================================================
+
+// AbsenceType categorizes the reason for a student absence.
+enum AbsenceType {
+  ABSENCE_TYPE_UNSPECIFIED = 0;
+  ABSENCE_TYPE_PERSONAL_LEAVE = 1;
+  ABSENCE_TYPE_OFFICIAL_DUTY = 2;
+  ABSENCE_TYPE_UNEXCUSED = 3;
+}
+
+// AbsenceRecord records a factual student absence.
+message AbsenceRecord {
+  // System-assigned ID.
+  int64 id = 1;
+  // The absent student ID.
+  int64 student_id = 2;
+  // The course missed.
+  string course_id = 3;
+  // The specific slot missed.
+  string course_slot_id = 4;
+  // The date of absence.
+  google.protobuf.Timestamp schedule_date = 5;
+  // Hours missed.
+  int32 missed_hours = 6;
+  // Type of absence.
+  AbsenceType absence_type = 7;
+  // Reason or notes.
+  string reason = 8;
+  // Record creation time.
+  google.protobuf.Timestamp created_at = 9;
+  // Last modification time.
+  google.protobuf.Timestamp updated_at = 10;
+}
+
+message AbsenceRecordSet {
+  repeated AbsenceRecord absences = 1;
+  string next_page_token = 2;
+}
+
+message RecordAbsenceRequest {
+  AbsenceRecord absence = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message GetAbsenceRequest {
+  int64 id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message ListAbsencesRequest {
+  int32 page_size = 1;
+  string page_token = 2;
+  string filter = 3;
+  string order_by = 4;
+}
+
+message ListAbsencesByStudentIDRequest {
+  int64 student_id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message ListAbsencesByCourseIDRequest {
+  string course_id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message DeleteAbsenceRequest {
+  int64 id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// AbsenceService owns the absence record aggregate.
+service AbsenceService {
+  // --- commands ---
+
+  // RecordAbsence records a factual student absence.
+  rpc RecordAbsence(RecordAbsenceRequest) returns (AbsenceRecord) {
+    option (google.api.http) = {
+      post: "/v1/absences"
+      body: "absence"
+    };
+  }
+
+  // DeleteAbsence hard-deletes an absence record by ID.
+  rpc DeleteAbsence(DeleteAbsenceRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/v1/absences/{id}"};
+  }
+
+  // --- queries ---
+
+  // GetAbsence returns a single absence record by ID.
+  rpc GetAbsence(GetAbsenceRequest) returns (AbsenceRecord) {
+    option (google.api.http) = {get: "/v1/absences/{id}"};
+  }
+
+  // ListAbsences returns a page of absence records.
+  rpc ListAbsences(ListAbsencesRequest) returns (AbsenceRecordSet) {
+    option (google.api.http) = {get: "/v1/absences"};
+  }
+
+  // ListAbsencesByStudentID returns all absences for a student.
+  rpc ListAbsencesByStudentID(ListAbsencesByStudentIDRequest) returns (AbsenceRecordSet) {
+    option (google.api.http) = {get: "/v1/students/{student_id}/absences"};
+  }
+
+  // ListAbsencesByCourseID returns all absences for a course.
+  rpc ListAbsencesByCourseID(ListAbsencesByCourseIDRequest) returns (AbsenceRecordSet) {
+    option (google.api.http) = {get: "/v1/courses/{course_id}/absences"};
+  }
+}

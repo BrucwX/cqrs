@@ -1,0 +1,149 @@
+syntax = "proto3";
+
+package v1.course_scheduling;
+
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "cqrs/api/v1/course_scheduling/course_slot_change;courseslotchangev1";
+option java_multiple_files = true;
+option java_package = "io.grpc.examples.course_scheduling.v1";
+option java_outer_classname = "CourseSlotChangeProto";
+
+// ============================================================
+// CourseSlotChange
+// ============================================================
+
+// ChangeType describes the kind of course slot change.
+enum ChangeType {
+  CHANGE_TYPE_UNSPECIFIED = 0;
+  CHANGE_TYPE_RESCHEDULE = 1;
+  CHANGE_TYPE_SUBSTITUTE = 2;
+  CHANGE_TYPE_RELOCATE = 3;
+  CHANGE_TYPE_COMPOSITE = 4;
+}
+
+// OriginalPlan captures the original schedule before a slot change.
+message OriginalPlan {
+  // The original course slot ID.
+  string slot_id = 1;
+  // The scheduled date.
+  google.protobuf.Timestamp date = 2;
+  // The originally assigned teacher ID.
+  int64 teacher_id = 3;
+  // The originally assigned classroom ID.
+  string classroom_id = 4;
+  // Start time string (e.g. "16:00").
+  string start_time = 5;
+  // End time string (e.g. "18:00").
+  string end_time = 6;
+}
+
+// TargetPlan captures the new schedule after a slot change.
+message TargetPlan {
+  // New start datetime.
+  google.protobuf.Timestamp target_start_at = 1;
+  // New end datetime.
+  google.protobuf.Timestamp target_end_at = 2;
+  // New teacher ID.
+  int64 teacher_id = 3;
+  // New classroom ID.
+  string classroom_id = 4;
+}
+
+// CourseSlotChange represents a temporary schedule modification.
+message CourseSlotChange {
+  // System-assigned ID.
+  int64 id = 1;
+  // The course affected.
+  string course_id = 2;
+  // The teacher who requested the change.
+  int64 applicant_id = 3;
+  // Type of change.
+  ChangeType change_type = 4;
+  // The original schedule plan.
+  OriginalPlan original_plan = 5;
+  // The target schedule plan.
+  TargetPlan target_plan = 6;
+  // Reason for the change.
+  string reason = 7;
+  // Record creation time.
+  google.protobuf.Timestamp created_at = 8;
+  // Last modification time.
+  google.protobuf.Timestamp updated_at = 9;
+}
+
+message CourseSlotChangeSet {
+  repeated CourseSlotChange course_slot_changes = 1;
+  string next_page_token = 2;
+}
+
+message ChangeCourseSlotRequest {
+  CourseSlotChange course_slot_change = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message GetCourseSlotChangeRequest {
+  int64 id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message ListCourseSlotChangesRequest {
+  int32 page_size = 1;
+  string page_token = 2;
+  string filter = 3;
+  string order_by = 4;
+}
+
+message ListCourseSlotChangesByCourseIDRequest {
+  string course_id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message DeleteCourseSlotChangeRequest {
+  int64 id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// CourseSlotChangeService owns the course slot change aggregate.
+service CourseSlotChangeService {
+
+  // --- commands ---
+
+  // ChangeCourseSlot creates a temporary schedule modification (reschedule,
+  // substitute teacher, relocate room, or composite).
+  rpc ChangeCourseSlot (ChangeCourseSlotRequest) returns (CourseSlotChange) {
+    option (google.api.http) = {
+      post: "/v1/course-slot-changes"
+      body: "course_slot_change"
+    };
+  }
+
+  // DeleteCourseSlotChange hard-deletes a slot change record by ID.
+  rpc DeleteCourseSlotChange (DeleteCourseSlotChangeRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/course-slot-changes/{id}"
+    };
+  }
+
+  // --- queries ---
+
+  // GetCourseSlotChange returns a single slot change record by ID.
+  rpc GetCourseSlotChange (GetCourseSlotChangeRequest) returns (CourseSlotChange) {
+    option (google.api.http) = {
+      get: "/v1/course-slot-changes/{id}"
+    };
+  }
+
+  // ListCourseSlotChanges returns a page of slot change records.
+  rpc ListCourseSlotChanges (ListCourseSlotChangesRequest) returns (CourseSlotChangeSet) {
+    option (google.api.http) = {
+      get: "/v1/course-slot-changes"
+    };
+  }
+
+  // ListCourseSlotChangesByCourseID returns all slot changes for a course.
+  rpc ListCourseSlotChangesByCourseID (ListCourseSlotChangesByCourseIDRequest) returns (CourseSlotChangeSet) {
+    option (google.api.http) = {
+      get: "/v1/courses/{course_id}/slot-changes"
+    };
+  }
+}

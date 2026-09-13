@@ -1,0 +1,134 @@
+syntax = "proto3";
+
+package v1.course_scheduling;
+
+import "v1/course_scheduling/course/course.proto";
+import "v1/course_scheduling/student/student.proto";
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "cqrs/api/v1/course_scheduling/enrollment;enrollmentv1";
+option java_multiple_files = true;
+option java_package = "io.grpc.examples.course_scheduling.v1";
+option java_outer_classname = "EnrollmentProto";
+
+// ============================================================
+// CourseEnrollment
+// ============================================================
+
+// EnrollmentStatus represents the state of a course enrollment.
+enum EnrollmentStatus {
+  ENROLLMENT_STATUS_UNSPECIFIED = 0;
+  ENROLLMENT_STATUS_ENROLLED = 1;
+  ENROLLMENT_STATUS_COMPLETED = 2;
+  ENROLLMENT_STATUS_DROPPED = 3;
+}
+
+// CourseEnrollment represents a student's enrollment in a course.
+message CourseEnrollment {
+  // System-assigned ID.
+  int64 id = 1;
+  // The enrolled student ID.
+  int64 student_id = 2;
+  // The course ID.
+  string course_id = 3;
+  // Enrollment status.
+  EnrollmentStatus status = 4;
+  // Time of enrollment.
+  google.protobuf.Timestamp enrolled_at = 5;
+  // Time of completion (if completed).
+  google.protobuf.Timestamp completed_at = 6;
+  // Time of drop (if dropped).
+  google.protobuf.Timestamp dropped_at = 7;
+  // Last modification time.
+  google.protobuf.Timestamp updated_at = 8;
+}
+
+message CourseEnrollmentSet {
+  repeated CourseEnrollment enrollments = 1;
+  string next_page_token = 2;
+}
+
+message EnrollStudentRequest {
+  CourseEnrollment enrollment = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message GetEnrollmentRequest {
+  int64 id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message ListEnrollmentsRequest {
+  int32 page_size = 1;
+  string page_token = 2;
+  string filter = 3;
+  string order_by = 4;
+}
+
+message ListEnrolledCoursesByStudentIDRequest {
+  int64 student_id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message ListEnrolledStudentsByCourseIDRequest {
+  string course_id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message DeleteEnrollmentRequest {
+  int64 id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// EnrollmentService owns the enrollment aggregate.
+//
+// The two cross-aggregate listings stay here rather than moving to Course or
+// Student: they are enrollment questions ("which rows link X and Y") whose
+// answers happen to be courses or students.
+service EnrollmentService {
+
+  // --- commands ---
+
+  // EnrollStudent enrolls a student in a course.
+  rpc EnrollStudent (EnrollStudentRequest) returns (CourseEnrollment) {
+    option (google.api.http) = {
+      post: "/v1/enrollments"
+      body: "enrollment"
+    };
+  }
+
+  // DeleteEnrollment hard-deletes an enrollment record by ID.
+  rpc DeleteEnrollment (DeleteEnrollmentRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/enrollments/{id}"
+    };
+  }
+
+  // --- queries ---
+
+  // GetEnrollment returns a single enrollment record by ID.
+  rpc GetEnrollment (GetEnrollmentRequest) returns (CourseEnrollment) {
+    option (google.api.http) = {
+      get: "/v1/enrollments/{id}"
+    };
+  }
+
+  // ListEnrollments returns a page of enrollment records.
+  rpc ListEnrollments (ListEnrollmentsRequest) returns (CourseEnrollmentSet) {
+    option (google.api.http) = {
+      get: "/v1/enrollments"
+    };
+  }
+
+  // ListEnrolledCoursesByStudentID returns all courses a student is enrolled in.
+  rpc ListEnrolledCoursesByStudentID (ListEnrolledCoursesByStudentIDRequest) returns (CourseSet) {
+    option (google.api.http) = {
+      get: "/v1/students/{student_id}/courses"
+    };
+  }
+
+  // ListEnrolledStudentsByCourseID returns all students enrolled in a course.
+  rpc ListEnrolledStudentsByCourseID (ListEnrolledStudentsByCourseIDRequest) returns (StudentSet) {
+    option (google.api.http) = {
+      get: "/v1/courses/{course_id}/students"
+    };
+  }
+}

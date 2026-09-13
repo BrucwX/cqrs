@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package v1.course_scheduling;
+
+
+option go_package = "cqrs/api/v1/course_scheduling;courseschedulingv1";
+option java_multiple_files = true;
+option java_package = "io.grpc.examples.course_scheduling.v1";
+option java_outer_classname = "CommonProto";
+
+// ============================================================
+// Shared value objects
+// ============================================================
+
+// ContactInfo holds phone and email for a student or teacher.
+message ContactInfo {
+  // Required. Chinese mobile phone number (e.g. "13800138000").
+  string phone = 1;
+  // Optional email address.
+  string email = 2;
+}

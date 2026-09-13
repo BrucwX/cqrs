@@ -1,0 +1,159 @@
+syntax = "proto3";
+
+package v1.course_scheduling;
+
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "cqrs/api/v1/course_scheduling/course;coursev1";
+option java_multiple_files = true;
+option java_package = "io.grpc.examples.course_scheduling.v1";
+option java_outer_classname = "CourseProto";
+
+// ============================================================
+// Course
+// ============================================================
+
+// Capacity tracks enrollment capacity for a course.
+message Capacity {
+  // Maximum number of students.
+  int32 max = 1;
+  // Current number of enrolled students.
+  int32 enrolled = 2;
+}
+
+// CoursePeriod defines the date range and hours of a course.
+message CoursePeriod {
+  // Course start date.
+  google.protobuf.Timestamp start_at = 1;
+  // Course end date.
+  google.protobuf.Timestamp end_at = 2;
+  // Total scheduled teaching hours.
+  int32 total_hours = 3;
+  // Hours completed so far.
+  int32 completed_hours = 4;
+}
+
+// EnrollmentWindow defines the period during which students can enroll or drop.
+message EnrollmentWindow {
+  // Enrollment open date.
+  google.protobuf.Timestamp start_at = 1;
+  // Enrollment close date.
+  google.protobuf.Timestamp end_at = 2;
+  // Last date a student may drop without penalty.
+  google.protobuf.Timestamp drop_deadline = 3;
+}
+
+// Course represents a scheduled course offering.
+//
+// The aggregate carries no timestamps, so neither does this message.
+message Course {
+  // System-assigned ID (UUID).
+  string id = 1;
+  // References the type of course.
+  string course_type_id = 2;
+  // Enrollment capacity.
+  Capacity capacity = 3;
+  // Enrollment window.
+  EnrollmentWindow enrollment = 4;
+  // Teaching period.
+  CoursePeriod period = 5;
+}
+
+message CourseSet {
+  repeated Course courses = 1;
+  string next_page_token = 2;
+}
+
+message SaveCourseRequest {
+  Course course = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message GetCourseRequest {
+  string id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message ListCoursesRequest {
+  int32 page_size = 1;
+  string page_token = 2;
+  string filter = 3;
+  string order_by = 4;
+}
+
+message DeleteCourseRequest {
+  string id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message ListCoursesAvailableForClassroomRequest {
+  string classroom_id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message ListCoursesAvailableForStudentRequest {
+  int64 student_id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message ListCoursesAvailableForTeacherRequest {
+  int64 teacher_id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// CourseService owns the course aggregate.
+service CourseService {
+
+  // --- commands ---
+
+  // SaveCourse creates or updates a course.
+  rpc SaveCourse (SaveCourseRequest) returns (Course) {
+    option (google.api.http) = {
+      post: "/v1/courses"
+      body: "course"
+    };
+  }
+
+  // DeleteCourse hard-deletes a course by ID.
+  rpc DeleteCourse (DeleteCourseRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/courses/{id}"
+    };
+  }
+
+  // --- queries ---
+
+  // GetCourse returns a single course by ID.
+  rpc GetCourse (GetCourseRequest) returns (Course) {
+    option (google.api.http) = {
+      get: "/v1/courses/{id}"
+    };
+  }
+
+  // ListCourses returns a page of courses.
+  rpc ListCourses (ListCoursesRequest) returns (CourseSet) {
+    option (google.api.http) = {
+      get: "/v1/courses"
+    };
+  }
+
+  // ListCoursesAvailableForClassroom returns courses that can fit in the given
+  // classroom based on capacity and schedule.
+  rpc ListCoursesAvailableForClassroom (ListCoursesAvailableForClassroomRequest) returns (CourseSet) {
+    option (google.api.http) = {
+      get: "/v1/courses/available-for-classroom"
+    };
+  }
+
+  // ListCoursesAvailableForStudent returns courses the student can enroll in.
+  rpc ListCoursesAvailableForStudent (ListCoursesAvailableForStudentRequest) returns (CourseSet) {
+    option (google.api.http) = {
+      get: "/v1/courses/available-for-student"
+    };
+  }
+
+  // ListCoursesAvailableForTeacher returns courses the teacher is qualified
+  // and available to teach.
+  rpc ListCoursesAvailableForTeacher (ListCoursesAvailableForTeacherRequest) returns (CourseSet) {
+    option (google.api.http) = {
+      get: "/v1/courses/available-for-teacher"
+    };
+  }
+}

@@ -1,0 +1,170 @@
+syntax = "proto3";
+
+package v1.course_scheduling;
+
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "cqrs/api/v1/course_scheduling/course_slot;courseslotv1";
+option java_multiple_files = true;
+option java_package = "io.grpc.examples.course_scheduling.v1";
+option java_outer_classname = "CourseSlotProto";
+
+// ============================================================
+// CourseSlot
+// ============================================================
+
+// Weekday represents a day of the week.
+enum Weekday {
+  WEEKDAY_UNSPECIFIED = 0;
+  WEEKDAY_SUNDAY = 1;
+  WEEKDAY_MONDAY = 2;
+  WEEKDAY_TUESDAY = 3;
+  WEEKDAY_WEDNESDAY = 4;
+  WEEKDAY_THURSDAY = 5;
+  WEEKDAY_FRIDAY = 6;
+  WEEKDAY_SATURDAY = 7;
+}
+
+// DayTime represents a time of day (hour and minute).
+message DayTime {
+  // Hour (0-23).
+  int32 hour = 1;
+  // Minute (0-59).
+  int32 minute = 2;
+}
+
+// DayTimeRange represents a time span within a single day.
+message DayTimeRange {
+  // Start time.
+  DayTime start = 1;
+  // End time.
+  DayTime end = 2;
+}
+
+// CourseSlot represents a weekly recurring time slot for a course.
+message CourseSlot {
+  // System-assigned ID (UUID).
+  string id = 1;
+  // The course this slot belongs to.
+  string course_id = 2;
+  // Day of the week.
+  Weekday weekday = 3;
+  // Time range within the day.
+  DayTimeRange time_range = 4;
+  // Assigned teacher ID. -1 means unassigned.
+  int64 teacher_id = 5;
+  // Assigned classroom ID. Empty means unassigned.
+  string classroom_id = 6;
+  // Record creation time.
+  google.protobuf.Timestamp created_at = 7;
+  // Last modification time.
+  google.protobuf.Timestamp updated_at = 8;
+}
+
+message CourseSlotSet {
+  repeated CourseSlot course_slots = 1;
+  string next_page_token = 2;
+}
+
+message GetCourseSlotRequest {
+  string id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message ListCourseSlotsRequest {
+  int32 page_size = 1;
+  string page_token = 2;
+  string filter = 3;
+  string order_by = 4;
+}
+
+message ListCourseSlotsByCourseIDRequest {
+  string course_id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message AssignClassroomToCourseSlotRequest {
+  // One or more slot IDs to assign.
+  repeated string slot_ids = 1 [(google.api.field_behavior) = REQUIRED];
+  // The classroom to assign.
+  string classroom_id = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+message AssignCourseToCourseSlotRequest {
+  // One or more slot IDs to assign.
+  repeated string slot_ids = 1 [(google.api.field_behavior) = REQUIRED];
+  // The course to assign.
+  string course_id = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+message AssignTeacherToCourseSlotRequest {
+  // One or more slot IDs to assign.
+  repeated string slot_ids = 1 [(google.api.field_behavior) = REQUIRED];
+  // The teacher to assign.
+  int64 teacher_id = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+message DeleteCourseSlotRequest {
+  string id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// CourseSlotService owns the course slot aggregate.
+service CourseSlotService {
+
+  // --- commands ---
+
+  // AssignClassroomToCourseSlot assigns a classroom to one or more slots.
+  rpc AssignClassroomToCourseSlot (AssignClassroomToCourseSlotRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/course-slots/assign-classroom"
+      body: "*"
+    };
+  }
+
+  // AssignCourseToCourseSlot assigns a course to one or more slots.
+  rpc AssignCourseToCourseSlot (AssignCourseToCourseSlotRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/course-slots/assign-course"
+      body: "*"
+    };
+  }
+
+  // AssignTeacherToCourseSlot assigns a teacher to one or more slots.
+  rpc AssignTeacherToCourseSlot (AssignTeacherToCourseSlotRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/course-slots/assign-teacher"
+      body: "*"
+    };
+  }
+
+  // DeleteCourseSlot hard-deletes a course slot by ID.
+  rpc DeleteCourseSlot (DeleteCourseSlotRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/course-slots/{id}"
+    };
+  }
+
+  // --- queries ---
+
+  // GetCourseSlot returns a single course slot by ID.
+  rpc GetCourseSlot (GetCourseSlotRequest) returns (CourseSlot) {
+    option (google.api.http) = {
+      get: "/v1/course-slots/{id}"
+    };
+  }
+
+  // ListCourseSlots returns a page of course slots.
+  rpc ListCourseSlots (ListCourseSlotsRequest) returns (CourseSlotSet) {
+    option (google.api.http) = {
+      get: "/v1/course-slots"
+    };
+  }
+
+  // ListCourseSlotsByCourseID returns all slots belonging to a course.
+  rpc ListCourseSlotsByCourseID (ListCourseSlotsByCourseIDRequest) returns (CourseSlotSet) {
+    option (google.api.http) = {
+      get: "/v1/courses/{course_id}/slots"
+    };
+  }
+}

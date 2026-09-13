@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package v1.course_scheduling;
+
+option go_package = "cqrs/api/v1/course_scheduling;courseschedulingv1";
+option java_multiple_files = true;
+option java_package = "io.grpc.examples.course_scheduling.v1";
+option java_outer_classname = "CourseSchedulingErrorProto";
+
+// ErrorReason enumerates domain-specific error codes for the course scheduling
+// bounded context. Values start at 1; 0 is reserved as the default/unspecified.
+enum ErrorReason {
+  ERROR_REASON_UNSPECIFIED = 0;
+
+  // --- Not-found errors ---
+  STUDENT_NOT_FOUND = 1;
+  TEACHER_NOT_FOUND = 2;
+  CLASSROOM_NOT_FOUND = 3;
+  COURSE_NOT_FOUND = 4;
+  COURSE_SLOT_NOT_FOUND = 5;
+  COURSE_SLOT_CHANGE_NOT_FOUND = 6;
+  ENROLLMENT_NOT_FOUND = 7;
+  ABSENCE_NOT_FOUND = 8;
+  MAKEUP_NOT_FOUND = 9;
+  QUALIFICATION_NOT_FOUND = 10;
+
+  // --- Conflict / business-rule errors ---
+  SLOT_CONFLICT = 20;
+  ENROLLMENT_CONFLICT = 21;
+  MAKEUP_CONFLICT = 22;
+  TEACHER_UNQUALIFIED = 23;
+  COURSE_NOT_FINISHED = 24;
+
+  // --- Validation errors ---
+  INVALID_ARGUMENT = 30;
+}

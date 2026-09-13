@@ -1,0 +1,145 @@
+syntax = "proto3";
+
+package v1.course_scheduling;
+
+import "v1/course_scheduling/course_type/course_type.proto";
+import "v1/course_scheduling/teacher/teacher.proto";
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "cqrs/api/v1/course_scheduling/qualification;qualificationv1";
+option java_multiple_files = true;
+option java_package = "io.grpc.examples.course_scheduling.v1";
+option java_outer_classname = "QualificationProto";
+
+// ============================================================
+// Qualification
+// ============================================================
+
+// QualificationStatus represents the state of a teaching qualification.
+enum QualificationStatus {
+  QUALIFICATION_STATUS_UNSPECIFIED = 0;
+  QUALIFICATION_STATUS_ACTIVE = 1;
+  QUALIFICATION_STATUS_REVOKED = 2;
+  QUALIFICATION_STATUS_EXPIRED = 3;
+}
+
+// Qualification records that a teacher is certified to teach a course type.
+message Qualification {
+  // System-assigned ID.
+  int64 id = 1;
+  // The qualified teacher ID.
+  int64 teacher_id = 2;
+  // The course type the teacher is qualified for.
+  string course_type_id = 3;
+  // Time the qualification was granted.
+  google.protobuf.Timestamp certified_at = 4;
+  // Qualification status.
+  QualificationStatus status = 5;
+  // Last modification time.
+  google.protobuf.Timestamp updated_at = 6;
+}
+
+message QualificationSet {
+  repeated Qualification qualifications = 1;
+  string next_page_token = 2;
+}
+
+message QualifyRequest {
+  Qualification qualification = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message GetQualificationRequest {
+  int64 id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message ListQualificationsRequest {
+  int32 page_size = 1;
+  string page_token = 2;
+  string filter = 3;
+  string order_by = 4;
+}
+
+message ListQualificationsByTeacherIDRequest {
+  int64 teacher_id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message ListTeachersQualifiedForCourseTypeRequest {
+  string course_type_id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message CheckTeacherQualifiedForCourseRequest {
+  int64 teacher_id = 1 [(google.api.field_behavior) = REQUIRED];
+  string course_id = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+message CheckTeacherQualifiedForCourseResponse {
+  bool qualified = 1;
+}
+
+message DeleteQualificationRequest {
+  int64 id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// QualificationService owns the qualification aggregate.
+service QualificationService {
+
+  // --- commands ---
+
+  // Qualify grants a teaching qualification to a teacher for a course type.
+  rpc Qualify (QualifyRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/qualifications"
+      body: "qualification"
+    };
+  }
+
+  // DeleteQualification hard-deletes a qualification record by ID.
+  rpc DeleteQualification (DeleteQualificationRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/qualifications/{id}"
+    };
+  }
+
+  // --- queries ---
+
+  // GetQualification returns a single qualification record by ID.
+  rpc GetQualification (GetQualificationRequest) returns (Qualification) {
+    option (google.api.http) = {
+      get: "/v1/qualifications/{id}"
+    };
+  }
+
+  // ListQualifications returns a page of qualification records.
+  rpc ListQualifications (ListQualificationsRequest) returns (QualificationSet) {
+    option (google.api.http) = {
+      get: "/v1/qualifications"
+    };
+  }
+
+  // ListQualificationsByTeacherID returns course types the teacher is qualified
+  // to teach.
+  rpc ListQualificationsByTeacherID (ListQualificationsByTeacherIDRequest) returns (CourseTypeSet) {
+    option (google.api.http) = {
+      get: "/v1/teachers/{teacher_id}/qualifications"
+    };
+  }
+
+  // ListTeachersQualifiedForCourseType returns teachers qualified for a
+  // specific course type.
+  rpc ListTeachersQualifiedForCourseType (ListTeachersQualifiedForCourseTypeRequest) returns (TeacherSet) {
+    option (google.api.http) = {
+      get: "/v1/course-types/{course_type_id}/teachers"
+    };
+  }
+
+  // CheckTeacherQualifiedForCourse checks whether a specific teacher holds a
+  // qualification for the course type of a given course.
+  rpc CheckTeacherQualifiedForCourse (CheckTeacherQualifiedForCourseRequest) returns (CheckTeacherQualifiedForCourseResponse) {
+    option (google.api.http) = {
+      get: "/v1/qualifications/check"
+    };
+  }
+}

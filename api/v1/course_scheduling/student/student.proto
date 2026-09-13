@@ -1,0 +1,113 @@
+syntax = "proto3";
+
+package v1.course_scheduling;
+
+import "v1/course_scheduling/common.proto";
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "cqrs/api/v1/course_scheduling/student;studentv1";
+option java_multiple_files = true;
+option java_package = "io.grpc.examples.course_scheduling.v1";
+option java_outer_classname = "StudentProto";
+
+// ============================================================
+// Student
+// ============================================================
+
+// StudentStatus represents the lifecycle state of a student.
+enum StudentStatus {
+  STUDENT_STATUS_UNSPECIFIED = 0;
+  STUDENT_STATUS_ACTIVE = 1;
+  STUDENT_STATUS_BLOCKED = 2;
+  STUDENT_STATUS_CANCELLED = 3;
+}
+
+// StudentType distinguishes internal employees from external clients.
+enum StudentType {
+  STUDENT_TYPE_UNSPECIFIED = 0;
+  STUDENT_TYPE_EXTERNAL = 1;
+  STUDENT_TYPE_INTERNAL = 2;
+}
+
+// Student represents a student enrolled in the scheduling system.
+message Student {
+  // System-assigned ID.
+  int64 id = 1;
+  // Student's full name.
+  string name = 2;
+  // Student type (external or internal).
+  StudentType student_type = 3;
+  // Contact information.
+  ContactInfo contact = 4;
+  // Lifecycle status.
+  StudentStatus status = 5;
+  // Record creation time.
+  google.protobuf.Timestamp created_at = 6;
+  // Last modification time.
+  google.protobuf.Timestamp updated_at = 7;
+}
+
+message StudentSet {
+  repeated Student students = 1;
+  string next_page_token = 2;
+}
+
+message SaveStudentRequest {
+  // The student to create or update. Set id to create; omit id to update.
+  Student student = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message GetStudentRequest {
+  int64 id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message ListStudentsRequest {
+  int32 page_size = 1;
+  string page_token = 2;
+  string filter = 3;
+  string order_by = 4;
+}
+
+message DeleteStudentRequest {
+  int64 id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// StudentService owns the student aggregate: commands mutate it, queries read it.
+service StudentService {
+
+  // --- commands ---
+
+  // SaveStudent creates a new student (id absent) or updates an existing one.
+  rpc SaveStudent (SaveStudentRequest) returns (Student) {
+    option (google.api.http) = {
+      post: "/v1/students"
+      body: "student"
+    };
+  }
+
+  // DeleteStudent hard-deletes a student by ID.
+  rpc DeleteStudent (DeleteStudentRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/students/{id}"
+    };
+  }
+
+  // --- queries ---
+
+  // GetStudent returns a single student by ID.
+  rpc GetStudent (GetStudentRequest) returns (Student) {
+    option (google.api.http) = {
+      get: "/v1/students/{id}"
+    };
+  }
+
+  // ListStudents returns a page of students.
+  rpc ListStudents (ListStudentsRequest) returns (StudentSet) {
+    option (google.api.http) = {
+      get: "/v1/students"
+    };
+  }
+}

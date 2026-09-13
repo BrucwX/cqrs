@@ -1,0 +1,111 @@
+syntax = "proto3";
+
+package v1.course_scheduling;
+
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/empty.proto";
+
+option go_package = "cqrs/api/v1/course_scheduling/classroom;classroomv1";
+option java_multiple_files = true;
+option java_package = "io.grpc.examples.course_scheduling.v1";
+option java_outer_classname = "ClassroomProto";
+
+// ============================================================
+// Classroom
+// ============================================================
+
+// ClassroomStatus represents the operational state of a classroom.
+enum ClassroomStatus {
+  CLASSROOM_STATUS_UNSPECIFIED = 0;
+  CLASSROOM_STATUS_AVAILABLE = 1;
+  CLASSROOM_STATUS_UNDER_MAINTENANCE = 2;
+  CLASSROOM_STATUS_DECOMMISSIONED = 3;
+}
+
+// Location identifies the physical position of a classroom.
+message Location {
+  // Building name or identifier.
+  string building = 1;
+  // Floor number.
+  int32 floor = 2;
+  // Room number or name.
+  string room = 3;
+}
+
+// Classroom represents a physical teaching room.
+//
+// The aggregate carries no timestamps, so neither does this message.
+message Classroom {
+  // System-assigned ID (UUID).
+  string id = 1;
+  // Physical location.
+  Location location = 2;
+  // Total seat capacity.
+  int32 capacity = 3;
+  // Currently allocated seats.
+  int32 allocated = 4;
+  // Operational status.
+  ClassroomStatus status = 5;
+}
+
+message ClassroomSet {
+  repeated Classroom classrooms = 1;
+  string next_page_token = 2;
+}
+
+message SaveClassroomRequest {
+  Classroom classroom = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message GetClassroomRequest {
+  string id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message ListClassroomsRequest {
+  int32 page_size = 1;
+  string page_token = 2;
+  string filter = 3;
+  string order_by = 4;
+}
+
+message DeleteClassroomRequest {
+  string id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// ClassroomService owns the classroom aggregate.
+service ClassroomService {
+
+  // --- commands ---
+
+  // SaveClassroom creates or updates a classroom.
+  rpc SaveClassroom (SaveClassroomRequest) returns (Classroom) {
+    option (google.api.http) = {
+      post: "/v1/classrooms"
+      body: "classroom"
+    };
+  }
+
+  // DeleteClassroom hard-deletes a classroom by ID.
+  rpc DeleteClassroom (DeleteClassroomRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/classrooms/{id}"
+    };
+  }
+
+  // --- queries ---
+
+  // GetClassroom returns a single classroom by ID.
+  rpc GetClassroom (GetClassroomRequest) returns (Classroom) {
+    option (google.api.http) = {
+      get: "/v1/classrooms/{id}"
+    };
+  }
+
+  // ListClassrooms returns a page of classrooms.
+  rpc ListClassrooms (ListClassroomsRequest) returns (ClassroomSet) {
+    option (google.api.http) = {
+      get: "/v1/classrooms"
+    };
+  }
+}

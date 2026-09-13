@@ -1,0 +1,138 @@
+syntax = "proto3";
+
+package v1.course_scheduling;
+
+import "v1/course_scheduling/course/course.proto";
+import "v1/course_scheduling/student/student.proto";
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "cqrs/api/v1/course_scheduling/makeup;makeupv1";
+option java_multiple_files = true;
+option java_package = "io.grpc.examples.course_scheduling.v1";
+option java_outer_classname = "MakeupProto";
+
+// ============================================================
+// StudentMakeup
+// ============================================================
+
+// MakeupStatus represents the state of a makeup class booking.
+enum MakeupStatus {
+  MAKEUP_STATUS_UNSPECIFIED = 0;
+  MAKEUP_STATUS_BOOKED = 1;
+  MAKEUP_STATUS_COMPLETED = 2;
+  MAKEUP_STATUS_CANCELLED = 3;
+}
+
+// StudentMakeup represents a booked makeup class for a student.
+message StudentMakeup {
+  // System-assigned ID.
+  int64 id = 1;
+  // The student taking the makeup.
+  int64 student_id = 2;
+  // The course.
+  string course_id = 3;
+  // The slot that was missed.
+  string original_slot_id = 4;
+  // The date that was missed.
+  google.protobuf.Timestamp original_date = 5;
+  // The slot for the makeup session.
+  string target_slot_id = 6;
+  // The date of the makeup session.
+  google.protobuf.Timestamp target_date = 7;
+  // Hours of makeup instruction.
+  int32 makeup_hours = 8;
+  // Booking status.
+  MakeupStatus status = 9;
+  // Completion time (if completed).
+  google.protobuf.Timestamp completed_at = 10;
+  // Record creation time.
+  google.protobuf.Timestamp created_at = 11;
+  // Last modification time.
+  google.protobuf.Timestamp updated_at = 12;
+}
+
+message StudentMakeupSet {
+  repeated StudentMakeup makeups = 1;
+  string next_page_token = 2;
+}
+
+message RecordMakeupRequest {
+  StudentMakeup makeup = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message GetMakeupRequest {
+  int64 id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message ListMakeupsRequest {
+  int32 page_size = 1;
+  string page_token = 2;
+  string filter = 3;
+  string order_by = 4;
+}
+
+message ListMakeupsByStudentIDRequest {
+  int64 student_id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message ListMakeupsByCourseIDRequest {
+  string course_id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message DeleteMakeupRequest {
+  int64 id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// MakeupService owns the makeup booking aggregate.
+service MakeupService {
+
+  // --- commands ---
+
+  // RecordMakeup books a makeup class for a student.
+  rpc RecordMakeup (RecordMakeupRequest) returns (StudentMakeup) {
+    option (google.api.http) = {
+      post: "/v1/makeups"
+      body: "makeup"
+    };
+  }
+
+  // DeleteMakeup hard-deletes a makeup booking by ID.
+  rpc DeleteMakeup (DeleteMakeupRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/makeups/{id}"
+    };
+  }
+
+  // --- queries ---
+
+  // GetMakeup returns a single makeup booking by ID.
+  rpc GetMakeup (GetMakeupRequest) returns (StudentMakeup) {
+    option (google.api.http) = {
+      get: "/v1/makeups/{id}"
+    };
+  }
+
+  // ListMakeups returns a page of makeup bookings.
+  rpc ListMakeups (ListMakeupsRequest) returns (StudentMakeupSet) {
+    option (google.api.http) = {
+      get: "/v1/makeups"
+    };
+  }
+
+  // ListMakeupsByStudentID returns courses the student has makeup classes for.
+  rpc ListMakeupsByStudentID (ListMakeupsByStudentIDRequest) returns (CourseSet) {
+    option (google.api.http) = {
+      get: "/v1/students/{student_id}/makeups"
+    };
+  }
+
+  // ListMakeupsByCourseID returns students who have makeup classes for a course.
+  rpc ListMakeupsByCourseID (ListMakeupsByCourseIDRequest) returns (StudentSet) {
+    option (google.api.http) = {
+      get: "/v1/courses/{course_id}/makeups"
+    };
+  }
+}

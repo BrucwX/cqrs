@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package v1.course_scheduling;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "cqrs/api/v1/course_scheduling/course_type;coursetypev1";
+option java_multiple_files = true;
+option java_package = "io.grpc.examples.course_scheduling.v1";
+option java_outer_classname = "CourseTypeProto";
+
+// ============================================================
+// CourseType
+// ============================================================
+
+// CourseType categorizes courses (e.g. "Piano Grade 3", "Violin Beginners").
+message CourseType {
+  // System-assigned ID (UUID).
+  string id = 1;
+  // Display name.
+  string name = 2;
+  // Description of this course type.
+  string description = 3;
+  // Record creation time.
+  google.protobuf.Timestamp created_at = 4;
+  // Last modification time.
+  google.protobuf.Timestamp updated_at = 5;
+}
+
+message CourseTypeSet {
+  repeated CourseType course_types = 1;
+  string next_page_token = 2;
+}
+
+// CourseType has no RPCs of its own yet: it is reached through the
+// qualification queries (see qualification.proto). A CourseTypeService will
+// land here once course types become manageable from the API.

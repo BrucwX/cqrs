@@ -3,82 +3,31 @@
 
 openapi: 3.0.3
 info:
-    title: TodoService API
-    description: |-
-        TodoService provides a simple CRUD example for managing todo items.
-         It demonstrates unary, server-streaming, and bidirectional-streaming RPCs
-         together with AIP-style list filtering, ordering, and pagination.
+    title: ""
     version: 0.0.1
 paths:
-    /v1/todos/create:
-        post:
-            tags:
-                - TodoService
-            description: |-
-                CreateTodo creates a new todo item and returns the persisted record
-                 with the server-assigned id, created_at, and updated_at populated.
-                 Returns INVALID_ARGUMENT if the request payload fails validation.
-            operationId: TodoService_CreateTodo
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/todo.v1.Todo'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/todo.v1.Todo'
-    /v1/todos/list:
+    /v1/absences:
         get:
             tags:
-                - TodoService
-            description: |-
-                ListTodos returns a page of todo items, optionally filtered and ordered.
-                 Use the next_page_token from TodoSet to retrieve subsequent pages.
-                 Returns INVALID_ARGUMENT if filter, order_by, or page_token are malformed.
-            operationId: TodoService_ListTodos
+                - AbsenceService
+            description: ListAbsences returns a page of absence records.
+            operationId: AbsenceService_ListAbsences
             parameters:
                 - name: pageSize
                   in: query
-                  description: |-
-                    Optional. Maximum number of todo items to return in a single page.
-                     The server may apply a default and a maximum when unset or out of range.
                   schema:
                     type: integer
                     format: int32
                 - name: pageToken
                   in: query
-                  description: |-
-                    Optional. Token from a previous response's next_page_token used to fetch
-                     the next page. Leave empty to request the first page.
                   schema:
                     type: string
                 - name: filter
                   in: query
-                  description: |-
-                    Optional. The standard list filter.
-                     Supported fields:
-                        * `title` (i.e. `title:"bug"`)
-                        * `content` (i.e. `content:"docs"`)
-                        * `completed` (i.e. `completed` or `NOT completed`)
-                        * `created_at` range (i.e. `created_at>="2026-01-01T00:00:00Z"`)
                   schema:
                     type: string
                 - name: orderBy
                   in: query
-                  description: |-
-                    Optional. A comma-separated list of fields to order by.
-                     Supported fields:
-                        * `id`
-                        * `title`
-                        * `created_at`
-                        * `updated_at`
-                     Append ` desc` to a field for descending order, e.g. `created_at desc`.
-                     Defaults to ascending order when no direction is supplied.
                   schema:
                     type: string
             responses:
@@ -87,22 +36,17 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/todo.v1.TodoSet'
-    /v1/todos/sync:
+                                $ref: '#/components/schemas/v1.course_scheduling.AbsenceRecordSet'
         post:
             tags:
-                - TodoService
-            description: |-
-                SyncTodos opens a bidirectional stream for two-way synchronization.
-                 The client sends SyncTodoRequest messages describing local changes, and
-                 the server pushes back TodoEvent messages reflecting the resulting state.
-                 The stream stays open until either side closes it.
-            operationId: TodoService_SyncTodos
+                - AbsenceService
+            description: RecordAbsence records a factual student absence.
+            operationId: AbsenceService_RecordAbsence
             requestBody:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/todo.v1.SyncTodoRequest'
+                            $ref: '#/components/schemas/v1.course_scheduling.AbsenceRecord'
                 required: true
             responses:
                 "200":
@@ -110,92 +54,16 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/todo.v1.TodoEvent'
-    /v1/todos/update:
-        put:
-            tags:
-                - TodoService
-            description: |-
-                UpdateTodo applies a partial update to an existing todo item using a
-                 FieldMask. Only the fields listed in update_mask are overwritten; all
-                 other fields are left unchanged.
-                 Returns NOT_FOUND if the target todo does not exist, or
-                 INVALID_ARGUMENT if update_mask references unknown fields.
-            operationId: TodoService_UpdateTodo
-            parameters:
-                - name: updateMask
-                  in: query
-                  description: |-
-                    Set of field paths in todo to overwrite. Fields not listed are left
-                     unchanged. Use a single path of `*` to replace every mutable field.
-                  schema:
-                    type: string
-                    format: field-mask
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/todo.v1.Todo'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/todo.v1.Todo'
-    /v1/todos/watch:
+                                $ref: '#/components/schemas/v1.course_scheduling.AbsenceRecord'
+    /v1/absences/{id}:
         get:
             tags:
-                - TodoService
-            description: |-
-                WatchTodos opens a server-side stream that emits a TodoEvent for every
-                 create, update, or delete that matches the supplied filter and ordering.
-                 The stream remains open until the client cancels or the server terminates it.
-            operationId: TodoService_WatchTodos
-            parameters:
-                - name: pageSize
-                  in: query
-                  description: |-
-                    Optional. Maximum number of todo items returned in the initial snapshot
-                     before live events begin streaming.
-                  schema:
-                    type: integer
-                    format: int32
-                - name: pageToken
-                  in: query
-                  description: Optional. Page token used to resume from a prior snapshot.
-                  schema:
-                    type: string
-                - name: filter
-                  in: query
-                  description: Optional. List filter expression. Same syntax as ListTodosRequest.filter.
-                  schema:
-                    type: string
-                - name: orderBy
-                  in: query
-                  description: Optional. Order specification. Same syntax as ListTodosRequest.order_by.
-                  schema:
-                    type: string
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/todo.v1.TodoEvent'
-    /v1/todos/{id}:
-        get:
-            tags:
-                - TodoService
-            description: |-
-                GetTodo returns a single todo item by its id.
-                 Returns NOT_FOUND if no todo exists with the supplied id.
-            operationId: TodoService_GetTodo
+                - AbsenceService
+            description: GetAbsence returns a single absence record by ID.
+            operationId: AbsenceService_GetAbsence
             parameters:
                 - name: id
                   in: path
-                  description: Unique identifier of the todo item to retrieve.
                   required: true
                   schema:
                     type: string
@@ -205,19 +73,15 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/todo.v1.Todo'
+                                $ref: '#/components/schemas/v1.course_scheduling.AbsenceRecord'
         delete:
             tags:
-                - TodoService
-            description: |-
-                DeleteTodo soft-deletes a todo item by its id. The record is retained by
-                 the server but no longer appears in GetTodo or ListTodos results.
-                 Returns NOT_FOUND if no todo exists with the supplied id.
-            operationId: TodoService_DeleteTodo
+                - AbsenceService
+            description: DeleteAbsence hard-deletes an absence record by ID.
+            operationId: AbsenceService_DeleteAbsence
             parameters:
                 - name: id
                   in: path
-                  description: Unique identifier of the todo item to delete.
                   required: true
                   schema:
                     type: string
@@ -225,92 +89,1712 @@ paths:
                 "200":
                     description: OK
                     content: {}
+    /v1/classrooms:
+        get:
+            tags:
+                - ClassroomService
+            description: ListClassrooms returns a page of classrooms.
+            operationId: ClassroomService_ListClassrooms
+            parameters:
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageToken
+                  in: query
+                  schema:
+                    type: string
+                - name: filter
+                  in: query
+                  schema:
+                    type: string
+                - name: orderBy
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.ClassroomSet'
+        post:
+            tags:
+                - ClassroomService
+            description: SaveClassroom creates or updates a classroom.
+            operationId: ClassroomService_SaveClassroom
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/v1.course_scheduling.Classroom'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.Classroom'
+    /v1/classrooms/{id}:
+        get:
+            tags:
+                - ClassroomService
+            description: GetClassroom returns a single classroom by ID.
+            operationId: ClassroomService_GetClassroom
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.Classroom'
+        delete:
+            tags:
+                - ClassroomService
+            description: DeleteClassroom hard-deletes a classroom by ID.
+            operationId: ClassroomService_DeleteClassroom
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /v1/course-slot-changes:
+        get:
+            tags:
+                - CourseSlotChangeService
+            description: ListCourseSlotChanges returns a page of slot change records.
+            operationId: CourseSlotChangeService_ListCourseSlotChanges
+            parameters:
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageToken
+                  in: query
+                  schema:
+                    type: string
+                - name: filter
+                  in: query
+                  schema:
+                    type: string
+                - name: orderBy
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.CourseSlotChangeSet'
+        post:
+            tags:
+                - CourseSlotChangeService
+            description: |-
+                ChangeCourseSlot creates a temporary schedule modification (reschedule,
+                 substitute teacher, relocate room, or composite).
+            operationId: CourseSlotChangeService_ChangeCourseSlot
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/v1.course_scheduling.CourseSlotChange'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.CourseSlotChange'
+    /v1/course-slot-changes/{id}:
+        get:
+            tags:
+                - CourseSlotChangeService
+            description: GetCourseSlotChange returns a single slot change record by ID.
+            operationId: CourseSlotChangeService_GetCourseSlotChange
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.CourseSlotChange'
+        delete:
+            tags:
+                - CourseSlotChangeService
+            description: DeleteCourseSlotChange hard-deletes a slot change record by ID.
+            operationId: CourseSlotChangeService_DeleteCourseSlotChange
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /v1/course-slots:
+        get:
+            tags:
+                - CourseSlotService
+            description: ListCourseSlots returns a page of course slots.
+            operationId: CourseSlotService_ListCourseSlots
+            parameters:
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageToken
+                  in: query
+                  schema:
+                    type: string
+                - name: filter
+                  in: query
+                  schema:
+                    type: string
+                - name: orderBy
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.CourseSlotSet'
+    /v1/course-slots/assign-classroom:
+        post:
+            tags:
+                - CourseSlotService
+            description: AssignClassroomToCourseSlot assigns a classroom to one or more slots.
+            operationId: CourseSlotService_AssignClassroomToCourseSlot
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/v1.course_scheduling.AssignClassroomToCourseSlotRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /v1/course-slots/assign-course:
+        post:
+            tags:
+                - CourseSlotService
+            description: AssignCourseToCourseSlot assigns a course to one or more slots.
+            operationId: CourseSlotService_AssignCourseToCourseSlot
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/v1.course_scheduling.AssignCourseToCourseSlotRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /v1/course-slots/assign-teacher:
+        post:
+            tags:
+                - CourseSlotService
+            description: AssignTeacherToCourseSlot assigns a teacher to one or more slots.
+            operationId: CourseSlotService_AssignTeacherToCourseSlot
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/v1.course_scheduling.AssignTeacherToCourseSlotRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /v1/course-slots/{id}:
+        get:
+            tags:
+                - CourseSlotService
+            description: GetCourseSlot returns a single course slot by ID.
+            operationId: CourseSlotService_GetCourseSlot
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.CourseSlot'
+        delete:
+            tags:
+                - CourseSlotService
+            description: DeleteCourseSlot hard-deletes a course slot by ID.
+            operationId: CourseSlotService_DeleteCourseSlot
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /v1/course-types/{courseTypeId}/teachers:
+        get:
+            tags:
+                - QualificationService
+            description: |-
+                ListTeachersQualifiedForCourseType returns teachers qualified for a
+                 specific course type.
+            operationId: QualificationService_ListTeachersQualifiedForCourseType
+            parameters:
+                - name: courseTypeId
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.TeacherSet'
+    /v1/courses:
+        get:
+            tags:
+                - CourseService
+            description: ListCourses returns a page of courses.
+            operationId: CourseService_ListCourses
+            parameters:
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageToken
+                  in: query
+                  schema:
+                    type: string
+                - name: filter
+                  in: query
+                  schema:
+                    type: string
+                - name: orderBy
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.CourseSet'
+        post:
+            tags:
+                - CourseService
+            description: SaveCourse creates or updates a course.
+            operationId: CourseService_SaveCourse
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/v1.course_scheduling.Course'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.Course'
+    /v1/courses/available-for-classroom:
+        get:
+            tags:
+                - CourseService
+            description: |-
+                ListCoursesAvailableForClassroom returns courses that can fit in the given
+                 classroom based on capacity and schedule.
+            operationId: CourseService_ListCoursesAvailableForClassroom
+            parameters:
+                - name: classroomId
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.CourseSet'
+    /v1/courses/available-for-student:
+        get:
+            tags:
+                - CourseService
+            description: ListCoursesAvailableForStudent returns courses the student can enroll in.
+            operationId: CourseService_ListCoursesAvailableForStudent
+            parameters:
+                - name: studentId
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.CourseSet'
+    /v1/courses/available-for-teacher:
+        get:
+            tags:
+                - CourseService
+            description: |-
+                ListCoursesAvailableForTeacher returns courses the teacher is qualified
+                 and available to teach.
+            operationId: CourseService_ListCoursesAvailableForTeacher
+            parameters:
+                - name: teacherId
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.CourseSet'
+    /v1/courses/{courseId}/absences:
+        get:
+            tags:
+                - AbsenceService
+            description: ListAbsencesByCourseID returns all absences for a course.
+            operationId: AbsenceService_ListAbsencesByCourseID
+            parameters:
+                - name: courseId
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.AbsenceRecordSet'
+    /v1/courses/{courseId}/makeups:
+        get:
+            tags:
+                - MakeupService
+            description: ListMakeupsByCourseID returns students who have makeup classes for a course.
+            operationId: MakeupService_ListMakeupsByCourseID
+            parameters:
+                - name: courseId
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.StudentSet'
+    /v1/courses/{courseId}/slot-changes:
+        get:
+            tags:
+                - CourseSlotChangeService
+            description: ListCourseSlotChangesByCourseID returns all slot changes for a course.
+            operationId: CourseSlotChangeService_ListCourseSlotChangesByCourseID
+            parameters:
+                - name: courseId
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.CourseSlotChangeSet'
+    /v1/courses/{courseId}/slots:
+        get:
+            tags:
+                - CourseSlotService
+            description: ListCourseSlotsByCourseID returns all slots belonging to a course.
+            operationId: CourseSlotService_ListCourseSlotsByCourseID
+            parameters:
+                - name: courseId
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.CourseSlotSet'
+    /v1/courses/{courseId}/students:
+        get:
+            tags:
+                - EnrollmentService
+            description: ListEnrolledStudentsByCourseID returns all students enrolled in a course.
+            operationId: EnrollmentService_ListEnrolledStudentsByCourseID
+            parameters:
+                - name: courseId
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.StudentSet'
+    /v1/courses/{id}:
+        get:
+            tags:
+                - CourseService
+            description: GetCourse returns a single course by ID.
+            operationId: CourseService_GetCourse
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.Course'
+        delete:
+            tags:
+                - CourseService
+            description: DeleteCourse hard-deletes a course by ID.
+            operationId: CourseService_DeleteCourse
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /v1/enrollments:
+        get:
+            tags:
+                - EnrollmentService
+            description: ListEnrollments returns a page of enrollment records.
+            operationId: EnrollmentService_ListEnrollments
+            parameters:
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageToken
+                  in: query
+                  schema:
+                    type: string
+                - name: filter
+                  in: query
+                  schema:
+                    type: string
+                - name: orderBy
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.CourseEnrollmentSet'
+        post:
+            tags:
+                - EnrollmentService
+            description: EnrollStudent enrolls a student in a course.
+            operationId: EnrollmentService_EnrollStudent
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/v1.course_scheduling.CourseEnrollment'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.CourseEnrollment'
+    /v1/enrollments/{id}:
+        get:
+            tags:
+                - EnrollmentService
+            description: GetEnrollment returns a single enrollment record by ID.
+            operationId: EnrollmentService_GetEnrollment
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.CourseEnrollment'
+        delete:
+            tags:
+                - EnrollmentService
+            description: DeleteEnrollment hard-deletes an enrollment record by ID.
+            operationId: EnrollmentService_DeleteEnrollment
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /v1/makeups:
+        get:
+            tags:
+                - MakeupService
+            description: ListMakeups returns a page of makeup bookings.
+            operationId: MakeupService_ListMakeups
+            parameters:
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageToken
+                  in: query
+                  schema:
+                    type: string
+                - name: filter
+                  in: query
+                  schema:
+                    type: string
+                - name: orderBy
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.StudentMakeupSet'
+        post:
+            tags:
+                - MakeupService
+            description: RecordMakeup books a makeup class for a student.
+            operationId: MakeupService_RecordMakeup
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/v1.course_scheduling.StudentMakeup'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.StudentMakeup'
+    /v1/makeups/{id}:
+        get:
+            tags:
+                - MakeupService
+            description: GetMakeup returns a single makeup booking by ID.
+            operationId: MakeupService_GetMakeup
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.StudentMakeup'
+        delete:
+            tags:
+                - MakeupService
+            description: DeleteMakeup hard-deletes a makeup booking by ID.
+            operationId: MakeupService_DeleteMakeup
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /v1/qualifications:
+        get:
+            tags:
+                - QualificationService
+            description: ListQualifications returns a page of qualification records.
+            operationId: QualificationService_ListQualifications
+            parameters:
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageToken
+                  in: query
+                  schema:
+                    type: string
+                - name: filter
+                  in: query
+                  schema:
+                    type: string
+                - name: orderBy
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.QualificationSet'
+        post:
+            tags:
+                - QualificationService
+            description: Qualify grants a teaching qualification to a teacher for a course type.
+            operationId: QualificationService_Qualify
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/v1.course_scheduling.Qualification'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /v1/qualifications/check:
+        get:
+            tags:
+                - QualificationService
+            description: |-
+                CheckTeacherQualifiedForCourse checks whether a specific teacher holds a
+                 qualification for the course type of a given course.
+            operationId: QualificationService_CheckTeacherQualifiedForCourse
+            parameters:
+                - name: teacherId
+                  in: query
+                  schema:
+                    type: string
+                - name: courseId
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.CheckTeacherQualifiedForCourseResponse'
+    /v1/qualifications/{id}:
+        get:
+            tags:
+                - QualificationService
+            description: GetQualification returns a single qualification record by ID.
+            operationId: QualificationService_GetQualification
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.Qualification'
+        delete:
+            tags:
+                - QualificationService
+            description: DeleteQualification hard-deletes a qualification record by ID.
+            operationId: QualificationService_DeleteQualification
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /v1/students:
+        get:
+            tags:
+                - StudentService
+            description: ListStudents returns a page of students.
+            operationId: StudentService_ListStudents
+            parameters:
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageToken
+                  in: query
+                  schema:
+                    type: string
+                - name: filter
+                  in: query
+                  schema:
+                    type: string
+                - name: orderBy
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.StudentSet'
+        post:
+            tags:
+                - StudentService
+            description: SaveStudent creates a new student (id absent) or updates an existing one.
+            operationId: StudentService_SaveStudent
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/v1.course_scheduling.Student'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.Student'
+    /v1/students/{id}:
+        get:
+            tags:
+                - StudentService
+            description: GetStudent returns a single student by ID.
+            operationId: StudentService_GetStudent
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.Student'
+        delete:
+            tags:
+                - StudentService
+            description: DeleteStudent hard-deletes a student by ID.
+            operationId: StudentService_DeleteStudent
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /v1/students/{studentId}/absences:
+        get:
+            tags:
+                - AbsenceService
+            description: ListAbsencesByStudentID returns all absences for a student.
+            operationId: AbsenceService_ListAbsencesByStudentID
+            parameters:
+                - name: studentId
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.AbsenceRecordSet'
+    /v1/students/{studentId}/courses:
+        get:
+            tags:
+                - EnrollmentService
+            description: ListEnrolledCoursesByStudentID returns all courses a student is enrolled in.
+            operationId: EnrollmentService_ListEnrolledCoursesByStudentID
+            parameters:
+                - name: studentId
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.CourseSet'
+    /v1/students/{studentId}/makeups:
+        get:
+            tags:
+                - MakeupService
+            description: ListMakeupsByStudentID returns courses the student has makeup classes for.
+            operationId: MakeupService_ListMakeupsByStudentID
+            parameters:
+                - name: studentId
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.CourseSet'
+    /v1/teachers:
+        get:
+            tags:
+                - TeacherService
+            description: ListTeachers returns a page of teachers.
+            operationId: TeacherService_ListTeachers
+            parameters:
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageToken
+                  in: query
+                  schema:
+                    type: string
+                - name: filter
+                  in: query
+                  schema:
+                    type: string
+                - name: orderBy
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.TeacherSet'
+        post:
+            tags:
+                - TeacherService
+            description: SaveTeacher creates or updates a teacher.
+            operationId: TeacherService_SaveTeacher
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/v1.course_scheduling.Teacher'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.Teacher'
+    /v1/teachers/{id}:
+        get:
+            tags:
+                - TeacherService
+            description: GetTeacher returns a single teacher by ID.
+            operationId: TeacherService_GetTeacher
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.Teacher'
+        delete:
+            tags:
+                - TeacherService
+            description: DeleteTeacher hard-deletes a teacher by ID.
+            operationId: TeacherService_DeleteTeacher
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /v1/teachers/{teacherId}/qualifications:
+        get:
+            tags:
+                - QualificationService
+            description: |-
+                ListQualificationsByTeacherID returns course types the teacher is qualified
+                 to teach.
+            operationId: QualificationService_ListQualificationsByTeacherID
+            parameters:
+                - name: teacherId
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/v1.course_scheduling.CourseTypeSet'
 components:
     schemas:
-        todo.v1.SyncTodoRequest:
-            type: object
-            properties:
-                action:
-                    type: string
-                    description: The operation to perform. One of `create`, `update`, or `delete`.
-                todo:
-                    allOf:
-                        - $ref: '#/components/schemas/todo.v1.Todo'
-                    description: Payload for `create` and `update` actions. Ignored for `delete`.
-                id:
-                    type: string
-                    description: Identifier of the target todo. Required for `delete` and `update`.
-                updateMask:
-                    type: string
-                    description: |-
-                        Field mask used by `update` actions to limit which fields are overwritten.
-                         Ignored for `create` and `delete`.
-                    format: field-mask
-            description: |-
-                SyncTodoRequest is a single client message in the SyncTodos bidirectional
-                 stream. The action field selects which operation to perform on the server.
-        todo.v1.Todo:
+        v1.course_scheduling.AbsenceRecord:
             type: object
             properties:
                 id:
                     type: string
-                    description: Application-generated UUIDv7 identifier. Read-only on create.
-                title:
+                    description: System-assigned ID.
+                studentId:
                     type: string
-                    description: Short human-readable title.
-                content:
+                    description: The absent student ID.
+                courseId:
                     type: string
-                    description: Detailed description or notes for the todo item.
-                completed:
-                    type: boolean
-                    description: Whether the todo item has been completed.
+                    description: The course missed.
+                courseSlotId:
+                    type: string
+                    description: The specific slot missed.
+                scheduleDate:
+                    type: string
+                    description: The date of absence.
+                    format: date-time
+                missedHours:
+                    type: integer
+                    description: Hours missed.
+                    format: int32
+                absenceType:
+                    type: integer
+                    description: Type of absence.
+                    format: enum
+                reason:
+                    type: string
+                    description: Reason or notes.
                 createdAt:
                     type: string
-                    description: Time at which the todo item was created. Server-assigned, read-only.
+                    description: Record creation time.
                     format: date-time
                 updatedAt:
                     type: string
-                    description: Time at which the todo item was last modified. Server-assigned, read-only.
+                    description: Last modification time.
+                    format: date-time
+            description: AbsenceRecord records a factual student absence.
+        v1.course_scheduling.AbsenceRecordSet:
+            type: object
+            properties:
+                absences:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/v1.course_scheduling.AbsenceRecord'
+                nextPageToken:
+                    type: string
+        v1.course_scheduling.AssignClassroomToCourseSlotRequest:
+            required:
+                - slotIds
+                - classroomId
+            type: object
+            properties:
+                slotIds:
+                    type: array
+                    items:
+                        type: string
+                    description: One or more slot IDs to assign.
+                classroomId:
+                    type: string
+                    description: The classroom to assign.
+        v1.course_scheduling.AssignCourseToCourseSlotRequest:
+            required:
+                - slotIds
+                - courseId
+            type: object
+            properties:
+                slotIds:
+                    type: array
+                    items:
+                        type: string
+                    description: One or more slot IDs to assign.
+                courseId:
+                    type: string
+                    description: The course to assign.
+        v1.course_scheduling.AssignTeacherToCourseSlotRequest:
+            required:
+                - slotIds
+                - teacherId
+            type: object
+            properties:
+                slotIds:
+                    type: array
+                    items:
+                        type: string
+                    description: One or more slot IDs to assign.
+                teacherId:
+                    type: string
+                    description: The teacher to assign.
+        v1.course_scheduling.Capacity:
+            type: object
+            properties:
+                max:
+                    type: integer
+                    description: Maximum number of students.
+                    format: int32
+                enrolled:
+                    type: integer
+                    description: Current number of enrolled students.
+                    format: int32
+            description: Capacity tracks enrollment capacity for a course.
+        v1.course_scheduling.CheckTeacherQualifiedForCourseResponse:
+            type: object
+            properties:
+                qualified:
+                    type: boolean
+        v1.course_scheduling.Classroom:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: System-assigned ID (UUID).
+                location:
+                    allOf:
+                        - $ref: '#/components/schemas/v1.course_scheduling.Location'
+                    description: Physical location.
+                capacity:
+                    type: integer
+                    description: Total seat capacity.
+                    format: int32
+                allocated:
+                    type: integer
+                    description: Currently allocated seats.
+                    format: int32
+                status:
+                    type: integer
+                    description: Operational status.
+                    format: enum
+            description: |-
+                Classroom represents a physical teaching room.
+
+                 The aggregate carries no timestamps, so neither does this message.
+        v1.course_scheduling.ClassroomSet:
+            type: object
+            properties:
+                classrooms:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/v1.course_scheduling.Classroom'
+                nextPageToken:
+                    type: string
+        v1.course_scheduling.ContactInfo:
+            type: object
+            properties:
+                phone:
+                    type: string
+                    description: Required. Chinese mobile phone number (e.g. "13800138000").
+                email:
+                    type: string
+                    description: Optional email address.
+            description: ContactInfo holds phone and email for a student or teacher.
+        v1.course_scheduling.Course:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: System-assigned ID (UUID).
+                courseTypeId:
+                    type: string
+                    description: References the type of course.
+                capacity:
+                    allOf:
+                        - $ref: '#/components/schemas/v1.course_scheduling.Capacity'
+                    description: Enrollment capacity.
+                enrollment:
+                    allOf:
+                        - $ref: '#/components/schemas/v1.course_scheduling.EnrollmentWindow'
+                    description: Enrollment window.
+                period:
+                    allOf:
+                        - $ref: '#/components/schemas/v1.course_scheduling.CoursePeriod'
+                    description: Teaching period.
+            description: |-
+                Course represents a scheduled course offering.
+
+                 The aggregate carries no timestamps, so neither does this message.
+        v1.course_scheduling.CourseEnrollment:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: System-assigned ID.
+                studentId:
+                    type: string
+                    description: The enrolled student ID.
+                courseId:
+                    type: string
+                    description: The course ID.
+                status:
+                    type: integer
+                    description: Enrollment status.
+                    format: enum
+                enrolledAt:
+                    type: string
+                    description: Time of enrollment.
+                    format: date-time
+                completedAt:
+                    type: string
+                    description: Time of completion (if completed).
+                    format: date-time
+                droppedAt:
+                    type: string
+                    description: Time of drop (if dropped).
+                    format: date-time
+                updatedAt:
+                    type: string
+                    description: Last modification time.
+                    format: date-time
+            description: CourseEnrollment represents a student's enrollment in a course.
+        v1.course_scheduling.CourseEnrollmentSet:
+            type: object
+            properties:
+                enrollments:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/v1.course_scheduling.CourseEnrollment'
+                nextPageToken:
+                    type: string
+        v1.course_scheduling.CoursePeriod:
+            type: object
+            properties:
+                startAt:
+                    type: string
+                    description: Course start date.
+                    format: date-time
+                endAt:
+                    type: string
+                    description: Course end date.
+                    format: date-time
+                totalHours:
+                    type: integer
+                    description: Total scheduled teaching hours.
+                    format: int32
+                completedHours:
+                    type: integer
+                    description: Hours completed so far.
+                    format: int32
+            description: CoursePeriod defines the date range and hours of a course.
+        v1.course_scheduling.CourseSet:
+            type: object
+            properties:
+                courses:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/v1.course_scheduling.Course'
+                nextPageToken:
+                    type: string
+        v1.course_scheduling.CourseSlot:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: System-assigned ID (UUID).
+                courseId:
+                    type: string
+                    description: The course this slot belongs to.
+                weekday:
+                    type: integer
+                    description: Day of the week.
+                    format: enum
+                timeRange:
+                    allOf:
+                        - $ref: '#/components/schemas/v1.course_scheduling.DayTimeRange'
+                    description: Time range within the day.
+                teacherId:
+                    type: string
+                    description: Assigned teacher ID. -1 means unassigned.
+                classroomId:
+                    type: string
+                    description: Assigned classroom ID. Empty means unassigned.
+                createdAt:
+                    type: string
+                    description: Record creation time.
+                    format: date-time
+                updatedAt:
+                    type: string
+                    description: Last modification time.
+                    format: date-time
+            description: CourseSlot represents a weekly recurring time slot for a course.
+        v1.course_scheduling.CourseSlotChange:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: System-assigned ID.
+                courseId:
+                    type: string
+                    description: The course affected.
+                applicantId:
+                    type: string
+                    description: The teacher who requested the change.
+                changeType:
+                    type: integer
+                    description: Type of change.
+                    format: enum
+                originalPlan:
+                    allOf:
+                        - $ref: '#/components/schemas/v1.course_scheduling.OriginalPlan'
+                    description: The original schedule plan.
+                targetPlan:
+                    allOf:
+                        - $ref: '#/components/schemas/v1.course_scheduling.TargetPlan'
+                    description: The target schedule plan.
+                reason:
+                    type: string
+                    description: Reason for the change.
+                createdAt:
+                    type: string
+                    description: Record creation time.
+                    format: date-time
+                updatedAt:
+                    type: string
+                    description: Last modification time.
+                    format: date-time
+            description: CourseSlotChange represents a temporary schedule modification.
+        v1.course_scheduling.CourseSlotChangeSet:
+            type: object
+            properties:
+                courseSlotChanges:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/v1.course_scheduling.CourseSlotChange'
+                nextPageToken:
+                    type: string
+        v1.course_scheduling.CourseSlotSet:
+            type: object
+            properties:
+                courseSlots:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/v1.course_scheduling.CourseSlot'
+                nextPageToken:
+                    type: string
+        v1.course_scheduling.CourseType:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: System-assigned ID (UUID).
+                name:
+                    type: string
+                    description: Display name.
+                description:
+                    type: string
+                    description: Description of this course type.
+                createdAt:
+                    type: string
+                    description: Record creation time.
+                    format: date-time
+                updatedAt:
+                    type: string
+                    description: Last modification time.
+                    format: date-time
+            description: CourseType categorizes courses (e.g. "Piano Grade 3", "Violin Beginners").
+        v1.course_scheduling.CourseTypeSet:
+            type: object
+            properties:
+                courseTypes:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/v1.course_scheduling.CourseType'
+                nextPageToken:
+                    type: string
+        v1.course_scheduling.DayTime:
+            type: object
+            properties:
+                hour:
+                    type: integer
+                    description: Hour (0-23).
+                    format: int32
+                minute:
+                    type: integer
+                    description: Minute (0-59).
+                    format: int32
+            description: DayTime represents a time of day (hour and minute).
+        v1.course_scheduling.DayTimeRange:
+            type: object
+            properties:
+                start:
+                    allOf:
+                        - $ref: '#/components/schemas/v1.course_scheduling.DayTime'
+                    description: Start time.
+                end:
+                    allOf:
+                        - $ref: '#/components/schemas/v1.course_scheduling.DayTime'
+                    description: End time.
+            description: DayTimeRange represents a time span within a single day.
+        v1.course_scheduling.EnrollmentWindow:
+            type: object
+            properties:
+                startAt:
+                    type: string
+                    description: Enrollment open date.
+                    format: date-time
+                endAt:
+                    type: string
+                    description: Enrollment close date.
+                    format: date-time
+                dropDeadline:
+                    type: string
+                    description: Last date a student may drop without penalty.
+                    format: date-time
+            description: EnrollmentWindow defines the period during which students can enroll or drop.
+        v1.course_scheduling.Location:
+            type: object
+            properties:
+                building:
+                    type: string
+                    description: Building name or identifier.
+                floor:
+                    type: integer
+                    description: Floor number.
+                    format: int32
+                room:
+                    type: string
+                    description: Room number or name.
+            description: Location identifies the physical position of a classroom.
+        v1.course_scheduling.OriginalPlan:
+            type: object
+            properties:
+                slotId:
+                    type: string
+                    description: The original course slot ID.
+                date:
+                    type: string
+                    description: The scheduled date.
+                    format: date-time
+                teacherId:
+                    type: string
+                    description: The originally assigned teacher ID.
+                classroomId:
+                    type: string
+                    description: The originally assigned classroom ID.
+                startTime:
+                    type: string
+                    description: Start time string (e.g. "16:00").
+                endTime:
+                    type: string
+                    description: End time string (e.g. "18:00").
+            description: OriginalPlan captures the original schedule before a slot change.
+        v1.course_scheduling.Qualification:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: System-assigned ID.
+                teacherId:
+                    type: string
+                    description: The qualified teacher ID.
+                courseTypeId:
+                    type: string
+                    description: The course type the teacher is qualified for.
+                certifiedAt:
+                    type: string
+                    description: Time the qualification was granted.
                     format: date-time
                 status:
                     type: integer
-                    description: |-
-                        Lifecycle state. Server-assigned, read-only: call DeleteTodo to move an
-                         item to TODO_STATUS_DELETED.
+                    description: Qualification status.
                     format: enum
-            description: Todo is the canonical representation of a todo item.
-        todo.v1.TodoEvent:
-            type: object
-            properties:
-                action:
+                updatedAt:
                     type: string
-                    description: The change that occurred. One of `created`, `updated`, or `deleted`.
-                todo:
-                    allOf:
-                        - $ref: '#/components/schemas/todo.v1.Todo'
-                    description: |-
-                        The todo item after the change. For `deleted` events only the id field
-                         is guaranteed to be populated.
-                eventTime:
-                    type: string
-                    description: Time at which the change was observed by the server.
+                    description: Last modification time.
                     format: date-time
-            description: |-
-                TodoEvent is a server-sent message describing a change to a todo item.
-                 It is emitted by both WatchTodos and SyncTodos streams.
-        todo.v1.TodoSet:
+            description: Qualification records that a teacher is certified to teach a course type.
+        v1.course_scheduling.QualificationSet:
             type: object
             properties:
-                todos:
+                qualifications:
                     type: array
                     items:
-                        $ref: '#/components/schemas/todo.v1.Todo'
-                    description: The page of todo items in the order requested by ListTodosRequest.order_by.
+                        $ref: '#/components/schemas/v1.course_scheduling.Qualification'
                 nextPageToken:
                     type: string
-                    description: |-
-                        Token used to retrieve the next page via ListTodosRequest.page_token.
-                         Empty when there are no more results.
-            description: TodoSet is a paginated collection of todo items returned by ListTodos.
+        v1.course_scheduling.Student:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: System-assigned ID.
+                name:
+                    type: string
+                    description: Student's full name.
+                studentType:
+                    type: integer
+                    description: Student type (external or internal).
+                    format: enum
+                contact:
+                    allOf:
+                        - $ref: '#/components/schemas/v1.course_scheduling.ContactInfo'
+                    description: Contact information.
+                status:
+                    type: integer
+                    description: Lifecycle status.
+                    format: enum
+                createdAt:
+                    type: string
+                    description: Record creation time.
+                    format: date-time
+                updatedAt:
+                    type: string
+                    description: Last modification time.
+                    format: date-time
+            description: Student represents a student enrolled in the scheduling system.
+        v1.course_scheduling.StudentMakeup:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: System-assigned ID.
+                studentId:
+                    type: string
+                    description: The student taking the makeup.
+                courseId:
+                    type: string
+                    description: The course.
+                originalSlotId:
+                    type: string
+                    description: The slot that was missed.
+                originalDate:
+                    type: string
+                    description: The date that was missed.
+                    format: date-time
+                targetSlotId:
+                    type: string
+                    description: The slot for the makeup session.
+                targetDate:
+                    type: string
+                    description: The date of the makeup session.
+                    format: date-time
+                makeupHours:
+                    type: integer
+                    description: Hours of makeup instruction.
+                    format: int32
+                status:
+                    type: integer
+                    description: Booking status.
+                    format: enum
+                completedAt:
+                    type: string
+                    description: Completion time (if completed).
+                    format: date-time
+                createdAt:
+                    type: string
+                    description: Record creation time.
+                    format: date-time
+                updatedAt:
+                    type: string
+                    description: Last modification time.
+                    format: date-time
+            description: StudentMakeup represents a booked makeup class for a student.
+        v1.course_scheduling.StudentMakeupSet:
+            type: object
+            properties:
+                makeups:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/v1.course_scheduling.StudentMakeup'
+                nextPageToken:
+                    type: string
+        v1.course_scheduling.StudentSet:
+            type: object
+            properties:
+                students:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/v1.course_scheduling.Student'
+                nextPageToken:
+                    type: string
+        v1.course_scheduling.TargetPlan:
+            type: object
+            properties:
+                targetStartAt:
+                    type: string
+                    description: New start datetime.
+                    format: date-time
+                targetEndAt:
+                    type: string
+                    description: New end datetime.
+                    format: date-time
+                teacherId:
+                    type: string
+                    description: New teacher ID.
+                classroomId:
+                    type: string
+                    description: New classroom ID.
+            description: TargetPlan captures the new schedule after a slot change.
+        v1.course_scheduling.Teacher:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: System-assigned ID.
+                studentId:
+                    type: string
+                    description: Linked student-system ID (for when the teacher also enrolls as a student).
+                name:
+                    type: string
+                    description: Teacher's full name.
+                title:
+                    type: string
+                    description: Professional title (e.g. "Senior Trainer", "Gold Instructor").
+                contact:
+                    allOf:
+                        - $ref: '#/components/schemas/v1.course_scheduling.ContactInfo'
+                    description: Contact information.
+                status:
+                    type: integer
+                    description: Lifecycle status.
+                    format: enum
+                createdAt:
+                    type: string
+                    description: Record creation time.
+                    format: date-time
+                updatedAt:
+                    type: string
+                    description: Last modification time.
+                    format: date-time
+            description: Teacher represents an instructor in the scheduling system.
+        v1.course_scheduling.TeacherSet:
+            type: object
+            properties:
+                teachers:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/v1.course_scheduling.Teacher'
+                nextPageToken:
+                    type: string
 tags:
-    - name: TodoService
+    - name: AbsenceService
+      description: AbsenceService owns the absence record aggregate.
+    - name: ClassroomService
+      description: ClassroomService owns the classroom aggregate.
+    - name: CourseService
+      description: CourseService owns the course aggregate.
+    - name: CourseSlotChangeService
+      description: CourseSlotChangeService owns the course slot change aggregate.
+    - name: CourseSlotService
+      description: CourseSlotService owns the course slot aggregate.
+    - name: EnrollmentService
+      description: |-
+        EnrollmentService owns the enrollment aggregate.
+
+         The two cross-aggregate listings stay here rather than moving to Course or
+         Student: they are enrollment questions ("which rows link X and Y") whose
+         answers happen to be courses or students.
+    - name: MakeupService
+      description: MakeupService owns the makeup booking aggregate.
+    - name: QualificationService
+      description: QualificationService owns the qualification aggregate.
+    - name: StudentService
+      description: 'StudentService owns the student aggregate: commands mutate it, queries read it.'
+    - name: TeacherService
+      description: TeacherService owns the teacher aggregate.
