@@ -227,7 +227,6 @@ func (x *StudentMakeup) GetUpdatedAt() *timestamppb.Timestamp {
 type StudentMakeupSet struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Makeups       []*StudentMakeup       `protobuf:"bytes,1,rep,name=makeups,proto3" json:"makeups,omitempty"`
-	NextPageToken string                 `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -267,13 +266,6 @@ func (x *StudentMakeupSet) GetMakeups() []*StudentMakeup {
 		return x.Makeups
 	}
 	return nil
-}
-
-func (x *StudentMakeupSet) GetNextPageToken() string {
-	if x != nil {
-		return x.NextPageToken
-	}
-	return ""
 }
 
 type RecordMakeupRequest struct {
@@ -366,8 +358,8 @@ func (x *GetMakeupRequest) GetId() int64 {
 
 type ListMakeupsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	PageSize      int32                  `protobuf:"varint,1,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	PageToken     string                 `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	Page          int32                  `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	Filter        string                 `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
 	OrderBy       string                 `protobuf:"bytes,4,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -404,18 +396,18 @@ func (*ListMakeupsRequest) Descriptor() ([]byte, []int) {
 	return file_v1_course_scheduling_makeup_makeup_proto_rawDescGZIP(), []int{4}
 }
 
+func (x *ListMakeupsRequest) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
 func (x *ListMakeupsRequest) GetPageSize() int32 {
 	if x != nil {
 		return x.PageSize
 	}
 	return 0
-}
-
-func (x *ListMakeupsRequest) GetPageToken() string {
-	if x != nil {
-		return x.PageToken
-	}
-	return ""
 }
 
 func (x *ListMakeupsRequest) GetFilter() string {
@@ -586,18 +578,16 @@ const file_v1_course_scheduling_makeup_makeup_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\v \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\f \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"y\n" +
+	"updated_at\x18\f \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"Q\n" +
 	"\x10StudentMakeupSet\x12=\n" +
-	"\amakeups\x18\x01 \x03(\v2#.v1.course_scheduling.StudentMakeupR\amakeups\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"W\n" +
+	"\amakeups\x18\x01 \x03(\v2#.v1.course_scheduling.StudentMakeupR\amakeups\"W\n" +
 	"\x13RecordMakeupRequest\x12@\n" +
 	"\x06makeup\x18\x01 \x01(\v2#.v1.course_scheduling.StudentMakeupB\x03\xe0A\x02R\x06makeup\"'\n" +
 	"\x10GetMakeupRequest\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\x03B\x03\xe0A\x02R\x02id\"\x83\x01\n" +
-	"\x12ListMakeupsRequest\x12\x1b\n" +
-	"\tpage_size\x18\x01 \x01(\x05R\bpageSize\x12\x1d\n" +
-	"\n" +
-	"page_token\x18\x02 \x01(\tR\tpageToken\x12\x16\n" +
+	"\x02id\x18\x01 \x01(\x03B\x03\xe0A\x02R\x02id\"x\n" +
+	"\x12ListMakeupsRequest\x12\x12\n" +
+	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x16\n" +
 	"\x06filter\x18\x03 \x01(\tR\x06filter\x12\x19\n" +
 	"\border_by\x18\x04 \x01(\tR\aorderBy\"C\n" +
 	"\x1dListMakeupsByStudentIDRequest\x12\"\n" +
@@ -611,9 +601,9 @@ const file_v1_course_scheduling_makeup_makeup_proto_rawDesc = "" +
 	"\x19MAKEUP_STATUS_UNSPECIFIED\x10\x00\x12\x18\n" +
 	"\x14MAKEUP_STATUS_BOOKED\x10\x01\x12\x1b\n" +
 	"\x17MAKEUP_STATUS_COMPLETED\x10\x02\x12\x1b\n" +
-	"\x17MAKEUP_STATUS_CANCELLED\x10\x032\x98\x06\n" +
-	"\rMakeupService\x12{\n" +
-	"\fRecordMakeup\x12).v1.course_scheduling.RecordMakeupRequest\x1a#.v1.course_scheduling.StudentMakeup\"\x1b\x82\xd3\xe4\x93\x02\x15:\x06makeup\"\v/v1/makeups\x12k\n" +
+	"\x17MAKEUP_STATUS_CANCELLED\x10\x032\x8b\x06\n" +
+	"\rMakeupService\x12n\n" +
+	"\fRecordMakeup\x12).v1.course_scheduling.RecordMakeupRequest\x1a\x16.google.protobuf.Empty\"\x1b\x82\xd3\xe4\x93\x02\x15:\x06makeup\"\v/v1/makeups\x12k\n" +
 	"\fDeleteMakeup\x12).v1.course_scheduling.DeleteMakeupRequest\x1a\x16.google.protobuf.Empty\"\x18\x82\xd3\xe4\x93\x02\x12*\x10/v1/makeups/{id}\x12r\n" +
 	"\tGetMakeup\x12&.v1.course_scheduling.GetMakeupRequest\x1a#.v1.course_scheduling.StudentMakeup\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/v1/makeups/{id}\x12t\n" +
 	"\vListMakeups\x12(.v1.course_scheduling.ListMakeupsRequest\x1a&.v1.course_scheduling.StudentMakeupSet\"\x13\x82\xd3\xe4\x93\x02\r\x12\v/v1/makeups\x12\x99\x01\n" +
@@ -665,7 +655,7 @@ var file_v1_course_scheduling_makeup_makeup_proto_depIdxs = []int32{
 	5,  // 11: v1.course_scheduling.MakeupService.ListMakeups:input_type -> v1.course_scheduling.ListMakeupsRequest
 	6,  // 12: v1.course_scheduling.MakeupService.ListMakeupsByStudentID:input_type -> v1.course_scheduling.ListMakeupsByStudentIDRequest
 	7,  // 13: v1.course_scheduling.MakeupService.ListMakeupsByCourseID:input_type -> v1.course_scheduling.ListMakeupsByCourseIDRequest
-	1,  // 14: v1.course_scheduling.MakeupService.RecordMakeup:output_type -> v1.course_scheduling.StudentMakeup
+	10, // 14: v1.course_scheduling.MakeupService.RecordMakeup:output_type -> google.protobuf.Empty
 	10, // 15: v1.course_scheduling.MakeupService.DeleteMakeup:output_type -> google.protobuf.Empty
 	1,  // 16: v1.course_scheduling.MakeupService.GetMakeup:output_type -> v1.course_scheduling.StudentMakeup
 	2,  // 17: v1.course_scheduling.MakeupService.ListMakeups:output_type -> v1.course_scheduling.StudentMakeupSet

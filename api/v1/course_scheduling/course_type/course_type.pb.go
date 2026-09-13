@@ -107,7 +107,6 @@ func (x *CourseType) GetUpdatedAt() *timestamppb.Timestamp {
 type CourseTypeSet struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	CourseTypes   []*CourseType          `protobuf:"bytes,1,rep,name=course_types,json=courseTypes,proto3" json:"course_types,omitempty"`
-	NextPageToken string                 `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -149,13 +148,6 @@ func (x *CourseTypeSet) GetCourseTypes() []*CourseType {
 	return nil
 }
 
-func (x *CourseTypeSet) GetNextPageToken() string {
-	if x != nil {
-		return x.NextPageToken
-	}
-	return ""
-}
-
 var File_v1_course_scheduling_course_type_course_type_proto protoreflect.FileDescriptor
 
 const file_v1_course_scheduling_course_type_course_type_proto_rawDesc = "" +
@@ -169,10 +161,9 @@ const file_v1_course_scheduling_course_type_course_type_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"|\n" +
+	"updated_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"T\n" +
 	"\rCourseTypeSet\x12C\n" +
-	"\fcourse_types\x18\x01 \x03(\v2 .v1.course_scheduling.CourseTypeR\vcourseTypes\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageTokenBr\n" +
+	"\fcourse_types\x18\x01 \x03(\v2 .v1.course_scheduling.CourseTypeR\vcourseTypesBr\n" +
 	"%io.grpc.examples.course_scheduling.v1B\x0fCourseTypeProtoP\x01Z6cqrs/api/v1/course_scheduling/course_type;coursetypev1b\x06proto3"
 
 var (

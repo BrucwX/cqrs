@@ -37,7 +37,7 @@ type AbsenceServiceHTTPServer interface {
 	// ListAbsencesByStudentID ListAbsencesByStudentID returns all absences for a student.
 	ListAbsencesByStudentID(context.Context, *ListAbsencesByStudentIDRequest) (*AbsenceRecordSet, error)
 	// RecordAbsence RecordAbsence records a factual student absence.
-	RecordAbsence(context.Context, *RecordAbsenceRequest) (*AbsenceRecord, error)
+	RecordAbsence(context.Context, *RecordAbsenceRequest) (*emptypb.Empty, error)
 }
 
 func RegisterAbsenceServiceHTTPServer(s *http.Server, srv AbsenceServiceHTTPServer) {
@@ -67,7 +67,7 @@ func _AbsenceService_RecordAbsence0_HTTP_Handler(srv AbsenceServiceHTTPServer) f
 		if err != nil {
 			return err
 		}
-		reply := out.(*AbsenceRecord)
+		reply := out.(*emptypb.Empty)
 		return ctx.Result(200, reply)
 	}
 }
@@ -191,7 +191,7 @@ type AbsenceServiceHTTPClient interface {
 	// ListAbsencesByStudentID ListAbsencesByStudentID returns all absences for a student.
 	ListAbsencesByStudentID(ctx context.Context, req *ListAbsencesByStudentIDRequest, opts ...http.CallOption) (rsp *AbsenceRecordSet, err error)
 	// RecordAbsence RecordAbsence records a factual student absence.
-	RecordAbsence(ctx context.Context, req *RecordAbsenceRequest, opts ...http.CallOption) (rsp *AbsenceRecord, err error)
+	RecordAbsence(ctx context.Context, req *RecordAbsenceRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 }
 
 type AbsenceServiceHTTPClientImpl struct {
@@ -288,8 +288,8 @@ func (c *AbsenceServiceHTTPClientImpl) ListAbsencesByStudentID(ctx context.Conte
 }
 
 // RecordAbsence RecordAbsence records a factual student absence.
-func (c *AbsenceServiceHTTPClientImpl) RecordAbsence(ctx context.Context, in *RecordAbsenceRequest, opts ...http.CallOption) (*AbsenceRecord, error) {
-	var out AbsenceRecord
+func (c *AbsenceServiceHTTPClientImpl) RecordAbsence(ctx context.Context, in *RecordAbsenceRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
 	pattern := "/v1/absences"
 	path := http.BuildPath(pattern, in, http.WithQueryParams(), http.WithOmitFields("absence"))
 	opts = append([]http.CallOption{

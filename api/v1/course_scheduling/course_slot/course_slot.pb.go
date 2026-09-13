@@ -311,7 +311,6 @@ func (x *CourseSlot) GetUpdatedAt() *timestamppb.Timestamp {
 type CourseSlotSet struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	CourseSlots   []*CourseSlot          `protobuf:"bytes,1,rep,name=course_slots,json=courseSlots,proto3" json:"course_slots,omitempty"`
-	NextPageToken string                 `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -351,13 +350,6 @@ func (x *CourseSlotSet) GetCourseSlots() []*CourseSlot {
 		return x.CourseSlots
 	}
 	return nil
-}
-
-func (x *CourseSlotSet) GetNextPageToken() string {
-	if x != nil {
-		return x.NextPageToken
-	}
-	return ""
 }
 
 type GetCourseSlotRequest struct {
@@ -406,8 +398,8 @@ func (x *GetCourseSlotRequest) GetId() string {
 
 type ListCourseSlotsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	PageSize      int32                  `protobuf:"varint,1,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	PageToken     string                 `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	Page          int32                  `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	Filter        string                 `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
 	OrderBy       string                 `protobuf:"bytes,4,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -444,18 +436,18 @@ func (*ListCourseSlotsRequest) Descriptor() ([]byte, []int) {
 	return file_v1_course_scheduling_course_slot_course_slot_proto_rawDescGZIP(), []int{5}
 }
 
+func (x *ListCourseSlotsRequest) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
 func (x *ListCourseSlotsRequest) GetPageSize() int32 {
 	if x != nil {
 		return x.PageSize
 	}
 	return 0
-}
-
-func (x *ListCourseSlotsRequest) GetPageToken() string {
-	if x != nil {
-		return x.PageToken
-	}
-	return ""
 }
 
 func (x *ListCourseSlotsRequest) GetFilter() string {
@@ -746,16 +738,14 @@ const file_v1_course_scheduling_course_slot_course_slot_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"|\n" +
+	"updated_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"T\n" +
 	"\rCourseSlotSet\x12C\n" +
-	"\fcourse_slots\x18\x01 \x03(\v2 .v1.course_scheduling.CourseSlotR\vcourseSlots\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"+\n" +
+	"\fcourse_slots\x18\x01 \x03(\v2 .v1.course_scheduling.CourseSlotR\vcourseSlots\"+\n" +
 	"\x14GetCourseSlotRequest\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\"\x87\x01\n" +
-	"\x16ListCourseSlotsRequest\x12\x1b\n" +
-	"\tpage_size\x18\x01 \x01(\x05R\bpageSize\x12\x1d\n" +
-	"\n" +
-	"page_token\x18\x02 \x01(\tR\tpageToken\x12\x16\n" +
+	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\"|\n" +
+	"\x16ListCourseSlotsRequest\x12\x12\n" +
+	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x16\n" +
 	"\x06filter\x18\x03 \x01(\tR\x06filter\x12\x19\n" +
 	"\border_by\x18\x04 \x01(\tR\aorderBy\"D\n" +
 	" ListCourseSlotsByCourseIDRequest\x12 \n" +

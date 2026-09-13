@@ -173,7 +173,6 @@ func (x *Qualification) GetUpdatedAt() *timestamppb.Timestamp {
 type QualificationSet struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
 	Qualifications []*Qualification       `protobuf:"bytes,1,rep,name=qualifications,proto3" json:"qualifications,omitempty"`
-	NextPageToken  string                 `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -213,13 +212,6 @@ func (x *QualificationSet) GetQualifications() []*Qualification {
 		return x.Qualifications
 	}
 	return nil
-}
-
-func (x *QualificationSet) GetNextPageToken() string {
-	if x != nil {
-		return x.NextPageToken
-	}
-	return ""
 }
 
 type QualifyRequest struct {
@@ -312,8 +304,8 @@ func (x *GetQualificationRequest) GetId() int64 {
 
 type ListQualificationsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	PageSize      int32                  `protobuf:"varint,1,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	PageToken     string                 `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	Page          int32                  `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	Filter        string                 `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
 	OrderBy       string                 `protobuf:"bytes,4,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -350,18 +342,18 @@ func (*ListQualificationsRequest) Descriptor() ([]byte, []int) {
 	return file_v1_course_scheduling_qualification_qualification_proto_rawDescGZIP(), []int{4}
 }
 
+func (x *ListQualificationsRequest) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
 func (x *ListQualificationsRequest) GetPageSize() int32 {
 	if x != nil {
 		return x.PageSize
 	}
 	return 0
-}
-
-func (x *ListQualificationsRequest) GetPageToken() string {
-	if x != nil {
-		return x.PageToken
-	}
-	return ""
 }
 
 func (x *ListQualificationsRequest) GetFilter() string {
@@ -619,18 +611,16 @@ const file_v1_course_scheduling_qualification_qualification_proto_rawDesc = "" +
 	"\fcertified_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\vcertifiedAt\x12A\n" +
 	"\x06status\x18\x05 \x01(\x0e2).v1.course_scheduling.QualificationStatusR\x06status\x129\n" +
 	"\n" +
-	"updated_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\x87\x01\n" +
+	"updated_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"_\n" +
 	"\x10QualificationSet\x12K\n" +
-	"\x0equalifications\x18\x01 \x03(\v2#.v1.course_scheduling.QualificationR\x0equalifications\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"`\n" +
+	"\x0equalifications\x18\x01 \x03(\v2#.v1.course_scheduling.QualificationR\x0equalifications\"`\n" +
 	"\x0eQualifyRequest\x12N\n" +
 	"\rqualification\x18\x01 \x01(\v2#.v1.course_scheduling.QualificationB\x03\xe0A\x02R\rqualification\".\n" +
 	"\x17GetQualificationRequest\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\x03B\x03\xe0A\x02R\x02id\"\x8a\x01\n" +
-	"\x19ListQualificationsRequest\x12\x1b\n" +
-	"\tpage_size\x18\x01 \x01(\x05R\bpageSize\x12\x1d\n" +
-	"\n" +
-	"page_token\x18\x02 \x01(\tR\tpageToken\x12\x16\n" +
+	"\x02id\x18\x01 \x01(\x03B\x03\xe0A\x02R\x02id\"\x7f\n" +
+	"\x19ListQualificationsRequest\x12\x12\n" +
+	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x16\n" +
 	"\x06filter\x18\x03 \x01(\tR\x06filter\x12\x19\n" +
 	"\border_by\x18\x04 \x01(\tR\aorderBy\"J\n" +
 	"$ListQualificationsByTeacherIDRequest\x12\"\n" +

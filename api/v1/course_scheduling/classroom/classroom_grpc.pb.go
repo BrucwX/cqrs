@@ -33,7 +33,7 @@ const (
 // ClassroomService owns the classroom aggregate.
 type ClassroomServiceClient interface {
 	// SaveClassroom creates or updates a classroom.
-	SaveClassroom(ctx context.Context, in *SaveClassroomRequest, opts ...grpc.CallOption) (*Classroom, error)
+	SaveClassroom(ctx context.Context, in *SaveClassroomRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// DeleteClassroom hard-deletes a classroom by ID.
 	DeleteClassroom(ctx context.Context, in *DeleteClassroomRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// GetClassroom returns a single classroom by ID.
@@ -50,9 +50,9 @@ func NewClassroomServiceClient(cc grpc.ClientConnInterface) ClassroomServiceClie
 	return &classroomServiceClient{cc}
 }
 
-func (c *classroomServiceClient) SaveClassroom(ctx context.Context, in *SaveClassroomRequest, opts ...grpc.CallOption) (*Classroom, error) {
+func (c *classroomServiceClient) SaveClassroom(ctx context.Context, in *SaveClassroomRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Classroom)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, ClassroomService_SaveClassroom_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -97,7 +97,7 @@ func (c *classroomServiceClient) ListClassrooms(ctx context.Context, in *ListCla
 // ClassroomService owns the classroom aggregate.
 type ClassroomServiceServer interface {
 	// SaveClassroom creates or updates a classroom.
-	SaveClassroom(context.Context, *SaveClassroomRequest) (*Classroom, error)
+	SaveClassroom(context.Context, *SaveClassroomRequest) (*emptypb.Empty, error)
 	// DeleteClassroom hard-deletes a classroom by ID.
 	DeleteClassroom(context.Context, *DeleteClassroomRequest) (*emptypb.Empty, error)
 	// GetClassroom returns a single classroom by ID.
@@ -114,7 +114,7 @@ type ClassroomServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedClassroomServiceServer struct{}
 
-func (UnimplementedClassroomServiceServer) SaveClassroom(context.Context, *SaveClassroomRequest) (*Classroom, error) {
+func (UnimplementedClassroomServiceServer) SaveClassroom(context.Context, *SaveClassroomRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method SaveClassroom not implemented")
 }
 func (UnimplementedClassroomServiceServer) DeleteClassroom(context.Context, *DeleteClassroomRequest) (*emptypb.Empty, error) {

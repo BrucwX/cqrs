@@ -4,8 +4,10 @@ import (
 	"github.com/google/wire"
 
 	"cqrs/internal/core/course_scheduling/adapters/memImp4test"
+	memcommand "cqrs/internal/core/course_scheduling/adapters/memImp4test/command"
 	commandmemory "cqrs/internal/core/course_scheduling/adapters/memImp4test/command/implement"
 	querymemory "cqrs/internal/core/course_scheduling/adapters/memImp4test/query/implement"
+	appcommand "cqrs/internal/core/course_scheduling/app/command"
 	"cqrs/internal/core/course_scheduling/app/command/absence"
 	"cqrs/internal/core/course_scheduling/app/command/classroom"
 	"cqrs/internal/core/course_scheduling/app/command/course"
@@ -52,6 +54,8 @@ var ProviderSet = wire.NewSet(
 	query.ProviderSet,
 	// domain - 判定服务
 	domainservice.ProviderSet,
+	// app - command.Transaction 接口 → 内存实现（写侧 Data 自带 Begin/End）
+	wire.Bind(new(appcommand.Transaction), new(*memcommand.Data)),
 	// service
 	service.NewTeacherService,
 	service.NewStudentService,

@@ -50,7 +50,6 @@ message AbsenceRecord {
 
 message AbsenceRecordSet {
   repeated AbsenceRecord absences = 1;
-  string next_page_token = 2;
 }
 
 message RecordAbsenceRequest {
@@ -62,8 +61,8 @@ message GetAbsenceRequest {
 }
 
 message ListAbsencesRequest {
-  int32 page_size = 1;
-  string page_token = 2;
+  int32 page = 1;
+  int32 page_size = 2;
   string filter = 3;
   string order_by = 4;
 }
@@ -85,7 +84,7 @@ service AbsenceService {
   // --- commands ---
 
   // RecordAbsence records a factual student absence.
-  rpc RecordAbsence(RecordAbsenceRequest) returns (AbsenceRecord) {
+  rpc RecordAbsence(RecordAbsenceRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       post: "/v1/absences"
       body: "absence"

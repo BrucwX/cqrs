@@ -33,7 +33,7 @@ const (
 // StudentService owns the student aggregate: commands mutate it, queries read it.
 type StudentServiceClient interface {
 	// SaveStudent creates a new student (id absent) or updates an existing one.
-	SaveStudent(ctx context.Context, in *SaveStudentRequest, opts ...grpc.CallOption) (*Student, error)
+	SaveStudent(ctx context.Context, in *SaveStudentRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// DeleteStudent hard-deletes a student by ID.
 	DeleteStudent(ctx context.Context, in *DeleteStudentRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// GetStudent returns a single student by ID.
@@ -50,9 +50,9 @@ func NewStudentServiceClient(cc grpc.ClientConnInterface) StudentServiceClient {
 	return &studentServiceClient{cc}
 }
 
-func (c *studentServiceClient) SaveStudent(ctx context.Context, in *SaveStudentRequest, opts ...grpc.CallOption) (*Student, error) {
+func (c *studentServiceClient) SaveStudent(ctx context.Context, in *SaveStudentRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Student)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, StudentService_SaveStudent_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -97,7 +97,7 @@ func (c *studentServiceClient) ListStudents(ctx context.Context, in *ListStudent
 // StudentService owns the student aggregate: commands mutate it, queries read it.
 type StudentServiceServer interface {
 	// SaveStudent creates a new student (id absent) or updates an existing one.
-	SaveStudent(context.Context, *SaveStudentRequest) (*Student, error)
+	SaveStudent(context.Context, *SaveStudentRequest) (*emptypb.Empty, error)
 	// DeleteStudent hard-deletes a student by ID.
 	DeleteStudent(context.Context, *DeleteStudentRequest) (*emptypb.Empty, error)
 	// GetStudent returns a single student by ID.
@@ -114,7 +114,7 @@ type StudentServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedStudentServiceServer struct{}
 
-func (UnimplementedStudentServiceServer) SaveStudent(context.Context, *SaveStudentRequest) (*Student, error) {
+func (UnimplementedStudentServiceServer) SaveStudent(context.Context, *SaveStudentRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method SaveStudent not implemented")
 }
 func (UnimplementedStudentServiceServer) DeleteStudent(context.Context, *DeleteStudentRequest) (*emptypb.Empty, error) {

@@ -191,7 +191,6 @@ func (x *CourseEnrollment) GetUpdatedAt() *timestamppb.Timestamp {
 type CourseEnrollmentSet struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Enrollments   []*CourseEnrollment    `protobuf:"bytes,1,rep,name=enrollments,proto3" json:"enrollments,omitempty"`
-	NextPageToken string                 `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -231,13 +230,6 @@ func (x *CourseEnrollmentSet) GetEnrollments() []*CourseEnrollment {
 		return x.Enrollments
 	}
 	return nil
-}
-
-func (x *CourseEnrollmentSet) GetNextPageToken() string {
-	if x != nil {
-		return x.NextPageToken
-	}
-	return ""
 }
 
 type EnrollStudentRequest struct {
@@ -330,8 +322,8 @@ func (x *GetEnrollmentRequest) GetId() int64 {
 
 type ListEnrollmentsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	PageSize      int32                  `protobuf:"varint,1,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	PageToken     string                 `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	Page          int32                  `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	Filter        string                 `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
 	OrderBy       string                 `protobuf:"bytes,4,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -368,18 +360,18 @@ func (*ListEnrollmentsRequest) Descriptor() ([]byte, []int) {
 	return file_v1_course_scheduling_enrollment_enrollment_proto_rawDescGZIP(), []int{4}
 }
 
+func (x *ListEnrollmentsRequest) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
 func (x *ListEnrollmentsRequest) GetPageSize() int32 {
 	if x != nil {
 		return x.PageSize
 	}
 	return 0
-}
-
-func (x *ListEnrollmentsRequest) GetPageToken() string {
-	if x != nil {
-		return x.PageToken
-	}
-	return ""
 }
 
 func (x *ListEnrollmentsRequest) GetFilter() string {
@@ -545,20 +537,18 @@ const file_v1_course_scheduling_enrollment_enrollment_proto_rawDesc = "" +
 	"\n" +
 	"dropped_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tdroppedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\x87\x01\n" +
+	"updated_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"_\n" +
 	"\x13CourseEnrollmentSet\x12H\n" +
-	"\venrollments\x18\x01 \x03(\v2&.v1.course_scheduling.CourseEnrollmentR\venrollments\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"c\n" +
+	"\venrollments\x18\x01 \x03(\v2&.v1.course_scheduling.CourseEnrollmentR\venrollments\"c\n" +
 	"\x14EnrollStudentRequest\x12K\n" +
 	"\n" +
 	"enrollment\x18\x01 \x01(\v2&.v1.course_scheduling.CourseEnrollmentB\x03\xe0A\x02R\n" +
 	"enrollment\"+\n" +
 	"\x14GetEnrollmentRequest\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\x03B\x03\xe0A\x02R\x02id\"\x87\x01\n" +
-	"\x16ListEnrollmentsRequest\x12\x1b\n" +
-	"\tpage_size\x18\x01 \x01(\x05R\bpageSize\x12\x1d\n" +
-	"\n" +
-	"page_token\x18\x02 \x01(\tR\tpageToken\x12\x16\n" +
+	"\x02id\x18\x01 \x01(\x03B\x03\xe0A\x02R\x02id\"|\n" +
+	"\x16ListEnrollmentsRequest\x12\x12\n" +
+	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x16\n" +
 	"\x06filter\x18\x03 \x01(\tR\x06filter\x12\x19\n" +
 	"\border_by\x18\x04 \x01(\tR\aorderBy\"K\n" +
 	"%ListEnrolledCoursesByStudentIDRequest\x12\"\n" +
@@ -572,9 +562,9 @@ const file_v1_course_scheduling_enrollment_enrollment_proto_rawDesc = "" +
 	"\x1dENROLLMENT_STATUS_UNSPECIFIED\x10\x00\x12\x1e\n" +
 	"\x1aENROLLMENT_STATUS_ENROLLED\x10\x01\x12\x1f\n" +
 	"\x1bENROLLMENT_STATUS_COMPLETED\x10\x02\x12\x1d\n" +
-	"\x19ENROLLMENT_STATUS_DROPPED\x10\x032\xf9\x06\n" +
-	"\x11EnrollmentService\x12\x88\x01\n" +
-	"\rEnrollStudent\x12*.v1.course_scheduling.EnrollStudentRequest\x1a&.v1.course_scheduling.CourseEnrollment\"#\x82\xd3\xe4\x93\x02\x1d:\n" +
+	"\x19ENROLLMENT_STATUS_DROPPED\x10\x032\xe8\x06\n" +
+	"\x11EnrollmentService\x12x\n" +
+	"\rEnrollStudent\x12*.v1.course_scheduling.EnrollStudentRequest\x1a\x16.google.protobuf.Empty\"#\x82\xd3\xe4\x93\x02\x1d:\n" +
 	"enrollment\"\x0f/v1/enrollments\x12w\n" +
 	"\x10DeleteEnrollment\x12-.v1.course_scheduling.DeleteEnrollmentRequest\x1a\x16.google.protobuf.Empty\"\x1c\x82\xd3\xe4\x93\x02\x16*\x14/v1/enrollments/{id}\x12\x81\x01\n" +
 	"\rGetEnrollment\x12*.v1.course_scheduling.GetEnrollmentRequest\x1a&.v1.course_scheduling.CourseEnrollment\"\x1c\x82\xd3\xe4\x93\x02\x16\x12\x14/v1/enrollments/{id}\x12\x83\x01\n" +
@@ -626,7 +616,7 @@ var file_v1_course_scheduling_enrollment_enrollment_proto_depIdxs = []int32{
 	5,  // 10: v1.course_scheduling.EnrollmentService.ListEnrollments:input_type -> v1.course_scheduling.ListEnrollmentsRequest
 	6,  // 11: v1.course_scheduling.EnrollmentService.ListEnrolledCoursesByStudentID:input_type -> v1.course_scheduling.ListEnrolledCoursesByStudentIDRequest
 	7,  // 12: v1.course_scheduling.EnrollmentService.ListEnrolledStudentsByCourseID:input_type -> v1.course_scheduling.ListEnrolledStudentsByCourseIDRequest
-	1,  // 13: v1.course_scheduling.EnrollmentService.EnrollStudent:output_type -> v1.course_scheduling.CourseEnrollment
+	10, // 13: v1.course_scheduling.EnrollmentService.EnrollStudent:output_type -> google.protobuf.Empty
 	10, // 14: v1.course_scheduling.EnrollmentService.DeleteEnrollment:output_type -> google.protobuf.Empty
 	1,  // 15: v1.course_scheduling.EnrollmentService.GetEnrollment:output_type -> v1.course_scheduling.CourseEnrollment
 	2,  // 16: v1.course_scheduling.EnrollmentService.ListEnrollments:output_type -> v1.course_scheduling.CourseEnrollmentSet

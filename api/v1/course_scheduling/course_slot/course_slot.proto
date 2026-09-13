@@ -66,7 +66,6 @@ message CourseSlot {
 
 message CourseSlotSet {
   repeated CourseSlot course_slots = 1;
-  string next_page_token = 2;
 }
 
 message GetCourseSlotRequest {
@@ -74,8 +73,8 @@ message GetCourseSlotRequest {
 }
 
 message ListCourseSlotsRequest {
-  int32 page_size = 1;
-  string page_token = 2;
+  int32 page = 1;
+  int32 page_size = 2;
   string filter = 3;
   string order_by = 4;
 }

@@ -207,7 +207,6 @@ func (x *AbsenceRecord) GetUpdatedAt() *timestamppb.Timestamp {
 type AbsenceRecordSet struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Absences      []*AbsenceRecord       `protobuf:"bytes,1,rep,name=absences,proto3" json:"absences,omitempty"`
-	NextPageToken string                 `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -247,13 +246,6 @@ func (x *AbsenceRecordSet) GetAbsences() []*AbsenceRecord {
 		return x.Absences
 	}
 	return nil
-}
-
-func (x *AbsenceRecordSet) GetNextPageToken() string {
-	if x != nil {
-		return x.NextPageToken
-	}
-	return ""
 }
 
 type RecordAbsenceRequest struct {
@@ -346,8 +338,8 @@ func (x *GetAbsenceRequest) GetId() int64 {
 
 type ListAbsencesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	PageSize      int32                  `protobuf:"varint,1,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	PageToken     string                 `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	Page          int32                  `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	Filter        string                 `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
 	OrderBy       string                 `protobuf:"bytes,4,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -384,18 +376,18 @@ func (*ListAbsencesRequest) Descriptor() ([]byte, []int) {
 	return file_v1_course_scheduling_absence_absence_proto_rawDescGZIP(), []int{4}
 }
 
+func (x *ListAbsencesRequest) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
 func (x *ListAbsencesRequest) GetPageSize() int32 {
 	if x != nil {
 		return x.PageSize
 	}
 	return 0
-}
-
-func (x *ListAbsencesRequest) GetPageToken() string {
-	if x != nil {
-		return x.PageToken
-	}
-	return ""
 }
 
 func (x *ListAbsencesRequest) GetFilter() string {
@@ -563,18 +555,16 @@ const file_v1_course_scheduling_absence_absence_proto_rawDesc = "" +
 	"created_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
 	"updated_at\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"{\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"S\n" +
 	"\x10AbsenceRecordSet\x12?\n" +
-	"\babsences\x18\x01 \x03(\v2#.v1.course_scheduling.AbsenceRecordR\babsences\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Z\n" +
+	"\babsences\x18\x01 \x03(\v2#.v1.course_scheduling.AbsenceRecordR\babsences\"Z\n" +
 	"\x14RecordAbsenceRequest\x12B\n" +
 	"\aabsence\x18\x01 \x01(\v2#.v1.course_scheduling.AbsenceRecordB\x03\xe0A\x02R\aabsence\"(\n" +
 	"\x11GetAbsenceRequest\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\x03B\x03\xe0A\x02R\x02id\"\x84\x01\n" +
-	"\x13ListAbsencesRequest\x12\x1b\n" +
-	"\tpage_size\x18\x01 \x01(\x05R\bpageSize\x12\x1d\n" +
-	"\n" +
-	"page_token\x18\x02 \x01(\tR\tpageToken\x12\x16\n" +
+	"\x02id\x18\x01 \x01(\x03B\x03\xe0A\x02R\x02id\"y\n" +
+	"\x13ListAbsencesRequest\x12\x12\n" +
+	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x16\n" +
 	"\x06filter\x18\x03 \x01(\tR\x06filter\x12\x19\n" +
 	"\border_by\x18\x04 \x01(\tR\aorderBy\"D\n" +
 	"\x1eListAbsencesByStudentIDRequest\x12\"\n" +
@@ -588,9 +578,9 @@ const file_v1_course_scheduling_absence_absence_proto_rawDesc = "" +
 	"\x18ABSENCE_TYPE_UNSPECIFIED\x10\x00\x12\x1f\n" +
 	"\x1bABSENCE_TYPE_PERSONAL_LEAVE\x10\x01\x12\x1e\n" +
 	"\x1aABSENCE_TYPE_OFFICIAL_DUTY\x10\x02\x12\x1a\n" +
-	"\x16ABSENCE_TYPE_UNEXCUSED\x10\x032\xb9\x06\n" +
-	"\x0eAbsenceService\x12\x7f\n" +
-	"\rRecordAbsence\x12*.v1.course_scheduling.RecordAbsenceRequest\x1a#.v1.course_scheduling.AbsenceRecord\"\x1d\x82\xd3\xe4\x93\x02\x17:\aabsence\"\f/v1/absences\x12n\n" +
+	"\x16ABSENCE_TYPE_UNEXCUSED\x10\x032\xac\x06\n" +
+	"\x0eAbsenceService\x12r\n" +
+	"\rRecordAbsence\x12*.v1.course_scheduling.RecordAbsenceRequest\x1a\x16.google.protobuf.Empty\"\x1d\x82\xd3\xe4\x93\x02\x17:\aabsence\"\f/v1/absences\x12n\n" +
 	"\rDeleteAbsence\x12*.v1.course_scheduling.DeleteAbsenceRequest\x1a\x16.google.protobuf.Empty\"\x19\x82\xd3\xe4\x93\x02\x13*\x11/v1/absences/{id}\x12u\n" +
 	"\n" +
 	"GetAbsence\x12'.v1.course_scheduling.GetAbsenceRequest\x1a#.v1.course_scheduling.AbsenceRecord\"\x19\x82\xd3\xe4\x93\x02\x13\x12\x11/v1/absences/{id}\x12w\n" +
@@ -639,7 +629,7 @@ var file_v1_course_scheduling_absence_absence_proto_depIdxs = []int32{
 	5,  // 9: v1.course_scheduling.AbsenceService.ListAbsences:input_type -> v1.course_scheduling.ListAbsencesRequest
 	6,  // 10: v1.course_scheduling.AbsenceService.ListAbsencesByStudentID:input_type -> v1.course_scheduling.ListAbsencesByStudentIDRequest
 	7,  // 11: v1.course_scheduling.AbsenceService.ListAbsencesByCourseID:input_type -> v1.course_scheduling.ListAbsencesByCourseIDRequest
-	1,  // 12: v1.course_scheduling.AbsenceService.RecordAbsence:output_type -> v1.course_scheduling.AbsenceRecord
+	10, // 12: v1.course_scheduling.AbsenceService.RecordAbsence:output_type -> google.protobuf.Empty
 	10, // 13: v1.course_scheduling.AbsenceService.DeleteAbsence:output_type -> google.protobuf.Empty
 	1,  // 14: v1.course_scheduling.AbsenceService.GetAbsence:output_type -> v1.course_scheduling.AbsenceRecord
 	2,  // 15: v1.course_scheduling.AbsenceService.ListAbsences:output_type -> v1.course_scheduling.AbsenceRecordSet

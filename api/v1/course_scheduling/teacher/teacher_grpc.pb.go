@@ -33,7 +33,7 @@ const (
 // TeacherService owns the teacher aggregate.
 type TeacherServiceClient interface {
 	// SaveTeacher creates or updates a teacher.
-	SaveTeacher(ctx context.Context, in *SaveTeacherRequest, opts ...grpc.CallOption) (*Teacher, error)
+	SaveTeacher(ctx context.Context, in *SaveTeacherRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// DeleteTeacher hard-deletes a teacher by ID.
 	DeleteTeacher(ctx context.Context, in *DeleteTeacherRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// GetTeacher returns a single teacher by ID.
@@ -50,9 +50,9 @@ func NewTeacherServiceClient(cc grpc.ClientConnInterface) TeacherServiceClient {
 	return &teacherServiceClient{cc}
 }
 
-func (c *teacherServiceClient) SaveTeacher(ctx context.Context, in *SaveTeacherRequest, opts ...grpc.CallOption) (*Teacher, error) {
+func (c *teacherServiceClient) SaveTeacher(ctx context.Context, in *SaveTeacherRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Teacher)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, TeacherService_SaveTeacher_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -97,7 +97,7 @@ func (c *teacherServiceClient) ListTeachers(ctx context.Context, in *ListTeacher
 // TeacherService owns the teacher aggregate.
 type TeacherServiceServer interface {
 	// SaveTeacher creates or updates a teacher.
-	SaveTeacher(context.Context, *SaveTeacherRequest) (*Teacher, error)
+	SaveTeacher(context.Context, *SaveTeacherRequest) (*emptypb.Empty, error)
 	// DeleteTeacher hard-deletes a teacher by ID.
 	DeleteTeacher(context.Context, *DeleteTeacherRequest) (*emptypb.Empty, error)
 	// GetTeacher returns a single teacher by ID.
@@ -114,7 +114,7 @@ type TeacherServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedTeacherServiceServer struct{}
 
-func (UnimplementedTeacherServiceServer) SaveTeacher(context.Context, *SaveTeacherRequest) (*Teacher, error) {
+func (UnimplementedTeacherServiceServer) SaveTeacher(context.Context, *SaveTeacherRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method SaveTeacher not implemented")
 }
 func (UnimplementedTeacherServiceServer) DeleteTeacher(context.Context, *DeleteTeacherRequest) (*emptypb.Empty, error) {

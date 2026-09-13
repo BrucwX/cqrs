@@ -1,6 +1,7 @@
 package ports
 
 import (
+	studentv1 "cqrs/api/v1/course_scheduling/student"
 	"cqrs/internal/conf"
 	"cqrs/internal/core/course_scheduling/service"
 
@@ -30,6 +31,6 @@ func NewGRPCServer(c *conf.Server, teacher *service.TeacherService, student *ser
 		opts = append(opts, grpc.Timeout(c.Grpc.Timeout.AsDuration()))
 	}
 	srv := grpc.NewServer(opts...)
-	// TODO: Register gRPC services
+	studentv1.RegisterStudentServiceServer(srv, student)
 	return &GRPCServer{Server: srv}
 }

@@ -41,7 +41,7 @@ const (
 // answers happen to be courses or students.
 type EnrollmentServiceClient interface {
 	// EnrollStudent enrolls a student in a course.
-	EnrollStudent(ctx context.Context, in *EnrollStudentRequest, opts ...grpc.CallOption) (*CourseEnrollment, error)
+	EnrollStudent(ctx context.Context, in *EnrollStudentRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// DeleteEnrollment hard-deletes an enrollment record by ID.
 	DeleteEnrollment(ctx context.Context, in *DeleteEnrollmentRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// GetEnrollment returns a single enrollment record by ID.
@@ -62,9 +62,9 @@ func NewEnrollmentServiceClient(cc grpc.ClientConnInterface) EnrollmentServiceCl
 	return &enrollmentServiceClient{cc}
 }
 
-func (c *enrollmentServiceClient) EnrollStudent(ctx context.Context, in *EnrollStudentRequest, opts ...grpc.CallOption) (*CourseEnrollment, error) {
+func (c *enrollmentServiceClient) EnrollStudent(ctx context.Context, in *EnrollStudentRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CourseEnrollment)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, EnrollmentService_EnrollStudent_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -133,7 +133,7 @@ func (c *enrollmentServiceClient) ListEnrolledStudentsByCourseID(ctx context.Con
 // answers happen to be courses or students.
 type EnrollmentServiceServer interface {
 	// EnrollStudent enrolls a student in a course.
-	EnrollStudent(context.Context, *EnrollStudentRequest) (*CourseEnrollment, error)
+	EnrollStudent(context.Context, *EnrollStudentRequest) (*emptypb.Empty, error)
 	// DeleteEnrollment hard-deletes an enrollment record by ID.
 	DeleteEnrollment(context.Context, *DeleteEnrollmentRequest) (*emptypb.Empty, error)
 	// GetEnrollment returns a single enrollment record by ID.
@@ -154,7 +154,7 @@ type EnrollmentServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedEnrollmentServiceServer struct{}
 
-func (UnimplementedEnrollmentServiceServer) EnrollStudent(context.Context, *EnrollStudentRequest) (*CourseEnrollment, error) {
+func (UnimplementedEnrollmentServiceServer) EnrollStudent(context.Context, *EnrollStudentRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method EnrollStudent not implemented")
 }
 func (UnimplementedEnrollmentServiceServer) DeleteEnrollment(context.Context, *DeleteEnrollmentRequest) (*emptypb.Empty, error) {

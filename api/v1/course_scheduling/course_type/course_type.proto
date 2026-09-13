@@ -29,7 +29,6 @@ message CourseType {
 
 message CourseTypeSet {
   repeated CourseType course_types = 1;
-  string next_page_token = 2;
 }
 
 // CourseType has no RPCs of its own yet: it is reached through the

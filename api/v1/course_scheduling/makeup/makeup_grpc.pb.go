@@ -37,7 +37,7 @@ const (
 // MakeupService owns the makeup booking aggregate.
 type MakeupServiceClient interface {
 	// RecordMakeup books a makeup class for a student.
-	RecordMakeup(ctx context.Context, in *RecordMakeupRequest, opts ...grpc.CallOption) (*StudentMakeup, error)
+	RecordMakeup(ctx context.Context, in *RecordMakeupRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// DeleteMakeup hard-deletes a makeup booking by ID.
 	DeleteMakeup(ctx context.Context, in *DeleteMakeupRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// GetMakeup returns a single makeup booking by ID.
@@ -58,9 +58,9 @@ func NewMakeupServiceClient(cc grpc.ClientConnInterface) MakeupServiceClient {
 	return &makeupServiceClient{cc}
 }
 
-func (c *makeupServiceClient) RecordMakeup(ctx context.Context, in *RecordMakeupRequest, opts ...grpc.CallOption) (*StudentMakeup, error) {
+func (c *makeupServiceClient) RecordMakeup(ctx context.Context, in *RecordMakeupRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(StudentMakeup)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, MakeupService_RecordMakeup_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -125,7 +125,7 @@ func (c *makeupServiceClient) ListMakeupsByCourseID(ctx context.Context, in *Lis
 // MakeupService owns the makeup booking aggregate.
 type MakeupServiceServer interface {
 	// RecordMakeup books a makeup class for a student.
-	RecordMakeup(context.Context, *RecordMakeupRequest) (*StudentMakeup, error)
+	RecordMakeup(context.Context, *RecordMakeupRequest) (*emptypb.Empty, error)
 	// DeleteMakeup hard-deletes a makeup booking by ID.
 	DeleteMakeup(context.Context, *DeleteMakeupRequest) (*emptypb.Empty, error)
 	// GetMakeup returns a single makeup booking by ID.
@@ -146,7 +146,7 @@ type MakeupServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedMakeupServiceServer struct{}
 
-func (UnimplementedMakeupServiceServer) RecordMakeup(context.Context, *RecordMakeupRequest) (*StudentMakeup, error) {
+func (UnimplementedMakeupServiceServer) RecordMakeup(context.Context, *RecordMakeupRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method RecordMakeup not implemented")
 }
 func (UnimplementedMakeupServiceServer) DeleteMakeup(context.Context, *DeleteMakeupRequest) (*emptypb.Empty, error) {

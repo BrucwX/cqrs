@@ -8,6 +8,13 @@ package main
 
 import (
 	"cqrs/internal/conf"
+	"cqrs/internal/core/course_scheduling/adapters/memImp4test"
+	"cqrs/internal/core/course_scheduling/adapters/memImp4test/command"
+	"cqrs/internal/core/course_scheduling/adapters/memImp4test/command/implement"
+	"cqrs/internal/core/course_scheduling/adapters/memImp4test/query"
+	implement2 "cqrs/internal/core/course_scheduling/adapters/memImp4test/query/implement"
+	"cqrs/internal/core/course_scheduling/app/command/student"
+	student2 "cqrs/internal/core/course_scheduling/app/query/student"
 	"cqrs/internal/core/course_scheduling/ports"
 	"cqrs/internal/core/course_scheduling/service"
 	"cqrs/internal/server"
@@ -27,7 +34,17 @@ import (
 // 先不挂进来：它们自己的 provider 还没补齐，挂进来会让整个应用没法生成。
 func wireApp(confServer *conf.Server, data *conf.Data, logger *slog.Logger) (*kratos.App, func(), error) {
 	teacherService := service.NewTeacherService()
-	studentService := service.NewStudentService()
+	memImp4testData, cleanup, err := memImp4test.NewData(data)
+	if err != nil {
+		return nil, nil, err
+	}
+	commandData := command.NewData(memImp4testData)
+	studentCommand := implement.NewStudentCommand(commandData)
+	handler := student.NewHandler(studentCommand, commandData)
+	queryData := query.NewData(memImp4testData)
+	studentQuery := implement2.NewStudentQuery(queryData)
+	studentHandler := student2.NewHandler(studentQuery)
+	studentService := service.NewStudentService(handler, studentHandler)
 	courseService := service.NewCourseService()
 	httpServer := ports.NewHTTPServer(confServer, teacherService, studentService, courseService)
 	grpcServer := ports.NewGRPCServer(confServer, teacherService, studentService, courseService)
@@ -35,5 +52,6 @@ func wireApp(confServer *conf.Server, data *conf.Data, logger *slog.Logger) (*kr
 	servers := server.NewServers(v)
 	app := newApp(logger, servers)
 	return app, func() {
+		cleanup()
 	}, nil
 }

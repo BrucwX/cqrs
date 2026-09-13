@@ -36,7 +36,7 @@ const (
 // CourseService owns the course aggregate.
 type CourseServiceClient interface {
 	// SaveCourse creates or updates a course.
-	SaveCourse(ctx context.Context, in *SaveCourseRequest, opts ...grpc.CallOption) (*Course, error)
+	SaveCourse(ctx context.Context, in *SaveCourseRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// DeleteCourse hard-deletes a course by ID.
 	DeleteCourse(ctx context.Context, in *DeleteCourseRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// GetCourse returns a single course by ID.
@@ -61,9 +61,9 @@ func NewCourseServiceClient(cc grpc.ClientConnInterface) CourseServiceClient {
 	return &courseServiceClient{cc}
 }
 
-func (c *courseServiceClient) SaveCourse(ctx context.Context, in *SaveCourseRequest, opts ...grpc.CallOption) (*Course, error) {
+func (c *courseServiceClient) SaveCourse(ctx context.Context, in *SaveCourseRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Course)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, CourseService_SaveCourse_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -138,7 +138,7 @@ func (c *courseServiceClient) ListCoursesAvailableForTeacher(ctx context.Context
 // CourseService owns the course aggregate.
 type CourseServiceServer interface {
 	// SaveCourse creates or updates a course.
-	SaveCourse(context.Context, *SaveCourseRequest) (*Course, error)
+	SaveCourse(context.Context, *SaveCourseRequest) (*emptypb.Empty, error)
 	// DeleteCourse hard-deletes a course by ID.
 	DeleteCourse(context.Context, *DeleteCourseRequest) (*emptypb.Empty, error)
 	// GetCourse returns a single course by ID.
@@ -163,7 +163,7 @@ type CourseServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedCourseServiceServer struct{}
 
-func (UnimplementedCourseServiceServer) SaveCourse(context.Context, *SaveCourseRequest) (*Course, error) {
+func (UnimplementedCourseServiceServer) SaveCourse(context.Context, *SaveCourseRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method SaveCourse not implemented")
 }
 func (UnimplementedCourseServiceServer) DeleteCourse(context.Context, *DeleteCourseRequest) (*emptypb.Empty, error) {

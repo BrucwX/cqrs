@@ -31,7 +31,7 @@ type ClassroomServiceHTTPServer interface {
 	// ListClassrooms ListClassrooms returns a page of classrooms.
 	ListClassrooms(context.Context, *ListClassroomsRequest) (*ClassroomSet, error)
 	// SaveClassroom SaveClassroom creates or updates a classroom.
-	SaveClassroom(context.Context, *SaveClassroomRequest) (*Classroom, error)
+	SaveClassroom(context.Context, *SaveClassroomRequest) (*emptypb.Empty, error)
 }
 
 func RegisterClassroomServiceHTTPServer(s *http.Server, srv ClassroomServiceHTTPServer) {
@@ -59,7 +59,7 @@ func _ClassroomService_SaveClassroom0_HTTP_Handler(srv ClassroomServiceHTTPServe
 		if err != nil {
 			return err
 		}
-		reply := out.(*Classroom)
+		reply := out.(*emptypb.Empty)
 		return ctx.Result(200, reply)
 	}
 }
@@ -135,7 +135,7 @@ type ClassroomServiceHTTPClient interface {
 	// ListClassrooms ListClassrooms returns a page of classrooms.
 	ListClassrooms(ctx context.Context, req *ListClassroomsRequest, opts ...http.CallOption) (rsp *ClassroomSet, err error)
 	// SaveClassroom SaveClassroom creates or updates a classroom.
-	SaveClassroom(ctx context.Context, req *SaveClassroomRequest, opts ...http.CallOption) (rsp *Classroom, err error)
+	SaveClassroom(ctx context.Context, req *SaveClassroomRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 }
 
 type ClassroomServiceHTTPClientImpl struct {
@@ -198,8 +198,8 @@ func (c *ClassroomServiceHTTPClientImpl) ListClassrooms(ctx context.Context, in 
 }
 
 // SaveClassroom SaveClassroom creates or updates a classroom.
-func (c *ClassroomServiceHTTPClientImpl) SaveClassroom(ctx context.Context, in *SaveClassroomRequest, opts ...http.CallOption) (*Classroom, error) {
-	var out Classroom
+func (c *ClassroomServiceHTTPClientImpl) SaveClassroom(ctx context.Context, in *SaveClassroomRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
 	pattern := "/v1/classrooms"
 	path := http.BuildPath(pattern, in, http.WithQueryParams(), http.WithOmitFields("classroom"))
 	opts = append([]http.CallOption{

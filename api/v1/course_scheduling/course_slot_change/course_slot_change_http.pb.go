@@ -27,7 +27,7 @@ const OperationCourseSlotChangeServiceListCourseSlotChangesByCourseID = "/v1.cou
 type CourseSlotChangeServiceHTTPServer interface {
 	// ChangeCourseSlot ChangeCourseSlot creates a temporary schedule modification (reschedule,
 	// substitute teacher, relocate room, or composite).
-	ChangeCourseSlot(context.Context, *ChangeCourseSlotRequest) (*CourseSlotChange, error)
+	ChangeCourseSlot(context.Context, *ChangeCourseSlotRequest) (*emptypb.Empty, error)
 	// DeleteCourseSlotChange DeleteCourseSlotChange hard-deletes a slot change record by ID.
 	DeleteCourseSlotChange(context.Context, *DeleteCourseSlotChangeRequest) (*emptypb.Empty, error)
 	// GetCourseSlotChange GetCourseSlotChange returns a single slot change record by ID.
@@ -64,7 +64,7 @@ func _CourseSlotChangeService_ChangeCourseSlot0_HTTP_Handler(srv CourseSlotChang
 		if err != nil {
 			return err
 		}
-		reply := out.(*CourseSlotChange)
+		reply := out.(*emptypb.Empty)
 		return ctx.Result(200, reply)
 	}
 }
@@ -157,7 +157,7 @@ func _CourseSlotChangeService_ListCourseSlotChangesByCourseID0_HTTP_Handler(srv 
 type CourseSlotChangeServiceHTTPClient interface {
 	// ChangeCourseSlot ChangeCourseSlot creates a temporary schedule modification (reschedule,
 	// substitute teacher, relocate room, or composite).
-	ChangeCourseSlot(ctx context.Context, req *ChangeCourseSlotRequest, opts ...http.CallOption) (rsp *CourseSlotChange, err error)
+	ChangeCourseSlot(ctx context.Context, req *ChangeCourseSlotRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	// DeleteCourseSlotChange DeleteCourseSlotChange hard-deletes a slot change record by ID.
 	DeleteCourseSlotChange(ctx context.Context, req *DeleteCourseSlotChangeRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	// GetCourseSlotChange GetCourseSlotChange returns a single slot change record by ID.
@@ -178,8 +178,8 @@ func NewCourseSlotChangeServiceHTTPClient(client *http.Client) CourseSlotChangeS
 
 // ChangeCourseSlot ChangeCourseSlot creates a temporary schedule modification (reschedule,
 // substitute teacher, relocate room, or composite).
-func (c *CourseSlotChangeServiceHTTPClientImpl) ChangeCourseSlot(ctx context.Context, in *ChangeCourseSlotRequest, opts ...http.CallOption) (*CourseSlotChange, error) {
-	var out CourseSlotChange
+func (c *CourseSlotChangeServiceHTTPClientImpl) ChangeCourseSlot(ctx context.Context, in *ChangeCourseSlotRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
 	pattern := "/v1/course-slot-changes"
 	path := http.BuildPath(pattern, in, http.WithQueryParams(), http.WithOmitFields("courseSlotChange"))
 	opts = append([]http.CallOption{

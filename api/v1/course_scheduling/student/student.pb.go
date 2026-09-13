@@ -231,7 +231,6 @@ func (x *Student) GetUpdatedAt() *timestamppb.Timestamp {
 type StudentSet struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Students      []*Student             `protobuf:"bytes,1,rep,name=students,proto3" json:"students,omitempty"`
-	NextPageToken string                 `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -271,13 +270,6 @@ func (x *StudentSet) GetStudents() []*Student {
 		return x.Students
 	}
 	return nil
-}
-
-func (x *StudentSet) GetNextPageToken() string {
-	if x != nil {
-		return x.NextPageToken
-	}
-	return ""
 }
 
 type SaveStudentRequest struct {
@@ -371,8 +363,8 @@ func (x *GetStudentRequest) GetId() int64 {
 
 type ListStudentsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	PageSize      int32                  `protobuf:"varint,1,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	PageToken     string                 `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	Page          int32                  `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	Filter        string                 `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
 	OrderBy       string                 `protobuf:"bytes,4,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -409,18 +401,18 @@ func (*ListStudentsRequest) Descriptor() ([]byte, []int) {
 	return file_v1_course_scheduling_student_student_proto_rawDescGZIP(), []int{4}
 }
 
+func (x *ListStudentsRequest) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
 func (x *ListStudentsRequest) GetPageSize() int32 {
 	if x != nil {
 		return x.PageSize
 	}
 	return 0
-}
-
-func (x *ListStudentsRequest) GetPageToken() string {
-	if x != nil {
-		return x.PageToken
-	}
-	return ""
 }
 
 func (x *ListStudentsRequest) GetFilter() string {
@@ -495,19 +487,17 @@ const file_v1_course_scheduling_student_student_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"o\n" +
+	"updated_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"G\n" +
 	"\n" +
 	"StudentSet\x129\n" +
-	"\bstudents\x18\x01 \x03(\v2\x1d.v1.course_scheduling.StudentR\bstudents\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"R\n" +
+	"\bstudents\x18\x01 \x03(\v2\x1d.v1.course_scheduling.StudentR\bstudents\"R\n" +
 	"\x12SaveStudentRequest\x12<\n" +
 	"\astudent\x18\x01 \x01(\v2\x1d.v1.course_scheduling.StudentB\x03\xe0A\x02R\astudent\"(\n" +
 	"\x11GetStudentRequest\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\x03B\x03\xe0A\x02R\x02id\"\x84\x01\n" +
-	"\x13ListStudentsRequest\x12\x1b\n" +
-	"\tpage_size\x18\x01 \x01(\x05R\bpageSize\x12\x1d\n" +
-	"\n" +
-	"page_token\x18\x02 \x01(\tR\tpageToken\x12\x16\n" +
+	"\x02id\x18\x01 \x01(\x03B\x03\xe0A\x02R\x02id\"y\n" +
+	"\x13ListStudentsRequest\x12\x12\n" +
+	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x16\n" +
 	"\x06filter\x18\x03 \x01(\tR\x06filter\x12\x19\n" +
 	"\border_by\x18\x04 \x01(\tR\aorderBy\"+\n" +
 	"\x14DeleteStudentRequest\x12\x13\n" +
@@ -520,9 +510,9 @@ const file_v1_course_scheduling_student_student_proto_rawDesc = "" +
 	"\vStudentType\x12\x1c\n" +
 	"\x18STUDENT_TYPE_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15STUDENT_TYPE_EXTERNAL\x10\x01\x12\x19\n" +
-	"\x15STUDENT_TYPE_INTERNAL\x10\x022\xdb\x03\n" +
-	"\x0eStudentService\x12u\n" +
-	"\vSaveStudent\x12(.v1.course_scheduling.SaveStudentRequest\x1a\x1d.v1.course_scheduling.Student\"\x1d\x82\xd3\xe4\x93\x02\x17:\astudent\"\f/v1/students\x12n\n" +
+	"\x15STUDENT_TYPE_INTERNAL\x10\x022\xd4\x03\n" +
+	"\x0eStudentService\x12n\n" +
+	"\vSaveStudent\x12(.v1.course_scheduling.SaveStudentRequest\x1a\x16.google.protobuf.Empty\"\x1d\x82\xd3\xe4\x93\x02\x17:\astudent\"\f/v1/students\x12n\n" +
 	"\rDeleteStudent\x12*.v1.course_scheduling.DeleteStudentRequest\x1a\x16.google.protobuf.Empty\"\x19\x82\xd3\xe4\x93\x02\x13*\x11/v1/students/{id}\x12o\n" +
 	"\n" +
 	"GetStudent\x12'.v1.course_scheduling.GetStudentRequest\x1a\x1d.v1.course_scheduling.Student\"\x19\x82\xd3\xe4\x93\x02\x13\x12\x11/v1/students/{id}\x12q\n" +
@@ -568,7 +558,7 @@ var file_v1_course_scheduling_student_student_proto_depIdxs = []int32{
 	7,  // 8: v1.course_scheduling.StudentService.DeleteStudent:input_type -> v1.course_scheduling.DeleteStudentRequest
 	5,  // 9: v1.course_scheduling.StudentService.GetStudent:input_type -> v1.course_scheduling.GetStudentRequest
 	6,  // 10: v1.course_scheduling.StudentService.ListStudents:input_type -> v1.course_scheduling.ListStudentsRequest
-	2,  // 11: v1.course_scheduling.StudentService.SaveStudent:output_type -> v1.course_scheduling.Student
+	10, // 11: v1.course_scheduling.StudentService.SaveStudent:output_type -> google.protobuf.Empty
 	10, // 12: v1.course_scheduling.StudentService.DeleteStudent:output_type -> google.protobuf.Empty
 	2,  // 13: v1.course_scheduling.StudentService.GetStudent:output_type -> v1.course_scheduling.Student
 	3,  // 14: v1.course_scheduling.StudentService.ListStudents:output_type -> v1.course_scheduling.StudentSet

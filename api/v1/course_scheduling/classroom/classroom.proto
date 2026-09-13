@@ -51,7 +51,6 @@ message Classroom {
 
 message ClassroomSet {
   repeated Classroom classrooms = 1;
-  string next_page_token = 2;
 }
 
 message SaveClassroomRequest {
@@ -63,8 +62,8 @@ message GetClassroomRequest {
 }
 
 message ListClassroomsRequest {
-  int32 page_size = 1;
-  string page_token = 2;
+  int32 page = 1;
+  int32 page_size = 2;
   string filter = 3;
   string order_by = 4;
 }
@@ -79,7 +78,7 @@ service ClassroomService {
   // --- commands ---
 
   // SaveClassroom creates or updates a classroom.
-  rpc SaveClassroom (SaveClassroomRequest) returns (Classroom) {
+  rpc SaveClassroom (SaveClassroomRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       post: "/v1/classrooms"
       body: "classroom"

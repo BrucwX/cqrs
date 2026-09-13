@@ -303,7 +303,6 @@ func (x *Course) GetPeriod() *CoursePeriod {
 type CourseSet struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Courses       []*Course              `protobuf:"bytes,1,rep,name=courses,proto3" json:"courses,omitempty"`
-	NextPageToken string                 `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -343,13 +342,6 @@ func (x *CourseSet) GetCourses() []*Course {
 		return x.Courses
 	}
 	return nil
-}
-
-func (x *CourseSet) GetNextPageToken() string {
-	if x != nil {
-		return x.NextPageToken
-	}
-	return ""
 }
 
 type SaveCourseRequest struct {
@@ -442,8 +434,8 @@ func (x *GetCourseRequest) GetId() string {
 
 type ListCoursesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	PageSize      int32                  `protobuf:"varint,1,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	PageToken     string                 `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	Page          int32                  `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	Filter        string                 `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
 	OrderBy       string                 `protobuf:"bytes,4,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -480,18 +472,18 @@ func (*ListCoursesRequest) Descriptor() ([]byte, []int) {
 	return file_v1_course_scheduling_course_course_proto_rawDescGZIP(), []int{7}
 }
 
+func (x *ListCoursesRequest) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
 func (x *ListCoursesRequest) GetPageSize() int32 {
 	if x != nil {
 		return x.PageSize
 	}
 	return 0
-}
-
-func (x *ListCoursesRequest) GetPageToken() string {
-	if x != nil {
-		return x.PageToken
-	}
-	return ""
 }
 
 func (x *ListCoursesRequest) GetFilter() string {
@@ -709,18 +701,16 @@ const file_v1_course_scheduling_course_course_proto_rawDesc = "" +
 	"\n" +
 	"enrollment\x18\x04 \x01(\v2&.v1.course_scheduling.EnrollmentWindowR\n" +
 	"enrollment\x12:\n" +
-	"\x06period\x18\x05 \x01(\v2\".v1.course_scheduling.CoursePeriodR\x06period\"k\n" +
+	"\x06period\x18\x05 \x01(\v2\".v1.course_scheduling.CoursePeriodR\x06period\"C\n" +
 	"\tCourseSet\x126\n" +
-	"\acourses\x18\x01 \x03(\v2\x1c.v1.course_scheduling.CourseR\acourses\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"N\n" +
+	"\acourses\x18\x01 \x03(\v2\x1c.v1.course_scheduling.CourseR\acourses\"N\n" +
 	"\x11SaveCourseRequest\x129\n" +
 	"\x06course\x18\x01 \x01(\v2\x1c.v1.course_scheduling.CourseB\x03\xe0A\x02R\x06course\"'\n" +
 	"\x10GetCourseRequest\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\"\x83\x01\n" +
-	"\x12ListCoursesRequest\x12\x1b\n" +
-	"\tpage_size\x18\x01 \x01(\x05R\bpageSize\x12\x1d\n" +
-	"\n" +
-	"page_token\x18\x02 \x01(\tR\tpageToken\x12\x16\n" +
+	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\"x\n" +
+	"\x12ListCoursesRequest\x12\x12\n" +
+	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x16\n" +
 	"\x06filter\x18\x03 \x01(\tR\x06filter\x12\x19\n" +
 	"\border_by\x18\x04 \x01(\tR\aorderBy\"*\n" +
 	"\x13DeleteCourseRequest\x12\x13\n" +
@@ -732,10 +722,10 @@ const file_v1_course_scheduling_course_course_proto_rawDesc = "" +
 	"student_id\x18\x01 \x01(\x03B\x03\xe0A\x02R\tstudentId\"K\n" +
 	"%ListCoursesAvailableForTeacherRequest\x12\"\n" +
 	"\n" +
-	"teacher_id\x18\x01 \x01(\x03B\x03\xe0A\x02R\tteacherId2\xd4\a\n" +
-	"\rCourseService\x12p\n" +
+	"teacher_id\x18\x01 \x01(\x03B\x03\xe0A\x02R\tteacherId2\xce\a\n" +
+	"\rCourseService\x12j\n" +
 	"\n" +
-	"SaveCourse\x12'.v1.course_scheduling.SaveCourseRequest\x1a\x1c.v1.course_scheduling.Course\"\x1b\x82\xd3\xe4\x93\x02\x15:\x06course\"\v/v1/courses\x12k\n" +
+	"SaveCourse\x12'.v1.course_scheduling.SaveCourseRequest\x1a\x16.google.protobuf.Empty\"\x1b\x82\xd3\xe4\x93\x02\x15:\x06course\"\v/v1/courses\x12k\n" +
 	"\fDeleteCourse\x12).v1.course_scheduling.DeleteCourseRequest\x1a\x16.google.protobuf.Empty\"\x18\x82\xd3\xe4\x93\x02\x12*\x10/v1/courses/{id}\x12k\n" +
 	"\tGetCourse\x12&.v1.course_scheduling.GetCourseRequest\x1a\x1c.v1.course_scheduling.Course\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/v1/courses/{id}\x12m\n" +
 	"\vListCourses\x12(.v1.course_scheduling.ListCoursesRequest\x1a\x1f.v1.course_scheduling.CourseSet\"\x13\x82\xd3\xe4\x93\x02\r\x12\v/v1/courses\x12\xaf\x01\n" +
@@ -791,7 +781,7 @@ var file_v1_course_scheduling_course_course_proto_depIdxs = []int32{
 	9,  // 14: v1.course_scheduling.CourseService.ListCoursesAvailableForClassroom:input_type -> v1.course_scheduling.ListCoursesAvailableForClassroomRequest
 	10, // 15: v1.course_scheduling.CourseService.ListCoursesAvailableForStudent:input_type -> v1.course_scheduling.ListCoursesAvailableForStudentRequest
 	11, // 16: v1.course_scheduling.CourseService.ListCoursesAvailableForTeacher:input_type -> v1.course_scheduling.ListCoursesAvailableForTeacherRequest
-	3,  // 17: v1.course_scheduling.CourseService.SaveCourse:output_type -> v1.course_scheduling.Course
+	13, // 17: v1.course_scheduling.CourseService.SaveCourse:output_type -> google.protobuf.Empty
 	13, // 18: v1.course_scheduling.CourseService.DeleteCourse:output_type -> google.protobuf.Empty
 	3,  // 19: v1.course_scheduling.CourseService.GetCourse:output_type -> v1.course_scheduling.Course
 	4,  // 20: v1.course_scheduling.CourseService.ListCourses:output_type -> v1.course_scheduling.CourseSet

@@ -31,7 +31,7 @@ type StudentServiceHTTPServer interface {
 	// ListStudents ListStudents returns a page of students.
 	ListStudents(context.Context, *ListStudentsRequest) (*StudentSet, error)
 	// SaveStudent SaveStudent creates a new student (id absent) or updates an existing one.
-	SaveStudent(context.Context, *SaveStudentRequest) (*Student, error)
+	SaveStudent(context.Context, *SaveStudentRequest) (*emptypb.Empty, error)
 }
 
 func RegisterStudentServiceHTTPServer(s *http.Server, srv StudentServiceHTTPServer) {
@@ -59,7 +59,7 @@ func _StudentService_SaveStudent0_HTTP_Handler(srv StudentServiceHTTPServer) fun
 		if err != nil {
 			return err
 		}
-		reply := out.(*Student)
+		reply := out.(*emptypb.Empty)
 		return ctx.Result(200, reply)
 	}
 }
@@ -135,7 +135,7 @@ type StudentServiceHTTPClient interface {
 	// ListStudents ListStudents returns a page of students.
 	ListStudents(ctx context.Context, req *ListStudentsRequest, opts ...http.CallOption) (rsp *StudentSet, err error)
 	// SaveStudent SaveStudent creates a new student (id absent) or updates an existing one.
-	SaveStudent(ctx context.Context, req *SaveStudentRequest, opts ...http.CallOption) (rsp *Student, err error)
+	SaveStudent(ctx context.Context, req *SaveStudentRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 }
 
 type StudentServiceHTTPClientImpl struct {
@@ -198,8 +198,8 @@ func (c *StudentServiceHTTPClientImpl) ListStudents(ctx context.Context, in *Lis
 }
 
 // SaveStudent SaveStudent creates a new student (id absent) or updates an existing one.
-func (c *StudentServiceHTTPClientImpl) SaveStudent(ctx context.Context, in *SaveStudentRequest, opts ...http.CallOption) (*Student, error) {
-	var out Student
+func (c *StudentServiceHTTPClientImpl) SaveStudent(ctx context.Context, in *SaveStudentRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
 	pattern := "/v1/students"
 	path := http.BuildPath(pattern, in, http.WithQueryParams(), http.WithOmitFields("student"))
 	opts = append([]http.CallOption{

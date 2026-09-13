@@ -39,7 +39,7 @@ type MakeupServiceHTTPServer interface {
 	// ListMakeupsByStudentID ListMakeupsByStudentID returns courses the student has makeup classes for.
 	ListMakeupsByStudentID(context.Context, *ListMakeupsByStudentIDRequest) (*course.CourseSet, error)
 	// RecordMakeup RecordMakeup books a makeup class for a student.
-	RecordMakeup(context.Context, *RecordMakeupRequest) (*StudentMakeup, error)
+	RecordMakeup(context.Context, *RecordMakeupRequest) (*emptypb.Empty, error)
 }
 
 func RegisterMakeupServiceHTTPServer(s *http.Server, srv MakeupServiceHTTPServer) {
@@ -69,7 +69,7 @@ func _MakeupService_RecordMakeup0_HTTP_Handler(srv MakeupServiceHTTPServer) func
 		if err != nil {
 			return err
 		}
-		reply := out.(*StudentMakeup)
+		reply := out.(*emptypb.Empty)
 		return ctx.Result(200, reply)
 	}
 }
@@ -193,7 +193,7 @@ type MakeupServiceHTTPClient interface {
 	// ListMakeupsByStudentID ListMakeupsByStudentID returns courses the student has makeup classes for.
 	ListMakeupsByStudentID(ctx context.Context, req *ListMakeupsByStudentIDRequest, opts ...http.CallOption) (rsp *course.CourseSet, err error)
 	// RecordMakeup RecordMakeup books a makeup class for a student.
-	RecordMakeup(ctx context.Context, req *RecordMakeupRequest, opts ...http.CallOption) (rsp *StudentMakeup, err error)
+	RecordMakeup(ctx context.Context, req *RecordMakeupRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 }
 
 type MakeupServiceHTTPClientImpl struct {
@@ -290,8 +290,8 @@ func (c *MakeupServiceHTTPClientImpl) ListMakeupsByStudentID(ctx context.Context
 }
 
 // RecordMakeup RecordMakeup books a makeup class for a student.
-func (c *MakeupServiceHTTPClientImpl) RecordMakeup(ctx context.Context, in *RecordMakeupRequest, opts ...http.CallOption) (*StudentMakeup, error) {
-	var out StudentMakeup
+func (c *MakeupServiceHTTPClientImpl) RecordMakeup(ctx context.Context, in *RecordMakeupRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
 	pattern := "/v1/makeups"
 	path := http.BuildPath(pattern, in, http.WithQueryParams(), http.WithOmitFields("makeup"))
 	opts = append([]http.CallOption{

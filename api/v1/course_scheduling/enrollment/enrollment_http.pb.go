@@ -31,7 +31,7 @@ type EnrollmentServiceHTTPServer interface {
 	// DeleteEnrollment DeleteEnrollment hard-deletes an enrollment record by ID.
 	DeleteEnrollment(context.Context, *DeleteEnrollmentRequest) (*emptypb.Empty, error)
 	// EnrollStudent EnrollStudent enrolls a student in a course.
-	EnrollStudent(context.Context, *EnrollStudentRequest) (*CourseEnrollment, error)
+	EnrollStudent(context.Context, *EnrollStudentRequest) (*emptypb.Empty, error)
 	// GetEnrollment GetEnrollment returns a single enrollment record by ID.
 	GetEnrollment(context.Context, *GetEnrollmentRequest) (*CourseEnrollment, error)
 	// ListEnrolledCoursesByStudentID ListEnrolledCoursesByStudentID returns all courses a student is enrolled in.
@@ -69,7 +69,7 @@ func _EnrollmentService_EnrollStudent0_HTTP_Handler(srv EnrollmentServiceHTTPSer
 		if err != nil {
 			return err
 		}
-		reply := out.(*CourseEnrollment)
+		reply := out.(*emptypb.Empty)
 		return ctx.Result(200, reply)
 	}
 }
@@ -185,7 +185,7 @@ type EnrollmentServiceHTTPClient interface {
 	// DeleteEnrollment DeleteEnrollment hard-deletes an enrollment record by ID.
 	DeleteEnrollment(ctx context.Context, req *DeleteEnrollmentRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	// EnrollStudent EnrollStudent enrolls a student in a course.
-	EnrollStudent(ctx context.Context, req *EnrollStudentRequest, opts ...http.CallOption) (rsp *CourseEnrollment, err error)
+	EnrollStudent(ctx context.Context, req *EnrollStudentRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	// GetEnrollment GetEnrollment returns a single enrollment record by ID.
 	GetEnrollment(ctx context.Context, req *GetEnrollmentRequest, opts ...http.CallOption) (rsp *CourseEnrollment, err error)
 	// ListEnrolledCoursesByStudentID ListEnrolledCoursesByStudentID returns all courses a student is enrolled in.
@@ -222,8 +222,8 @@ func (c *EnrollmentServiceHTTPClientImpl) DeleteEnrollment(ctx context.Context, 
 }
 
 // EnrollStudent EnrollStudent enrolls a student in a course.
-func (c *EnrollmentServiceHTTPClientImpl) EnrollStudent(ctx context.Context, in *EnrollStudentRequest, opts ...http.CallOption) (*CourseEnrollment, error) {
-	var out CourseEnrollment
+func (c *EnrollmentServiceHTTPClientImpl) EnrollStudent(ctx context.Context, in *EnrollStudentRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
 	pattern := "/v1/enrollments"
 	path := http.BuildPath(pattern, in, http.WithQueryParams(), http.WithOmitFields("enrollment"))
 	opts = append([]http.CallOption{

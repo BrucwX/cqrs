@@ -365,7 +365,6 @@ func (x *CourseSlotChange) GetUpdatedAt() *timestamppb.Timestamp {
 type CourseSlotChangeSet struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
 	CourseSlotChanges []*CourseSlotChange    `protobuf:"bytes,1,rep,name=course_slot_changes,json=courseSlotChanges,proto3" json:"course_slot_changes,omitempty"`
-	NextPageToken     string                 `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
@@ -405,13 +404,6 @@ func (x *CourseSlotChangeSet) GetCourseSlotChanges() []*CourseSlotChange {
 		return x.CourseSlotChanges
 	}
 	return nil
-}
-
-func (x *CourseSlotChangeSet) GetNextPageToken() string {
-	if x != nil {
-		return x.NextPageToken
-	}
-	return ""
 }
 
 type ChangeCourseSlotRequest struct {
@@ -504,8 +496,8 @@ func (x *GetCourseSlotChangeRequest) GetId() int64 {
 
 type ListCourseSlotChangesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	PageSize      int32                  `protobuf:"varint,1,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	PageToken     string                 `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	Page          int32                  `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	Filter        string                 `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
 	OrderBy       string                 `protobuf:"bytes,4,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -542,18 +534,18 @@ func (*ListCourseSlotChangesRequest) Descriptor() ([]byte, []int) {
 	return file_v1_course_scheduling_course_slot_change_course_slot_change_proto_rawDescGZIP(), []int{6}
 }
 
+func (x *ListCourseSlotChangesRequest) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
 func (x *ListCourseSlotChangesRequest) GetPageSize() int32 {
 	if x != nil {
 		return x.PageSize
 	}
 	return 0
-}
-
-func (x *ListCourseSlotChangesRequest) GetPageToken() string {
-	if x != nil {
-		return x.PageToken
-	}
-	return ""
 }
 
 func (x *ListCourseSlotChangesRequest) GetFilter() string {
@@ -692,18 +684,16 @@ const file_v1_course_scheduling_course_slot_change_course_slot_change_proto_rawD
 	"\n" +
 	"created_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\x95\x01\n" +
+	"updated_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"m\n" +
 	"\x13CourseSlotChangeSet\x12V\n" +
-	"\x13course_slot_changes\x18\x01 \x03(\v2&.v1.course_scheduling.CourseSlotChangeR\x11courseSlotChanges\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"t\n" +
+	"\x13course_slot_changes\x18\x01 \x03(\v2&.v1.course_scheduling.CourseSlotChangeR\x11courseSlotChanges\"t\n" +
 	"\x17ChangeCourseSlotRequest\x12Y\n" +
 	"\x12course_slot_change\x18\x01 \x01(\v2&.v1.course_scheduling.CourseSlotChangeB\x03\xe0A\x02R\x10courseSlotChange\"1\n" +
 	"\x1aGetCourseSlotChangeRequest\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\x03B\x03\xe0A\x02R\x02id\"\x8d\x01\n" +
-	"\x1cListCourseSlotChangesRequest\x12\x1b\n" +
-	"\tpage_size\x18\x01 \x01(\x05R\bpageSize\x12\x1d\n" +
-	"\n" +
-	"page_token\x18\x02 \x01(\tR\tpageToken\x12\x16\n" +
+	"\x02id\x18\x01 \x01(\x03B\x03\xe0A\x02R\x02id\"\x82\x01\n" +
+	"\x1cListCourseSlotChangesRequest\x12\x12\n" +
+	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x16\n" +
 	"\x06filter\x18\x03 \x01(\tR\x06filter\x12\x19\n" +
 	"\border_by\x18\x04 \x01(\tR\aorderBy\"J\n" +
 	"&ListCourseSlotChangesByCourseIDRequest\x12 \n" +
@@ -716,9 +706,9 @@ const file_v1_course_scheduling_course_slot_change_course_slot_change_proto_rawD
 	"\x16CHANGE_TYPE_RESCHEDULE\x10\x01\x12\x1a\n" +
 	"\x16CHANGE_TYPE_SUBSTITUTE\x10\x02\x12\x18\n" +
 	"\x14CHANGE_TYPE_RELOCATE\x10\x03\x12\x19\n" +
-	"\x15CHANGE_TYPE_COMPOSITE\x10\x042\xb5\x06\n" +
-	"\x17CourseSlotChangeService\x12\x9e\x01\n" +
-	"\x10ChangeCourseSlot\x12-.v1.course_scheduling.ChangeCourseSlotRequest\x1a&.v1.course_scheduling.CourseSlotChange\"3\x82\xd3\xe4\x93\x02-:\x12course_slot_change\"\x17/v1/course-slot-changes\x12\x8b\x01\n" +
+	"\x15CHANGE_TYPE_COMPOSITE\x10\x042\xa5\x06\n" +
+	"\x17CourseSlotChangeService\x12\x8e\x01\n" +
+	"\x10ChangeCourseSlot\x12-.v1.course_scheduling.ChangeCourseSlotRequest\x1a\x16.google.protobuf.Empty\"3\x82\xd3\xe4\x93\x02-:\x12course_slot_change\"\x17/v1/course-slot-changes\x12\x8b\x01\n" +
 	"\x16DeleteCourseSlotChange\x123.v1.course_scheduling.DeleteCourseSlotChangeRequest\x1a\x16.google.protobuf.Empty\"$\x82\xd3\xe4\x93\x02\x1e*\x1c/v1/course-slot-changes/{id}\x12\x95\x01\n" +
 	"\x13GetCourseSlotChange\x120.v1.course_scheduling.GetCourseSlotChangeRequest\x1a&.v1.course_scheduling.CourseSlotChange\"$\x82\xd3\xe4\x93\x02\x1e\x12\x1c/v1/course-slot-changes/{id}\x12\x97\x01\n" +
 	"\x15ListCourseSlotChanges\x122.v1.course_scheduling.ListCourseSlotChangesRequest\x1a).v1.course_scheduling.CourseSlotChangeSet\"\x1f\x82\xd3\xe4\x93\x02\x19\x12\x17/v1/course-slot-changes\x12\xb8\x01\n" +
@@ -769,7 +759,7 @@ var file_v1_course_scheduling_course_slot_change_course_slot_change_proto_depIdx
 	6,  // 12: v1.course_scheduling.CourseSlotChangeService.GetCourseSlotChange:input_type -> v1.course_scheduling.GetCourseSlotChangeRequest
 	7,  // 13: v1.course_scheduling.CourseSlotChangeService.ListCourseSlotChanges:input_type -> v1.course_scheduling.ListCourseSlotChangesRequest
 	8,  // 14: v1.course_scheduling.CourseSlotChangeService.ListCourseSlotChangesByCourseID:input_type -> v1.course_scheduling.ListCourseSlotChangesByCourseIDRequest
-	3,  // 15: v1.course_scheduling.CourseSlotChangeService.ChangeCourseSlot:output_type -> v1.course_scheduling.CourseSlotChange
+	11, // 15: v1.course_scheduling.CourseSlotChangeService.ChangeCourseSlot:output_type -> google.protobuf.Empty
 	11, // 16: v1.course_scheduling.CourseSlotChangeService.DeleteCourseSlotChange:output_type -> google.protobuf.Empty
 	3,  // 17: v1.course_scheduling.CourseSlotChangeService.GetCourseSlotChange:output_type -> v1.course_scheduling.CourseSlotChange
 	4,  // 18: v1.course_scheduling.CourseSlotChangeService.ListCourseSlotChanges:output_type -> v1.course_scheduling.CourseSlotChangeSet

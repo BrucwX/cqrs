@@ -35,7 +35,7 @@ const (
 // AbsenceService owns the absence record aggregate.
 type AbsenceServiceClient interface {
 	// RecordAbsence records a factual student absence.
-	RecordAbsence(ctx context.Context, in *RecordAbsenceRequest, opts ...grpc.CallOption) (*AbsenceRecord, error)
+	RecordAbsence(ctx context.Context, in *RecordAbsenceRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// DeleteAbsence hard-deletes an absence record by ID.
 	DeleteAbsence(ctx context.Context, in *DeleteAbsenceRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// GetAbsence returns a single absence record by ID.
@@ -56,9 +56,9 @@ func NewAbsenceServiceClient(cc grpc.ClientConnInterface) AbsenceServiceClient {
 	return &absenceServiceClient{cc}
 }
 
-func (c *absenceServiceClient) RecordAbsence(ctx context.Context, in *RecordAbsenceRequest, opts ...grpc.CallOption) (*AbsenceRecord, error) {
+func (c *absenceServiceClient) RecordAbsence(ctx context.Context, in *RecordAbsenceRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(AbsenceRecord)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, AbsenceService_RecordAbsence_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -123,7 +123,7 @@ func (c *absenceServiceClient) ListAbsencesByCourseID(ctx context.Context, in *L
 // AbsenceService owns the absence record aggregate.
 type AbsenceServiceServer interface {
 	// RecordAbsence records a factual student absence.
-	RecordAbsence(context.Context, *RecordAbsenceRequest) (*AbsenceRecord, error)
+	RecordAbsence(context.Context, *RecordAbsenceRequest) (*emptypb.Empty, error)
 	// DeleteAbsence hard-deletes an absence record by ID.
 	DeleteAbsence(context.Context, *DeleteAbsenceRequest) (*emptypb.Empty, error)
 	// GetAbsence returns a single absence record by ID.
@@ -144,7 +144,7 @@ type AbsenceServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedAbsenceServiceServer struct{}
 
-func (UnimplementedAbsenceServiceServer) RecordAbsence(context.Context, *RecordAbsenceRequest) (*AbsenceRecord, error) {
+func (UnimplementedAbsenceServiceServer) RecordAbsence(context.Context, *RecordAbsenceRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method RecordAbsence not implemented")
 }
 func (UnimplementedAbsenceServiceServer) DeleteAbsence(context.Context, *DeleteAbsenceRequest) (*emptypb.Empty, error) {

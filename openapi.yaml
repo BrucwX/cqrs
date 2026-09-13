@@ -13,15 +13,16 @@ paths:
             description: ListAbsences returns a page of absence records.
             operationId: AbsenceService_ListAbsences
             parameters:
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
                 - name: pageSize
                   in: query
                   schema:
                     type: integer
                     format: int32
-                - name: pageToken
-                  in: query
-                  schema:
-                    type: string
                 - name: filter
                   in: query
                   schema:
@@ -51,10 +52,7 @@ paths:
             responses:
                 "200":
                     description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/v1.course_scheduling.AbsenceRecord'
+                    content: {}
     /v1/absences/{id}:
         get:
             tags:
@@ -96,15 +94,16 @@ paths:
             description: ListClassrooms returns a page of classrooms.
             operationId: ClassroomService_ListClassrooms
             parameters:
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
                 - name: pageSize
                   in: query
                   schema:
                     type: integer
                     format: int32
-                - name: pageToken
-                  in: query
-                  schema:
-                    type: string
                 - name: filter
                   in: query
                   schema:
@@ -134,10 +133,7 @@ paths:
             responses:
                 "200":
                     description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/v1.course_scheduling.Classroom'
+                    content: {}
     /v1/classrooms/{id}:
         get:
             tags:
@@ -179,15 +175,16 @@ paths:
             description: ListCourseSlotChanges returns a page of slot change records.
             operationId: CourseSlotChangeService_ListCourseSlotChanges
             parameters:
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
                 - name: pageSize
                   in: query
                   schema:
                     type: integer
                     format: int32
-                - name: pageToken
-                  in: query
-                  schema:
-                    type: string
                 - name: filter
                   in: query
                   schema:
@@ -219,10 +216,7 @@ paths:
             responses:
                 "200":
                     description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/v1.course_scheduling.CourseSlotChange'
+                    content: {}
     /v1/course-slot-changes/{id}:
         get:
             tags:
@@ -264,15 +258,16 @@ paths:
             description: ListCourseSlots returns a page of course slots.
             operationId: CourseSlotService_ListCourseSlots
             parameters:
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
                 - name: pageSize
                   in: query
                   schema:
                     type: integer
                     format: int32
-                - name: pageToken
-                  in: query
-                  schema:
-                    type: string
                 - name: filter
                   in: query
                   schema:
@@ -398,15 +393,16 @@ paths:
             description: ListCourses returns a page of courses.
             operationId: CourseService_ListCourses
             parameters:
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
                 - name: pageSize
                   in: query
                   schema:
                     type: integer
                     format: int32
-                - name: pageToken
-                  in: query
-                  schema:
-                    type: string
                 - name: filter
                   in: query
                   schema:
@@ -436,10 +432,7 @@ paths:
             responses:
                 "200":
                     description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/v1.course_scheduling.Course'
+                    content: {}
     /v1/courses/available-for-classroom:
         get:
             tags:
@@ -634,15 +627,16 @@ paths:
             description: ListEnrollments returns a page of enrollment records.
             operationId: EnrollmentService_ListEnrollments
             parameters:
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
                 - name: pageSize
                   in: query
                   schema:
                     type: integer
                     format: int32
-                - name: pageToken
-                  in: query
-                  schema:
-                    type: string
                 - name: filter
                   in: query
                   schema:
@@ -672,10 +666,7 @@ paths:
             responses:
                 "200":
                     description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/v1.course_scheduling.CourseEnrollment'
+                    content: {}
     /v1/enrollments/{id}:
         get:
             tags:
@@ -717,15 +708,16 @@ paths:
             description: ListMakeups returns a page of makeup bookings.
             operationId: MakeupService_ListMakeups
             parameters:
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
                 - name: pageSize
                   in: query
                   schema:
                     type: integer
                     format: int32
-                - name: pageToken
-                  in: query
-                  schema:
-                    type: string
                 - name: filter
                   in: query
                   schema:
@@ -755,10 +747,7 @@ paths:
             responses:
                 "200":
                     description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/v1.course_scheduling.StudentMakeup'
+                    content: {}
     /v1/makeups/{id}:
         get:
             tags:
@@ -800,15 +789,16 @@ paths:
             description: ListQualifications returns a page of qualification records.
             operationId: QualificationService_ListQualifications
             parameters:
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
                 - name: pageSize
                   in: query
                   schema:
                     type: integer
                     format: int32
-                - name: pageToken
-                  in: query
-                  schema:
-                    type: string
                 - name: filter
                   in: query
                   schema:
@@ -904,15 +894,16 @@ paths:
             description: ListStudents returns a page of students.
             operationId: StudentService_ListStudents
             parameters:
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
                 - name: pageSize
                   in: query
                   schema:
                     type: integer
                     format: int32
-                - name: pageToken
-                  in: query
-                  schema:
-                    type: string
                 - name: filter
                   in: query
                   schema:
@@ -942,10 +933,7 @@ paths:
             responses:
                 "200":
                     description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/v1.course_scheduling.Student'
+                    content: {}
     /v1/students/{id}:
         get:
             tags:
@@ -1044,15 +1032,16 @@ paths:
             description: ListTeachers returns a page of teachers.
             operationId: TeacherService_ListTeachers
             parameters:
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
                 - name: pageSize
                   in: query
                   schema:
                     type: integer
                     format: int32
-                - name: pageToken
-                  in: query
-                  schema:
-                    type: string
                 - name: filter
                   in: query
                   schema:
@@ -1082,10 +1071,7 @@ paths:
             responses:
                 "200":
                     description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/v1.course_scheduling.Teacher'
+                    content: {}
     /v1/teachers/{id}:
         get:
             tags:
@@ -1189,8 +1175,6 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/v1.course_scheduling.AbsenceRecord'
-                nextPageToken:
-                    type: string
         v1.course_scheduling.AssignClassroomToCourseSlotRequest:
             required:
                 - slotIds
@@ -1283,8 +1267,6 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/v1.course_scheduling.Classroom'
-                nextPageToken:
-                    type: string
         v1.course_scheduling.ContactInfo:
             type: object
             properties:
@@ -1360,8 +1342,6 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/v1.course_scheduling.CourseEnrollment'
-                nextPageToken:
-                    type: string
         v1.course_scheduling.CoursePeriod:
             type: object
             properties:
@@ -1389,8 +1369,6 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/v1.course_scheduling.Course'
-                nextPageToken:
-                    type: string
         v1.course_scheduling.CourseSlot:
             type: object
             properties:
@@ -1466,8 +1444,6 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/v1.course_scheduling.CourseSlotChange'
-                nextPageToken:
-                    type: string
         v1.course_scheduling.CourseSlotSet:
             type: object
             properties:
@@ -1475,8 +1451,6 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/v1.course_scheduling.CourseSlot'
-                nextPageToken:
-                    type: string
         v1.course_scheduling.CourseType:
             type: object
             properties:
@@ -1505,8 +1479,6 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/v1.course_scheduling.CourseType'
-                nextPageToken:
-                    type: string
         v1.course_scheduling.DayTime:
             type: object
             properties:
@@ -1616,8 +1588,6 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/v1.course_scheduling.Qualification'
-                nextPageToken:
-                    type: string
         v1.course_scheduling.Student:
             type: object
             properties:
@@ -1702,8 +1672,6 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/v1.course_scheduling.StudentMakeup'
-                nextPageToken:
-                    type: string
         v1.course_scheduling.StudentSet:
             type: object
             properties:
@@ -1711,8 +1679,6 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/v1.course_scheduling.Student'
-                nextPageToken:
-                    type: string
         v1.course_scheduling.TargetPlan:
             type: object
             properties:
@@ -1770,8 +1736,6 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/v1.course_scheduling.Teacher'
-                nextPageToken:
-                    type: string
 tags:
     - name: AbsenceService
       description: AbsenceService owns the absence record aggregate.

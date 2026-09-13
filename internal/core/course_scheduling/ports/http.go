@@ -1,6 +1,7 @@
 package ports
 
 import (
+	studentv1 "cqrs/api/v1/course_scheduling/student"
 	"cqrs/internal/conf"
 	"cqrs/internal/core/course_scheduling/service"
 
@@ -30,6 +31,6 @@ func NewHTTPServer(c *conf.Server, teacher *service.TeacherService, student *ser
 		opts = append(opts, http.Timeout(c.Http.Timeout.AsDuration()))
 	}
 	srv := http.NewServer(opts...)
-	// TODO: Register HTTP routes
+	studentv1.RegisterStudentServiceHTTPServer(srv, student)
 	return &HTTPServer{Server: srv}
 }

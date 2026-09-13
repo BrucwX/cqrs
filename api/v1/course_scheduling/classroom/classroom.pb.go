@@ -227,7 +227,6 @@ func (x *Classroom) GetStatus() ClassroomStatus {
 type ClassroomSet struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Classrooms    []*Classroom           `protobuf:"bytes,1,rep,name=classrooms,proto3" json:"classrooms,omitempty"`
-	NextPageToken string                 `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -267,13 +266,6 @@ func (x *ClassroomSet) GetClassrooms() []*Classroom {
 		return x.Classrooms
 	}
 	return nil
-}
-
-func (x *ClassroomSet) GetNextPageToken() string {
-	if x != nil {
-		return x.NextPageToken
-	}
-	return ""
 }
 
 type SaveClassroomRequest struct {
@@ -366,8 +358,8 @@ func (x *GetClassroomRequest) GetId() string {
 
 type ListClassroomsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	PageSize      int32                  `protobuf:"varint,1,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	PageToken     string                 `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	Page          int32                  `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	Filter        string                 `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
 	OrderBy       string                 `protobuf:"bytes,4,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -404,18 +396,18 @@ func (*ListClassroomsRequest) Descriptor() ([]byte, []int) {
 	return file_v1_course_scheduling_classroom_classroom_proto_rawDescGZIP(), []int{5}
 }
 
+func (x *ListClassroomsRequest) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
 func (x *ListClassroomsRequest) GetPageSize() int32 {
 	if x != nil {
 		return x.PageSize
 	}
 	return 0
-}
-
-func (x *ListClassroomsRequest) GetPageToken() string {
-	if x != nil {
-		return x.PageToken
-	}
-	return ""
 }
 
 func (x *ListClassroomsRequest) GetFilter() string {
@@ -490,20 +482,18 @@ const file_v1_course_scheduling_classroom_classroom_proto_rawDesc = "" +
 	"\blocation\x18\x02 \x01(\v2\x1e.v1.course_scheduling.LocationR\blocation\x12\x1a\n" +
 	"\bcapacity\x18\x03 \x01(\x05R\bcapacity\x12\x1c\n" +
 	"\tallocated\x18\x04 \x01(\x05R\tallocated\x12=\n" +
-	"\x06status\x18\x05 \x01(\x0e2%.v1.course_scheduling.ClassroomStatusR\x06status\"w\n" +
+	"\x06status\x18\x05 \x01(\x0e2%.v1.course_scheduling.ClassroomStatusR\x06status\"O\n" +
 	"\fClassroomSet\x12?\n" +
 	"\n" +
 	"classrooms\x18\x01 \x03(\v2\x1f.v1.course_scheduling.ClassroomR\n" +
-	"classrooms\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Z\n" +
+	"classrooms\"Z\n" +
 	"\x14SaveClassroomRequest\x12B\n" +
 	"\tclassroom\x18\x01 \x01(\v2\x1f.v1.course_scheduling.ClassroomB\x03\xe0A\x02R\tclassroom\"*\n" +
 	"\x13GetClassroomRequest\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\"\x86\x01\n" +
-	"\x15ListClassroomsRequest\x12\x1b\n" +
-	"\tpage_size\x18\x01 \x01(\x05R\bpageSize\x12\x1d\n" +
-	"\n" +
-	"page_token\x18\x02 \x01(\tR\tpageToken\x12\x16\n" +
+	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\"{\n" +
+	"\x15ListClassroomsRequest\x12\x12\n" +
+	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x16\n" +
 	"\x06filter\x18\x03 \x01(\tR\x06filter\x12\x19\n" +
 	"\border_by\x18\x04 \x01(\tR\aorderBy\"-\n" +
 	"\x16DeleteClassroomRequest\x12\x13\n" +
@@ -512,9 +502,9 @@ const file_v1_course_scheduling_classroom_classroom_proto_rawDesc = "" +
 	"\x1cCLASSROOM_STATUS_UNSPECIFIED\x10\x00\x12\x1e\n" +
 	"\x1aCLASSROOM_STATUS_AVAILABLE\x10\x01\x12&\n" +
 	"\"CLASSROOM_STATUS_UNDER_MAINTENANCE\x10\x02\x12#\n" +
-	"\x1fCLASSROOM_STATUS_DECOMMISSIONED\x10\x032\xfd\x03\n" +
-	"\x10ClassroomService\x12\x7f\n" +
-	"\rSaveClassroom\x12*.v1.course_scheduling.SaveClassroomRequest\x1a\x1f.v1.course_scheduling.Classroom\"!\x82\xd3\xe4\x93\x02\x1b:\tclassroom\"\x0e/v1/classrooms\x12t\n" +
+	"\x1fCLASSROOM_STATUS_DECOMMISSIONED\x10\x032\xf4\x03\n" +
+	"\x10ClassroomService\x12v\n" +
+	"\rSaveClassroom\x12*.v1.course_scheduling.SaveClassroomRequest\x1a\x16.google.protobuf.Empty\"!\x82\xd3\xe4\x93\x02\x1b:\tclassroom\"\x0e/v1/classrooms\x12t\n" +
 	"\x0fDeleteClassroom\x12,.v1.course_scheduling.DeleteClassroomRequest\x1a\x16.google.protobuf.Empty\"\x1b\x82\xd3\xe4\x93\x02\x15*\x13/v1/classrooms/{id}\x12w\n" +
 	"\fGetClassroom\x12).v1.course_scheduling.GetClassroomRequest\x1a\x1f.v1.course_scheduling.Classroom\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/v1/classrooms/{id}\x12y\n" +
 	"\x0eListClassrooms\x12+.v1.course_scheduling.ListClassroomsRequest\x1a\".v1.course_scheduling.ClassroomSet\"\x16\x82\xd3\xe4\x93\x02\x10\x12\x0e/v1/classroomsBn\n" +
@@ -554,7 +544,7 @@ var file_v1_course_scheduling_classroom_classroom_proto_depIdxs = []int32{
 	7, // 5: v1.course_scheduling.ClassroomService.DeleteClassroom:input_type -> v1.course_scheduling.DeleteClassroomRequest
 	5, // 6: v1.course_scheduling.ClassroomService.GetClassroom:input_type -> v1.course_scheduling.GetClassroomRequest
 	6, // 7: v1.course_scheduling.ClassroomService.ListClassrooms:input_type -> v1.course_scheduling.ListClassroomsRequest
-	2, // 8: v1.course_scheduling.ClassroomService.SaveClassroom:output_type -> v1.course_scheduling.Classroom
+	8, // 8: v1.course_scheduling.ClassroomService.SaveClassroom:output_type -> google.protobuf.Empty
 	8, // 9: v1.course_scheduling.ClassroomService.DeleteClassroom:output_type -> google.protobuf.Empty
 	2, // 10: v1.course_scheduling.ClassroomService.GetClassroom:output_type -> v1.course_scheduling.Classroom
 	3, // 11: v1.course_scheduling.ClassroomService.ListClassrooms:output_type -> v1.course_scheduling.ClassroomSet

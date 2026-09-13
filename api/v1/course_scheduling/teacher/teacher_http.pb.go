@@ -31,7 +31,7 @@ type TeacherServiceHTTPServer interface {
 	// ListTeachers ListTeachers returns a page of teachers.
 	ListTeachers(context.Context, *ListTeachersRequest) (*TeacherSet, error)
 	// SaveTeacher SaveTeacher creates or updates a teacher.
-	SaveTeacher(context.Context, *SaveTeacherRequest) (*Teacher, error)
+	SaveTeacher(context.Context, *SaveTeacherRequest) (*emptypb.Empty, error)
 }
 
 func RegisterTeacherServiceHTTPServer(s *http.Server, srv TeacherServiceHTTPServer) {
@@ -59,7 +59,7 @@ func _TeacherService_SaveTeacher0_HTTP_Handler(srv TeacherServiceHTTPServer) fun
 		if err != nil {
 			return err
 		}
-		reply := out.(*Teacher)
+		reply := out.(*emptypb.Empty)
 		return ctx.Result(200, reply)
 	}
 }
@@ -135,7 +135,7 @@ type TeacherServiceHTTPClient interface {
 	// ListTeachers ListTeachers returns a page of teachers.
 	ListTeachers(ctx context.Context, req *ListTeachersRequest, opts ...http.CallOption) (rsp *TeacherSet, err error)
 	// SaveTeacher SaveTeacher creates or updates a teacher.
-	SaveTeacher(ctx context.Context, req *SaveTeacherRequest, opts ...http.CallOption) (rsp *Teacher, err error)
+	SaveTeacher(ctx context.Context, req *SaveTeacherRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 }
 
 type TeacherServiceHTTPClientImpl struct {
@@ -198,8 +198,8 @@ func (c *TeacherServiceHTTPClientImpl) ListTeachers(ctx context.Context, in *Lis
 }
 
 // SaveTeacher SaveTeacher creates or updates a teacher.
-func (c *TeacherServiceHTTPClientImpl) SaveTeacher(ctx context.Context, in *SaveTeacherRequest, opts ...http.CallOption) (*Teacher, error) {
-	var out Teacher
+func (c *TeacherServiceHTTPClientImpl) SaveTeacher(ctx context.Context, in *SaveTeacherRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
 	pattern := "/v1/teachers"
 	path := http.BuildPath(pattern, in, http.WithQueryParams(), http.WithOmitFields("teacher"))
 	opts = append([]http.CallOption{

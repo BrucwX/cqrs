@@ -48,7 +48,6 @@ message CourseEnrollment {
 
 message CourseEnrollmentSet {
   repeated CourseEnrollment enrollments = 1;
-  string next_page_token = 2;
 }
 
 message EnrollStudentRequest {
@@ -60,8 +59,8 @@ message GetEnrollmentRequest {
 }
 
 message ListEnrollmentsRequest {
-  int32 page_size = 1;
-  string page_token = 2;
+  int32 page = 1;
+  int32 page_size = 2;
   string filter = 3;
   string order_by = 4;
 }
@@ -88,7 +87,7 @@ service EnrollmentService {
   // --- commands ---
 
   // EnrollStudent enrolls a student in a course.
-  rpc EnrollStudent (EnrollStudentRequest) returns (CourseEnrollment) {
+  rpc EnrollStudent (EnrollStudentRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       post: "/v1/enrollments"
       body: "enrollment"

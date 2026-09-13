@@ -35,7 +35,7 @@ const (
 type CourseSlotChangeServiceClient interface {
 	// ChangeCourseSlot creates a temporary schedule modification (reschedule,
 	// substitute teacher, relocate room, or composite).
-	ChangeCourseSlot(ctx context.Context, in *ChangeCourseSlotRequest, opts ...grpc.CallOption) (*CourseSlotChange, error)
+	ChangeCourseSlot(ctx context.Context, in *ChangeCourseSlotRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// DeleteCourseSlotChange hard-deletes a slot change record by ID.
 	DeleteCourseSlotChange(ctx context.Context, in *DeleteCourseSlotChangeRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// GetCourseSlotChange returns a single slot change record by ID.
@@ -54,9 +54,9 @@ func NewCourseSlotChangeServiceClient(cc grpc.ClientConnInterface) CourseSlotCha
 	return &courseSlotChangeServiceClient{cc}
 }
 
-func (c *courseSlotChangeServiceClient) ChangeCourseSlot(ctx context.Context, in *ChangeCourseSlotRequest, opts ...grpc.CallOption) (*CourseSlotChange, error) {
+func (c *courseSlotChangeServiceClient) ChangeCourseSlot(ctx context.Context, in *ChangeCourseSlotRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CourseSlotChange)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, CourseSlotChangeService_ChangeCourseSlot_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -112,7 +112,7 @@ func (c *courseSlotChangeServiceClient) ListCourseSlotChangesByCourseID(ctx cont
 type CourseSlotChangeServiceServer interface {
 	// ChangeCourseSlot creates a temporary schedule modification (reschedule,
 	// substitute teacher, relocate room, or composite).
-	ChangeCourseSlot(context.Context, *ChangeCourseSlotRequest) (*CourseSlotChange, error)
+	ChangeCourseSlot(context.Context, *ChangeCourseSlotRequest) (*emptypb.Empty, error)
 	// DeleteCourseSlotChange hard-deletes a slot change record by ID.
 	DeleteCourseSlotChange(context.Context, *DeleteCourseSlotChangeRequest) (*emptypb.Empty, error)
 	// GetCourseSlotChange returns a single slot change record by ID.
@@ -131,7 +131,7 @@ type CourseSlotChangeServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedCourseSlotChangeServiceServer struct{}
 
-func (UnimplementedCourseSlotChangeServiceServer) ChangeCourseSlot(context.Context, *ChangeCourseSlotRequest) (*CourseSlotChange, error) {
+func (UnimplementedCourseSlotChangeServiceServer) ChangeCourseSlot(context.Context, *ChangeCourseSlotRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method ChangeCourseSlot not implemented")
 }
 func (UnimplementedCourseSlotChangeServiceServer) DeleteCourseSlotChange(context.Context, *DeleteCourseSlotChangeRequest) (*emptypb.Empty, error) {

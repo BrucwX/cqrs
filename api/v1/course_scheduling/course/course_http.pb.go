@@ -42,7 +42,7 @@ type CourseServiceHTTPServer interface {
 	// and available to teach.
 	ListCoursesAvailableForTeacher(context.Context, *ListCoursesAvailableForTeacherRequest) (*CourseSet, error)
 	// SaveCourse SaveCourse creates or updates a course.
-	SaveCourse(context.Context, *SaveCourseRequest) (*Course, error)
+	SaveCourse(context.Context, *SaveCourseRequest) (*emptypb.Empty, error)
 }
 
 func RegisterCourseServiceHTTPServer(s *http.Server, srv CourseServiceHTTPServer) {
@@ -73,7 +73,7 @@ func _CourseService_SaveCourse0_HTTP_Handler(srv CourseServiceHTTPServer) func(c
 		if err != nil {
 			return err
 		}
-		reply := out.(*Course)
+		reply := out.(*emptypb.Empty)
 		return ctx.Result(200, reply)
 	}
 }
@@ -214,7 +214,7 @@ type CourseServiceHTTPClient interface {
 	// and available to teach.
 	ListCoursesAvailableForTeacher(ctx context.Context, req *ListCoursesAvailableForTeacherRequest, opts ...http.CallOption) (rsp *CourseSet, err error)
 	// SaveCourse SaveCourse creates or updates a course.
-	SaveCourse(ctx context.Context, req *SaveCourseRequest, opts ...http.CallOption) (rsp *Course, err error)
+	SaveCourse(ctx context.Context, req *SaveCourseRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 }
 
 type CourseServiceHTTPClientImpl struct {
@@ -330,8 +330,8 @@ func (c *CourseServiceHTTPClientImpl) ListCoursesAvailableForTeacher(ctx context
 }
 
 // SaveCourse SaveCourse creates or updates a course.
-func (c *CourseServiceHTTPClientImpl) SaveCourse(ctx context.Context, in *SaveCourseRequest, opts ...http.CallOption) (*Course, error) {
-	var out Course
+func (c *CourseServiceHTTPClientImpl) SaveCourse(ctx context.Context, in *SaveCourseRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
 	pattern := "/v1/courses"
 	path := http.BuildPath(pattern, in, http.WithQueryParams(), http.WithOmitFields("course"))
 	opts = append([]http.CallOption{

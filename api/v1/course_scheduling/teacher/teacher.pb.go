@@ -190,7 +190,6 @@ func (x *Teacher) GetUpdatedAt() *timestamppb.Timestamp {
 type TeacherSet struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Teachers      []*Teacher             `protobuf:"bytes,1,rep,name=teachers,proto3" json:"teachers,omitempty"`
-	NextPageToken string                 `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -230,13 +229,6 @@ func (x *TeacherSet) GetTeachers() []*Teacher {
 		return x.Teachers
 	}
 	return nil
-}
-
-func (x *TeacherSet) GetNextPageToken() string {
-	if x != nil {
-		return x.NextPageToken
-	}
-	return ""
 }
 
 type SaveTeacherRequest struct {
@@ -329,8 +321,8 @@ func (x *GetTeacherRequest) GetId() int64 {
 
 type ListTeachersRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	PageSize      int32                  `protobuf:"varint,1,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	PageToken     string                 `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	Page          int32                  `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	Filter        string                 `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
 	OrderBy       string                 `protobuf:"bytes,4,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -367,18 +359,18 @@ func (*ListTeachersRequest) Descriptor() ([]byte, []int) {
 	return file_v1_course_scheduling_teacher_teacher_proto_rawDescGZIP(), []int{4}
 }
 
+func (x *ListTeachersRequest) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
 func (x *ListTeachersRequest) GetPageSize() int32 {
 	if x != nil {
 		return x.PageSize
 	}
 	return 0
-}
-
-func (x *ListTeachersRequest) GetPageToken() string {
-	if x != nil {
-		return x.PageToken
-	}
-	return ""
 }
 
 func (x *ListTeachersRequest) GetFilter() string {
@@ -455,19 +447,17 @@ const file_v1_course_scheduling_teacher_teacher_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"o\n" +
+	"updated_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"G\n" +
 	"\n" +
 	"TeacherSet\x129\n" +
-	"\bteachers\x18\x01 \x03(\v2\x1d.v1.course_scheduling.TeacherR\bteachers\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"R\n" +
+	"\bteachers\x18\x01 \x03(\v2\x1d.v1.course_scheduling.TeacherR\bteachers\"R\n" +
 	"\x12SaveTeacherRequest\x12<\n" +
 	"\ateacher\x18\x01 \x01(\v2\x1d.v1.course_scheduling.TeacherB\x03\xe0A\x02R\ateacher\"(\n" +
 	"\x11GetTeacherRequest\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\x03B\x03\xe0A\x02R\x02id\"\x84\x01\n" +
-	"\x13ListTeachersRequest\x12\x1b\n" +
-	"\tpage_size\x18\x01 \x01(\x05R\bpageSize\x12\x1d\n" +
-	"\n" +
-	"page_token\x18\x02 \x01(\tR\tpageToken\x12\x16\n" +
+	"\x02id\x18\x01 \x01(\x03B\x03\xe0A\x02R\x02id\"y\n" +
+	"\x13ListTeachersRequest\x12\x12\n" +
+	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x16\n" +
 	"\x06filter\x18\x03 \x01(\tR\x06filter\x12\x19\n" +
 	"\border_by\x18\x04 \x01(\tR\aorderBy\"+\n" +
 	"\x14DeleteTeacherRequest\x12\x13\n" +
@@ -476,9 +466,9 @@ const file_v1_course_scheduling_teacher_teacher_proto_rawDesc = "" +
 	"\x1aTEACHER_STATUS_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15TEACHER_STATUS_ACTIVE\x10\x01\x12\x1b\n" +
 	"\x17TEACHER_STATUS_ON_LEAVE\x10\x02\x12\x1d\n" +
-	"\x19TEACHER_STATUS_TERMINATED\x10\x032\xdb\x03\n" +
-	"\x0eTeacherService\x12u\n" +
-	"\vSaveTeacher\x12(.v1.course_scheduling.SaveTeacherRequest\x1a\x1d.v1.course_scheduling.Teacher\"\x1d\x82\xd3\xe4\x93\x02\x17:\ateacher\"\f/v1/teachers\x12n\n" +
+	"\x19TEACHER_STATUS_TERMINATED\x10\x032\xd4\x03\n" +
+	"\x0eTeacherService\x12n\n" +
+	"\vSaveTeacher\x12(.v1.course_scheduling.SaveTeacherRequest\x1a\x16.google.protobuf.Empty\"\x1d\x82\xd3\xe4\x93\x02\x17:\ateacher\"\f/v1/teachers\x12n\n" +
 	"\rDeleteTeacher\x12*.v1.course_scheduling.DeleteTeacherRequest\x1a\x16.google.protobuf.Empty\"\x19\x82\xd3\xe4\x93\x02\x13*\x11/v1/teachers/{id}\x12o\n" +
 	"\n" +
 	"GetTeacher\x12'.v1.course_scheduling.GetTeacherRequest\x1a\x1d.v1.course_scheduling.Teacher\"\x19\x82\xd3\xe4\x93\x02\x13\x12\x11/v1/teachers/{id}\x12q\n" +
@@ -522,7 +512,7 @@ var file_v1_course_scheduling_teacher_teacher_proto_depIdxs = []int32{
 	6,  // 7: v1.course_scheduling.TeacherService.DeleteTeacher:input_type -> v1.course_scheduling.DeleteTeacherRequest
 	4,  // 8: v1.course_scheduling.TeacherService.GetTeacher:input_type -> v1.course_scheduling.GetTeacherRequest
 	5,  // 9: v1.course_scheduling.TeacherService.ListTeachers:input_type -> v1.course_scheduling.ListTeachersRequest
-	1,  // 10: v1.course_scheduling.TeacherService.SaveTeacher:output_type -> v1.course_scheduling.Teacher
+	9,  // 10: v1.course_scheduling.TeacherService.SaveTeacher:output_type -> google.protobuf.Empty
 	9,  // 11: v1.course_scheduling.TeacherService.DeleteTeacher:output_type -> google.protobuf.Empty
 	1,  // 12: v1.course_scheduling.TeacherService.GetTeacher:output_type -> v1.course_scheduling.Teacher
 	2,  // 13: v1.course_scheduling.TeacherService.ListTeachers:output_type -> v1.course_scheduling.TeacherSet
