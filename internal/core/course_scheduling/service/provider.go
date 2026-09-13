@@ -6,5 +6,12 @@ import "github.com/google/wire"
 var ProviderSet = wire.NewSet(
 	NewTeacherService,
 	NewStudentService,
+	NewClassroomService,
 	NewCourseService,
+	NewCourseSlotService,
+	NewCourseSlotChangeService,
+	NewEnrollmentService,
+	NewAbsenceService,
+	NewMakeupService,
+	NewQualificationService,
 )

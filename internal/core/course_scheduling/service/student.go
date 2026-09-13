@@ -78,11 +78,16 @@ func (s *StudentService) ListStudents(ctx context.Context, req *studentv1.ListSt
 	if err != nil {
 		return nil, err
 	}
+	return newStudentSet(items), nil
+}
+
+// newStudentSet []*student.Student → StudentSet。
+func newStudentSet(items []*studentdo.Student) *studentv1.StudentSet {
 	set := &studentv1.StudentSet{Students: make([]*studentv1.Student, 0, len(items))}
 	for _, do := range items {
 		set.Students = append(set.Students, toStudent(do))
 	}
-	return set, nil
+	return set
 }
 
 // toStudent 领域对象 → proto 消息。

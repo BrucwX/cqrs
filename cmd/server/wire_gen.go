@@ -8,13 +8,33 @@ package main
 
 import (
 	"cqrs/internal/conf"
-	"cqrs/internal/core/course_scheduling/adapters/memImp4test"
-	"cqrs/internal/core/course_scheduling/adapters/memImp4test/command"
-	"cqrs/internal/core/course_scheduling/adapters/memImp4test/command/implement"
-	"cqrs/internal/core/course_scheduling/adapters/memImp4test/query"
-	implement2 "cqrs/internal/core/course_scheduling/adapters/memImp4test/query/implement"
+	"cqrs/internal/core/course_scheduling/adapters/command/Impl"
+	"cqrs/internal/core/course_scheduling/adapters/command/data/mysql"
+	"cqrs/internal/core/course_scheduling/adapters/query/Impl"
+	mysql2 "cqrs/internal/core/course_scheduling/adapters/query/data/mysql"
+	"cqrs/internal/core/course_scheduling/app/command/absence"
+	"cqrs/internal/core/course_scheduling/app/command/classroom"
+	"cqrs/internal/core/course_scheduling/app/command/course"
+	"cqrs/internal/core/course_scheduling/app/command/courseSlot"
+	"cqrs/internal/core/course_scheduling/app/command/courseSlotChange"
+	"cqrs/internal/core/course_scheduling/app/command/enrollment"
+	"cqrs/internal/core/course_scheduling/app/command/makeup"
+	"cqrs/internal/core/course_scheduling/app/command/qualification"
 	"cqrs/internal/core/course_scheduling/app/command/student"
+	"cqrs/internal/core/course_scheduling/app/command/teacher"
+	absence2 "cqrs/internal/core/course_scheduling/app/query/absence"
+	classroom2 "cqrs/internal/core/course_scheduling/app/query/classroom"
+	course2 "cqrs/internal/core/course_scheduling/app/query/course"
+	courseSlot2 "cqrs/internal/core/course_scheduling/app/query/courseSlot"
+	courseSlotChange2 "cqrs/internal/core/course_scheduling/app/query/courseSlotChange"
+	enrollment2 "cqrs/internal/core/course_scheduling/app/query/enrollment"
+	makeup2 "cqrs/internal/core/course_scheduling/app/query/makeup"
+	qualification2 "cqrs/internal/core/course_scheduling/app/query/qualification"
 	student2 "cqrs/internal/core/course_scheduling/app/query/student"
+	teacher2 "cqrs/internal/core/course_scheduling/app/query/teacher"
+	"cqrs/internal/core/course_scheduling/domain/service/classroomCapacity"
+	"cqrs/internal/core/course_scheduling/domain/service/qualificationCheck"
+	"cqrs/internal/core/course_scheduling/domain/service/scheduleConflict"
 	"cqrs/internal/core/course_scheduling/ports"
 	"cqrs/internal/core/course_scheduling/service"
 	"cqrs/internal/server"
@@ -33,25 +53,57 @@ import (
 // 目前只 wire course_scheduling 一个上下文。product / commerce 的 ProviderSet
 // 先不挂进来：它们自己的 provider 还没补齐，挂进来会让整个应用没法生成。
 func wireApp(confServer *conf.Server, data *conf.Data, logger *slog.Logger) (*kratos.App, func(), error) {
-	teacherService := service.NewTeacherService()
-	memImp4testData, cleanup, err := memImp4test.NewData(data)
+	mysqlData, cleanup, err := mysql.NewMysqlData(data)
 	if err != nil {
 		return nil, nil, err
 	}
-	commandData := command.NewData(memImp4testData)
-	studentCommand := implement.NewStudentCommand(commandData)
-	handler := student.NewHandler(studentCommand, commandData)
-	queryData := query.NewData(memImp4testData)
-	studentQuery := implement2.NewStudentQuery(queryData)
-	studentHandler := student2.NewHandler(studentQuery)
+	commandImpl := command.NewCommandImpl(mysqlData)
+	handler := student.NewHandler(commandImpl, commandImpl)
+	data2, cleanup2, err := mysql2.NewData(data)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	queryImpl := query.NewQueryImpl(data2)
+	studentHandler := student2.NewHandler(queryImpl)
 	studentService := service.NewStudentService(handler, studentHandler)
-	courseService := service.NewCourseService()
-	httpServer := ports.NewHTTPServer(confServer, teacherService, studentService, courseService)
-	grpcServer := ports.NewGRPCServer(confServer, teacherService, studentService, courseService)
+	teacherHandler := teacher.NewHandler(commandImpl, commandImpl)
+	handler2 := teacher2.NewHandler(queryImpl)
+	teacherService := service.NewTeacherService(teacherHandler, handler2)
+	classroomHandler := classroom.NewHandler(commandImpl, commandImpl)
+	handler3 := classroom2.NewHandler(queryImpl)
+	classroomService := service.NewClassroomService(classroomHandler, handler3)
+	courseHandler := course.NewHandler(commandImpl, commandImpl)
+	handler4 := course2.NewHandler(queryImpl)
+	courseService := service.NewCourseService(courseHandler, handler4)
+	scheduleConflictService := scheduleConflict.NewService(commandImpl, commandImpl, commandImpl, commandImpl)
+	qualificationCheckService := qualificationCheck.NewService(commandImpl, commandImpl, commandImpl, commandImpl, commandImpl, commandImpl, commandImpl)
+	classroomCapacityService := classroomCapacity.NewService(commandImpl, commandImpl, commandImpl, commandImpl)
+	courseSlotHandler := courseSlot.NewHandler(commandImpl, scheduleConflictService, qualificationCheckService, classroomCapacityService, commandImpl)
+	handler5 := courseSlot2.NewHandler(queryImpl)
+	courseSlotService := service.NewCourseSlotService(courseSlotHandler, handler5)
+	courseSlotChangeHandler := courseSlotChange.NewHandler(commandImpl, scheduleConflictService, commandImpl)
+	handler6 := courseSlotChange2.NewHandler(queryImpl)
+	courseSlotChangeService := service.NewCourseSlotChangeService(courseSlotChangeHandler, handler6)
+	enrollmentHandler := enrollment.NewHandler(commandImpl, queryImpl, queryImpl, queryImpl, scheduleConflictService, commandImpl)
+	handler7 := enrollment2.NewHandler(queryImpl)
+	enrollmentService := service.NewEnrollmentService(enrollmentHandler, handler7)
+	absenceHandler := absence.NewHandler(commandImpl, commandImpl)
+	handler8 := absence2.NewHandler(queryImpl)
+	absenceService := service.NewAbsenceService(absenceHandler, handler8)
+	makeupHandler := makeup.NewHandler(commandImpl, classroomCapacityService, commandImpl)
+	handler9 := makeup2.NewHandler(queryImpl)
+	makeupService := service.NewMakeupService(makeupHandler, handler9)
+	qualificationHandler := qualification.NewHandler(commandImpl, qualificationCheckService, commandImpl)
+	handler10 := qualification2.NewHandler(queryImpl)
+	qualificationService := service.NewQualificationService(qualificationHandler, handler10)
+	httpServer := ports.NewHTTPServer(confServer, studentService, teacherService, classroomService, courseService, courseSlotService, courseSlotChangeService, enrollmentService, absenceService, makeupService, qualificationService)
+	grpcServer := ports.NewGRPCServer(confServer, studentService, teacherService, classroomService, courseService, courseSlotService, courseSlotChangeService, enrollmentService, absenceService, makeupService, qualificationService)
 	v := ports.NewServers(httpServer, grpcServer)
 	servers := server.NewServers(v)
 	app := newApp(logger, servers)
 	return app, func() {
+		cleanup2()
 		cleanup()
 	}, nil
 }

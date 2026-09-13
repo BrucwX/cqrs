@@ -1,7 +1,7 @@
 package course
 
 import (
-	appcommand "cqrs/internal/core/course_scheduling/app/command"
+	appcommand "cqrs/internal/core/course_scheduling/app/command/appRepo"
 	"cqrs/internal/core/course_scheduling/domain/repo/command"
 )
 

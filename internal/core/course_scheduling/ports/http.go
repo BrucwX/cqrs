@@ -1,7 +1,16 @@
 package ports
 
 import (
+	absencev1 "cqrs/api/v1/course_scheduling/absence"
+	classroomv1 "cqrs/api/v1/course_scheduling/classroom"
+	coursev1 "cqrs/api/v1/course_scheduling/course"
+	courseslotv1 "cqrs/api/v1/course_scheduling/course_slot"
+	courseslotchangev1 "cqrs/api/v1/course_scheduling/course_slot_change"
+	enrollmentv1 "cqrs/api/v1/course_scheduling/enrollment"
+	makeupv1 "cqrs/api/v1/course_scheduling/makeup"
+	qualificationv1 "cqrs/api/v1/course_scheduling/qualification"
 	studentv1 "cqrs/api/v1/course_scheduling/student"
+	teacherv1 "cqrs/api/v1/course_scheduling/teacher"
 	"cqrs/internal/conf"
 	"cqrs/internal/core/course_scheduling/service"
 
@@ -15,7 +24,18 @@ type HTTPServer struct {
 }
 
 // NewHTTPServer creates a new HTTP server for teaching context.
-func NewHTTPServer(c *conf.Server, teacher *service.TeacherService, student *service.StudentService, course *service.CourseService) *HTTPServer {
+func NewHTTPServer(c *conf.Server,
+	student *service.StudentService,
+	teacher *service.TeacherService,
+	classroom *service.ClassroomService,
+	course *service.CourseService,
+	courseSlot *service.CourseSlotService,
+	courseSlotChange *service.CourseSlotChangeService,
+	enrollment *service.EnrollmentService,
+	absence *service.AbsenceService,
+	makeup *service.MakeupService,
+	qualification *service.QualificationService,
+) *HTTPServer {
 	var opts = []http.ServerOption{
 		http.Middleware(
 			recovery.Recovery(),
@@ -32,5 +52,14 @@ func NewHTTPServer(c *conf.Server, teacher *service.TeacherService, student *ser
 	}
 	srv := http.NewServer(opts...)
 	studentv1.RegisterStudentServiceHTTPServer(srv, student)
+	teacherv1.RegisterTeacherServiceHTTPServer(srv, teacher)
+	classroomv1.RegisterClassroomServiceHTTPServer(srv, classroom)
+	coursev1.RegisterCourseServiceHTTPServer(srv, course)
+	courseslotv1.RegisterCourseSlotServiceHTTPServer(srv, courseSlot)
+	courseslotchangev1.RegisterCourseSlotChangeServiceHTTPServer(srv, courseSlotChange)
+	enrollmentv1.RegisterEnrollmentServiceHTTPServer(srv, enrollment)
+	absencev1.RegisterAbsenceServiceHTTPServer(srv, absence)
+	makeupv1.RegisterMakeupServiceHTTPServer(srv, makeup)
+	qualificationv1.RegisterQualificationServiceHTTPServer(srv, qualification)
 	return &HTTPServer{Server: srv}
 }

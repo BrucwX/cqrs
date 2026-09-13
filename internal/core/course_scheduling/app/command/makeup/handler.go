@@ -1,7 +1,7 @@
 package makeup
 
 import (
-	appcommand "cqrs/internal/core/course_scheduling/app/command"
+	appcommand "cqrs/internal/core/course_scheduling/app/command/appRepo"
 	"cqrs/internal/core/course_scheduling/domain/repo/command"
 	"cqrs/internal/core/course_scheduling/domain/service/classroomCapacity"
 )

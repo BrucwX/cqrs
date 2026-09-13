@@ -1,4 +1,9 @@
-package command
+// Package appRepo 定义命令侧的存储端口。
+//
+// 单独放在一个子包里，而不是和 provider.go 一起放 app/command 父包：
+// handler 子包要 import 这个端口，而父包的 provider.go 又要 import handler 子包，
+// 两端都不碰对方，才不会成环。
+package appRepo
 
 import "context"
 
@@ -7,7 +12,7 @@ import "context"
 // Begin 返回的 ctx 带着事务，之后必须拿它去调仓库 —— 事务靠 ctx 传递，
 // 用外面的 ctx 就跑到事务外了。
 //
-// 实现在存储侧（见 adapters/command/data/mysql/implement/app.Transaction）：
+// 实现在存储侧（见 adapters/command/data/mysql 的 transaction.go）：
 // 期间任何仓库发出的读也落在同一个事务里。
 // ⚠️ 前提是读也走写库。如果读走 adapters/query/data/mysql 的从库，两边不共享事务，
 // 就不构成原子读了。
