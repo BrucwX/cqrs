@@ -32,6 +32,9 @@ Thumbs.db
 *.log
 bin/
 
+# dlv 调试时会在 cwd（cmd/server）落地这个临时二进制
+__debug_bin*
+
 # Develop tools
 .vscode/
 .idea/

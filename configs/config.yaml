@@ -9,9 +9,11 @@ data:
   database:
     driver: mysql
     # 写库：命令侧用它。
-    source: ${DATABASE_SOURCE:root:root@tcp(127.0.0.1:3306)/test?timeout=5s&parseTime=True&loc=Local&charset=utf8mb4}
+    # 覆盖方式：KRATOS_DATABASE_SOURCE='user:pass@tcp(host:port)/db?...'
+    source: ${DATABASE_SOURCE:cqrs:cqrs@tcp(127.0.0.1:3306)/course_scheduling?timeout=5s&parseTime=True&loc=Local&charset=utf8mb4}
     # 读库：查询侧用它。默认和写库同一个，之后要分离再改 DATABASE_READ_SOURCE。
-    read_source: ${DATABASE_READ_SOURCE:root:root@tcp(127.0.0.1:3306)/test?timeout=5s&parseTime=True&loc=Local&charset=utf8mb4}
+    # 覆盖方式：KRATOS_DATABASE_READ_SOURCE='user:pass@tcp(host:port)/db?...'
+    read_source: ${DATABASE_READ_SOURCE:cqrs:cqrs@tcp(127.0.0.1:3306)/course_scheduling?timeout=5s&parseTime=True&loc=Local&charset=utf8mb4}
     # Development conveniences. Keep both false in production and apply schema
     # changes as a separate reviewed step.
     debug: true
