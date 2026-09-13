@@ -26,6 +26,15 @@ func (h *Handler) AssignClassroom(ctx context.Context, cmd AssignClassroomInput)
 	}
 	defer func() { err = h.tx.End(ctx, err) }()
 
+	if err := h.CheckClassroom(ctx, &cmd); err != nil {
+		return err
+	}
+
+	return h.SlotCmd.AssignClassroom(ctx, cmd.SlotIDs, cmd.ClassroomID)
+}
+
+func (h *Handler) CheckClassroom(ctx context.Context, cmd *AssignClassroomInput) (err error) {
+
 	// 1) 容量：逐个目标槽位按其所属课程核对教室能不能装下
 	tooSmall, err := h.capacity.Check(ctx, cmd.ClassroomID, cmd.SlotIDs)
 	if err != nil {
@@ -46,5 +55,5 @@ func (h *Handler) AssignClassroom(ctx context.Context, cmd AssignClassroomInput)
 		return fmt.Errorf("%w: classroom %s", courseSlot.ErrCourseSlotConflict, cmd.ClassroomID)
 	}
 
-	return h.SlotCmd.AssignClassroom(ctx, cmd.SlotIDs, cmd.ClassroomID)
+	return nil
 }

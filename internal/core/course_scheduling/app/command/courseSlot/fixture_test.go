@@ -4,9 +4,9 @@ import (
 	"testing"
 	"time"
 
-	commandmemory "cqrs/internal/core/course_scheduling/adapters/command/memory"
-	memorycmd "cqrs/internal/core/course_scheduling/adapters/command/memory/implement"
-	"cqrs/internal/core/course_scheduling/adapters/memorystore"
+	"cqrs/internal/core/course_scheduling/adapters/test_memory"
+	commandmemory "cqrs/internal/core/course_scheduling/adapters/test_memory/command"
+	memorycmd "cqrs/internal/core/course_scheduling/adapters/test_memory/command/implement"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/classroom"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/course"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlot"
@@ -41,7 +41,7 @@ const (
 // 则是收窄后的写侧面。
 type fixture struct {
 	handler   *Handler
-	data      *memorystore.Data
+	data      *test_memory.Data
 	teacher   teacher.Teacher
 	course    *course.Course
 	room      *classroom.Classroom
@@ -55,7 +55,7 @@ type fixture struct {
 func newFixture(t *testing.T, withQualification bool) *fixture {
 	t.Helper()
 
-	d, cleanup, err := memorystore.NewData(nil)
+	d, cleanup, err := test_memory.NewData(nil)
 	if err != nil {
 		t.Fatalf("new data: %v", err)
 	}

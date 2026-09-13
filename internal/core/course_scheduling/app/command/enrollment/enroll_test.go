@@ -6,11 +6,11 @@ import (
 	"testing"
 	"time"
 
-	commandmemory "cqrs/internal/core/course_scheduling/adapters/command/memory"
-	memorycmd "cqrs/internal/core/course_scheduling/adapters/command/memory/implement"
-	"cqrs/internal/core/course_scheduling/adapters/memorystore"
-	querymemory "cqrs/internal/core/course_scheduling/adapters/query/memory"
-	memoryquery "cqrs/internal/core/course_scheduling/adapters/query/memory/implement"
+	"cqrs/internal/core/course_scheduling/adapters/test_memory"
+	commandmemory "cqrs/internal/core/course_scheduling/adapters/test_memory/command"
+	memorycmd "cqrs/internal/core/course_scheduling/adapters/test_memory/command/implement"
+	querymemory "cqrs/internal/core/course_scheduling/adapters/test_memory/query"
+	memoryquery "cqrs/internal/core/course_scheduling/adapters/test_memory/query/implement"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/course"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlot"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/enrollment"
@@ -38,10 +38,10 @@ const (
 
 // newData 造一份干净的内存数据：
 // 7 门课 + 7 条排期 + 学员 A 的 3 条注册记录（courseTaken/courseDupe 在学，courseRetake 已退课）。
-func newData(t *testing.T) *memorystore.Data {
+func newData(t *testing.T) *test_memory.Data {
 	t.Helper()
 
-	d, cleanup, err := memorystore.NewData(nil)
+	d, cleanup, err := test_memory.NewData(nil)
 	if err != nil {
 		t.Fatalf("new data: %v", err)
 	}
@@ -175,7 +175,7 @@ func TestStudentEnroll_Rejected(t *testing.T) {
 // newHandler 装配一个处理器：写侧仓库拿写侧窄面，读侧仓库拿读侧窄面。
 //
 // 这个用例两侧都用（报要和查在读侧），所以两个窄面各收一次。
-func newHandler(d *memorystore.Data) *Handler {
+func newHandler(d *test_memory.Data) *Handler {
 	cmdData := commandmemory.NewData(d)
 	queryData := querymemory.NewData(d)
 
