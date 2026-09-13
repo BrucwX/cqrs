@@ -14,5 +14,5 @@ type PageQualifications struct {
 
 // PageQualifications 授课资质分页查询
 func (h *Handler) PageQualifications(ctx context.Context, q PageQualifications) ([]*qualification.Qualification, error) {
-	return h.Query.Page(ctx, q.Page, q.PageSize)
+	return h.Query.PageQualifications(ctx, q.Page, q.PageSize)
 }

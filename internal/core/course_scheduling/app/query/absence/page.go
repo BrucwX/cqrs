@@ -14,5 +14,5 @@ type PageAbsences struct {
 
 // PageAbsences 缺勤记录分页查询
 func (h *Handler) PageAbsences(ctx context.Context, q PageAbsences) ([]*absence.AbsenceRecord, error) {
-	return h.Query.Page(ctx, q.Page, q.PageSize)
+	return h.Query.PageAbsences(ctx, q.Page, q.PageSize)
 }

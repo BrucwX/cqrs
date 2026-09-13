@@ -5,19 +5,19 @@ import (
 	"errors"
 	"testing"
 
-	"cqrs/internal/core/course_scheduling/adapters/test_memory"
-	commandmemory "cqrs/internal/core/course_scheduling/adapters/test_memory/command"
-	memorycmd "cqrs/internal/core/course_scheduling/adapters/test_memory/command/implement"
+	"cqrs/internal/core/course_scheduling/adapters/memImp4test"
+	commandmemory "cqrs/internal/core/course_scheduling/adapters/memImp4test/command"
+	memorycmd "cqrs/internal/core/course_scheduling/adapters/memImp4test/command/implement"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/classroom"
 )
 
 // newHandler 装配一个跑在干净内存存储上的命令处理器。
 //
 // 返回完整 store 给测试塞数据/做断言，仓库拿到的则是收窄后的写侧面。
-func newHandler(t *testing.T) (*Handler, *test_memory.Data) {
+func newHandler(t *testing.T) (*Handler, *memImp4test.Data) {
 	t.Helper()
 
-	store, cleanup, err := test_memory.NewData(nil)
+	store, cleanup, err := memImp4test.NewData(nil)
 	if err != nil {
 		t.Fatalf("new data: %v", err)
 	}

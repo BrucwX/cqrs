@@ -14,5 +14,5 @@ type PageMakeups struct {
 
 // PageMakeups 补课申请分页查询
 func (h *Handler) PageMakeups(ctx context.Context, q PageMakeups) ([]*makeup.StudentMakeup, error) {
-	return h.Query.Page(ctx, q.Page, q.PageSize)
+	return h.Query.PageMakeups(ctx, q.Page, q.PageSize)
 }

@@ -8,8 +8,8 @@ import (
 
 // CourseQuery 课程查询接口
 type CourseQuery interface {
-	// Page 分页查询课程列表
-	Page(ctx context.Context, page int, pageSize int) ([]*course.Course, error)
+	// PageCourses 分页查询课程列表
+	PageCourses(ctx context.Context, page int, pageSize int) ([]*course.Course, error)
 	// AvailableForStudent 查找与学员当前选课不冲突的课程
 	AvailableForStudent(ctx context.Context, studentID int64) ([]*course.Course, error)
 	// AvailableForTeacher 查找与讲师现有排课不冲突的课程

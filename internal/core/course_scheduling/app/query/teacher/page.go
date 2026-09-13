@@ -14,5 +14,5 @@ type PageTeachers struct {
 
 // PageTeachers 讲师分页查询
 func (h *Handler) PageTeachers(ctx context.Context, q PageTeachers) ([]*teacher.Teacher, error) {
-	return h.Query.Page(ctx, q.Page, q.PageSize)
+	return h.Query.PageTeachers(ctx, q.Page, q.PageSize)
 }

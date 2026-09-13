@@ -14,5 +14,5 @@ type PageCourses struct {
 
 // PageCourses 课程分页查询
 func (h *Handler) PageCourses(ctx context.Context, q PageCourses) ([]*course.Course, error) {
-	return h.Query.Page(ctx, q.Page, q.PageSize)
+	return h.Query.PageCourses(ctx, q.Page, q.PageSize)
 }

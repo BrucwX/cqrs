@@ -13,5 +13,5 @@ type StudentsByCourseID struct {
 
 // StudentsByCourseID 根据课程 ID 获取已注册的学员
 func (h *Handler) StudentsByCourseID(ctx context.Context, q StudentsByCourseID) ([]*student.Student, error) {
-	return h.Query.StudentsByCourseID(ctx, q.CourseID)
+	return h.Query.EnrolledStudentsByCourseID(ctx, q.CourseID)
 }

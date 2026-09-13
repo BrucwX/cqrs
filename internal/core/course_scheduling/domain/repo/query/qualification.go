@@ -12,8 +12,8 @@ import (
 //
 // 资质绑定的是「课程类型」而不是具体课程，所以这里按课程类型维度查询。
 type QualificationQuery interface {
-	// Page 分页查询授课资质列表
-	Page(ctx context.Context, page int, pageSize int) ([]*qualification.Qualification, error)
+	// PageQualifications 分页查询授课资质列表
+	PageQualifications(ctx context.Context, page int, pageSize int) ([]*qualification.Qualification, error)
 	// CourseTypesByTeacherID 根据讲师 ID 获取其有资质的课程类型列表
 	CourseTypesByTeacherID(ctx context.Context, teacherID int64) ([]*courseType.CourseType, error)
 	// TeachersByCourseTypeID 根据课程类型 ID 获取有资质的讲师列表

@@ -8,6 +8,6 @@ import (
 
 // TeacherQuery 讲师查询接口
 type TeacherQuery interface {
-	// Page 分页查询讲师列表
-	Page(ctx context.Context, page int, pageSize int) ([]*teacher.Teacher, error)
+	// PageTeachers 分页查询讲师列表
+	PageTeachers(ctx context.Context, page int, pageSize int) ([]*teacher.Teacher, error)
 }

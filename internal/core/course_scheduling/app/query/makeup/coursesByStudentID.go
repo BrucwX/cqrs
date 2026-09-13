@@ -13,5 +13,5 @@ type CoursesByStudentID struct {
 
 // CoursesByStudentID 根据学员 ID 获取已补课的课程
 func (h *Handler) CoursesByStudentID(ctx context.Context, q CoursesByStudentID) ([]*course.Course, error) {
-	return h.Query.CoursesByStudentID(ctx, q.StudentID)
+	return h.Query.MakeupCoursesByStudentID(ctx, q.StudentID)
 }

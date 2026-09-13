@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"cqrs/internal/core/course_scheduling/adapters/test_memory"
-	commandmemory "cqrs/internal/core/course_scheduling/adapters/test_memory/command"
-	memorycmd "cqrs/internal/core/course_scheduling/adapters/test_memory/command/implement"
+	"cqrs/internal/core/course_scheduling/adapters/memImp4test"
+	commandmemory "cqrs/internal/core/course_scheduling/adapters/memImp4test/command"
+	memorycmd "cqrs/internal/core/course_scheduling/adapters/memImp4test/command/implement"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/classroom"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/course"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlot"
@@ -33,7 +33,7 @@ const (
 // 两个目标槽位属于同一门课、排在两间教室：targetSlot 那间装得下，smallSlot 装不下。
 type fixture struct {
 	handler    *Handler
-	data       *test_memory.Data
+	data       *memImp4test.Data
 	targetSlot string // 排在 30 座的教室
 	smallSlot  string // 排在 5 座的小教室
 }
@@ -43,7 +43,7 @@ type fixture struct {
 func newFixture(t *testing.T) *fixture {
 	t.Helper()
 
-	store, cleanup, err := test_memory.NewData(nil)
+	store, cleanup, err := memImp4test.NewData(nil)
 	if err != nil {
 		t.Fatalf("new data: %v", err)
 	}
@@ -107,7 +107,7 @@ func (f *fixture) seedMakeups(t *testing.T, n int, slotID string, date time.Time
 // --- 造数据的辅助 ---
 
 // seedCourse 塞一门课进去（容量判定只用得到 ID 与人数上限）。
-func seedCourse(t *testing.T, d *test_memory.Data, id string, max int) {
+func seedCourse(t *testing.T, d *memImp4test.Data, id string, max int) {
 	t.Helper()
 
 	capacity, err := course.NewCapacity(max, 0)
@@ -128,7 +128,7 @@ func seedCourse(t *testing.T, d *test_memory.Data, id string, max int) {
 }
 
 // seedClassroom 塞一间教室进去；ID 固定所以走 Reconstitute。
-func seedClassroom(t *testing.T, d *test_memory.Data, id string, seats int) {
+func seedClassroom(t *testing.T, d *memImp4test.Data, id string, seats int) {
 	t.Helper()
 
 	loc, err := classroom.NewLocation("A", 1, id)
@@ -139,7 +139,7 @@ func seedClassroom(t *testing.T, d *test_memory.Data, id string, seats int) {
 }
 
 // seedSlot 塞一条指定教室的排期进去，返回它的 ID（聚合自己生成的 UUID）。
-func seedSlot(t *testing.T, d *test_memory.Data, courseID string, weekday time.Weekday, fromHour, toHour int, classroomID string) string {
+func seedSlot(t *testing.T, d *memImp4test.Data, courseID string, weekday time.Weekday, fromHour, toHour int, classroomID string) string {
 	t.Helper()
 
 	from, err := courseSlot.NewDayTime(fromHour, 0)

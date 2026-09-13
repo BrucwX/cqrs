@@ -14,5 +14,5 @@ type PageCourseSlots struct {
 
 // PageCourseSlots 课表槽位分页查询
 func (h *Handler) PageCourseSlots(ctx context.Context, q PageCourseSlots) ([]*courseSlot.CourseSlot, error) {
-	return h.Query.Page(ctx, q.Page, q.PageSize)
+	return h.Query.PageCourseSlots(ctx, q.Page, q.PageSize)
 }

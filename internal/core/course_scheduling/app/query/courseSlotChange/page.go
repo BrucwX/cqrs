@@ -14,5 +14,5 @@ type PageCourseSlotChanges struct {
 
 // PageCourseSlotChanges 课表变更分页查询
 func (h *Handler) PageCourseSlotChanges(ctx context.Context, q PageCourseSlotChanges) ([]*courseSlotChange.CourseSlotChange, error) {
-	return h.Query.Page(ctx, q.Page, q.PageSize)
+	return h.Query.PageCourseSlotChanges(ctx, q.Page, q.PageSize)
 }

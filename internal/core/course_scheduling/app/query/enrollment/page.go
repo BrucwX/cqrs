@@ -14,5 +14,5 @@ type PageEnrollments struct {
 
 // PageEnrollments 课程注册分页查询
 func (h *Handler) PageEnrollments(ctx context.Context, q PageEnrollments) ([]*enrollment.CourseEnrollment, error) {
-	return h.Query.Page(ctx, q.Page, q.PageSize)
+	return h.Query.PageEnrollments(ctx, q.Page, q.PageSize)
 }

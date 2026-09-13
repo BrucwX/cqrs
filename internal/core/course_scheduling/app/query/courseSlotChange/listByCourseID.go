@@ -13,5 +13,5 @@ type ListByCourseID struct {
 
 // ListByCourseID 根据课程 ID 获取课表变更
 func (h *Handler) ListByCourseID(ctx context.Context, q ListByCourseID) ([]*courseSlotChange.CourseSlotChange, error) {
-	return h.Query.ListByCourseID(ctx, q.CourseID)
+	return h.Query.ListCourseSlotChangesByCourseID(ctx, q.CourseID)
 }

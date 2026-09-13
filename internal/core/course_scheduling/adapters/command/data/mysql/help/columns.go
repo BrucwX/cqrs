@@ -3,7 +3,7 @@ package help
 // Package help 是写侧 MySQL 适配器的辅助函数：把 database/sql 的一行
 // 扫成 model 里的 PO。
 //
-// 与读侧（adapters/query/mysql/implement/help）一一对应：列清单与扫行是「表结构」
+// 与读侧（adapters/query/data/mysql/implement/help）一一对应：列清单与扫行是「表结构」
 // 的事，implement 里只留每个仓库一份 SQL。两边的差别是写侧暂未启用乐观锁，
 // 所以这里的列清单不含 lock_version。
 

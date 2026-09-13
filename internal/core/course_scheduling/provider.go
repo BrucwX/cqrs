@@ -3,9 +3,9 @@ package course_scheduling
 import (
 	"github.com/google/wire"
 
-	"cqrs/internal/core/course_scheduling/adapters/test_memory"
-	commandmemory "cqrs/internal/core/course_scheduling/adapters/test_memory/command/implement"
-	querymemory "cqrs/internal/core/course_scheduling/adapters/test_memory/query/implement"
+	"cqrs/internal/core/course_scheduling/adapters/memImp4test"
+	commandmemory "cqrs/internal/core/course_scheduling/adapters/memImp4test/command/implement"
+	querymemory "cqrs/internal/core/course_scheduling/adapters/memImp4test/query/implement"
 	"cqrs/internal/core/course_scheduling/app/command/absence"
 	"cqrs/internal/core/course_scheduling/app/command/classroom"
 	"cqrs/internal/core/course_scheduling/app/command/course"
@@ -29,7 +29,7 @@ import (
 // 它既不属于读侧也不属于写侧，两侧各自把它收窄成自己需要的那一面。
 var ProviderSet = wire.NewSet(
 	// adapters - 内存共享存储（读写两侧共用一个实例）
-	test_memory.ProviderSet,
+	memImp4test.ProviderSet,
 	// adapters - command (接口实现)
 	commandmemory.ProviderSet,
 	// adapters - query (接口实现)

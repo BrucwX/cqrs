@@ -8,6 +8,6 @@ import (
 
 // ClassroomQuery 教室查询接口
 type ClassroomQuery interface {
-	// Page 分页查询教室列表
-	Page(ctx context.Context, page int, pageSize int) ([]*classroom.Classroom, error)
+	// PageClassrooms 分页查询教室列表
+	PageClassrooms(ctx context.Context, page int, pageSize int) ([]*classroom.Classroom, error)
 }

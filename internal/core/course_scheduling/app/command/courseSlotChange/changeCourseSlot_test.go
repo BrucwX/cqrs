@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"cqrs/internal/core/course_scheduling/adapters/test_memory"
-	commandmemory "cqrs/internal/core/course_scheduling/adapters/test_memory/command"
-	memorycmd "cqrs/internal/core/course_scheduling/adapters/test_memory/command/implement"
+	"cqrs/internal/core/course_scheduling/adapters/memImp4test"
+	commandmemory "cqrs/internal/core/course_scheduling/adapters/memImp4test/command"
+	memorycmd "cqrs/internal/core/course_scheduling/adapters/memImp4test/command/implement"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlot"
 	"cqrs/internal/core/course_scheduling/domain/aggregate/courseSlotChange"
 	"cqrs/internal/core/course_scheduling/domain/service/scheduleConflict"
@@ -25,10 +25,10 @@ const (
 // newHandler 装配一个跑在干净内存存储上的命令处理器。
 //
 // 返回的是完整 store（测试要靠它塞数据和做断言），仓库拿到的则是收窄后的写侧面。
-func newHandler(t *testing.T) (*Handler, *test_memory.Data) {
+func newHandler(t *testing.T) (*Handler, *memImp4test.Data) {
 	t.Helper()
 
-	store, cleanup, err := test_memory.NewData(nil)
+	store, cleanup, err := memImp4test.NewData(nil)
 	if err != nil {
 		t.Fatalf("new data: %v", err)
 	}
@@ -82,7 +82,7 @@ func validCmd(t *testing.T) ChangeCourseSlot {
 }
 
 // seedSlot 往内存存储里塞一条周排期。
-func seedSlot(t *testing.T, d *test_memory.Data, courseID string, teacherID int64, classroomID string, weekday time.Weekday, fromHour, toHour int) {
+func seedSlot(t *testing.T, d *memImp4test.Data, courseID string, teacherID int64, classroomID string, weekday time.Weekday, fromHour, toHour int) {
 	t.Helper()
 
 	from, err := courseSlot.NewDayTime(fromHour, 0)
@@ -133,12 +133,12 @@ func TestChangeCourseSlot(t *testing.T) {
 func TestChangeCourseSlotConflict(t *testing.T) {
 	cases := []struct {
 		name         string
-		setup        func(t *testing.T, d *test_memory.Data)
+		setup        func(t *testing.T, d *memImp4test.Data)
 		wantConflict bool
 	}{
 		{
 			name: "目标讲师同期已有别的课",
-			setup: func(t *testing.T, d *test_memory.Data) {
+			setup: func(t *testing.T, d *memImp4test.Data) {
 				// 讲师 2 周一 10:00-12:00 在别门课上 —— 与目标 09:00-11:00 重叠
 				seedSlot(t, d, otherCourse, targetTeacher, "R201", time.Monday, 10, 12)
 			},
@@ -146,21 +146,21 @@ func TestChangeCourseSlotConflict(t *testing.T) {
 		},
 		{
 			name: "目标教室同期已被别的课占用",
-			setup: func(t *testing.T, d *test_memory.Data) {
+			setup: func(t *testing.T, d *memImp4test.Data) {
 				seedSlot(t, d, otherCourse, 7, targetClassroom, time.Monday, 10, 12)
 			},
 			wantConflict: true,
 		},
 		{
 			name: "目标讲师同期有课但星期几不同",
-			setup: func(t *testing.T, d *test_memory.Data) {
+			setup: func(t *testing.T, d *memImp4test.Data) {
 				seedSlot(t, d, otherCourse, targetTeacher, "R201", time.Tuesday, 9, 11)
 			},
 			wantConflict: false,
 		},
 		{
 			name: "目标讲师同期有课但时间不重叠",
-			setup: func(t *testing.T, d *test_memory.Data) {
+			setup: func(t *testing.T, d *memImp4test.Data) {
 				// 周一 13:00-15:00，与目标 09:00-11:00 不重叠
 				seedSlot(t, d, otherCourse, targetTeacher, "R201", time.Monday, 13, 15)
 			},

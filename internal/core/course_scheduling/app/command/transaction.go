@@ -9,7 +9,7 @@ import "context"
 //
 // 实现在存储侧（见 adapters/command/data/mysql/implement/app.Transaction）：
 // 期间任何仓库发出的读也落在同一个事务里。
-// ⚠️ 前提是读也走写库。如果读走 adapters/query/mysql 的从库，两边不共享事务，
+// ⚠️ 前提是读也走写库。如果读走 adapters/query/data/mysql 的从库，两边不共享事务，
 // 就不构成原子读了。
 type Transaction interface {
 	// Begin 开启事务，返回带着它的 ctx。

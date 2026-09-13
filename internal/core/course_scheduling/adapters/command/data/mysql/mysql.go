@@ -4,7 +4,7 @@
 //
 //	data.database.source  写库连接串
 //
-// 读侧（adapters/query/mysql）连的是 data.database.read_source，两者可以不是
+// 读侧（adapters/query/data/mysql）连的是 data.database.read_source，两者可以不是
 // 同一个库，所以两侧各带一套自己的连接与 model，互不共用。
 //
 //	mysql.go        本文件：写库连接池（MysqlData / NewMysqlData）
@@ -16,7 +16,7 @@
 //
 // 与读侧的关键差别是事务：写侧提供 Begin / End，把事务放进 context，
 // 这样「先读排期判冲突、再写回」里那些经仓库发起的读也能落在同一个事务上。
-// ⚠️ 前提是读也走写库；如果读走 adapters/query/mysql 的从库，就不构成原子读了。
+// ⚠️ 前提是读也走写库；如果读走 adapters/query/data/mysql 的从库，就不构成原子读了。
 package mysql
 
 import (
