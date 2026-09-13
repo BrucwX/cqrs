@@ -10,8 +10,8 @@ data:
     driver: mysql
     # 写库：命令侧用它。
     source: ${DATABASE_SOURCE:root:root@tcp(127.0.0.1:3306)/test?timeout=5s&parseTime=True&loc=Local&charset=utf8mb4}
-    # 读库：查询侧用它。留空则回落到 source（单库开发环境不用配）。
-    read_source: ${DATABASE_READ_SOURCE:}
+    # 读库：查询侧用它。默认和写库同一个，之后要分离再改 DATABASE_READ_SOURCE。
+    read_source: ${DATABASE_READ_SOURCE:root:root@tcp(127.0.0.1:3306)/test?timeout=5s&parseTime=True&loc=Local&charset=utf8mb4}
     # Development conveniences. Keep both false in production and apply schema
     # changes as a separate reviewed step.
     debug: true
