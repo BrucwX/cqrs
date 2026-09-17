@@ -4,9 +4,10 @@ package enrollment
 type Status int
 
 const (
-	StatusEnrolled  Status = iota + 1 // 正常报班/在读
-	StatusCompleted                   // 已结业/修完
-	StatusDropped                     // 已退课/取消
+	StatusEnrolled    Status = iota + 1 // 正常报班/在读
+	StatusCompleted                     // 已结业/修完
+	StatusDropped                       // 已退课/取消
+	StatusNotSelected                   // 未选课（已进入名单/待选，尚未报班）
 )
 
 func (s Status) String() string {
@@ -17,6 +18,8 @@ func (s Status) String() string {
 		return "COMPLETED"
 	case StatusDropped:
 		return "DROPPED"
+	case StatusNotSelected:
+		return "NOT_SELECTED"
 	default:
 		return "UNKNOWN"
 	}

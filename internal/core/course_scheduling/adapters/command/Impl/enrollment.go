@@ -28,6 +28,11 @@ func (d *CommandImpl) Enroll(ctx context.Context, e *enrollment.CourseEnrollment
 	return d.MysqlData.Enroll(ctx, e)
 }
 
+// GetUnSelectEnrollBySC 转发给 MysqlData，等 Redis 接入后在这里组合两者。
+func (d *CommandImpl) GetUnSelectEnrollBySC(ctx context.Context, studentID int64, courseID string) (enrollment.CourseEnrollment, error) {
+	return d.MysqlData.GetUnSelectEnrollBySC(ctx, studentID, courseID)
+}
+
 // GetEnrollments 转发给 MysqlData，等 Redis 接入后在这里组合两者。
 func (d *CommandImpl) GetEnrollments(ctx context.Context, studentID int64) ([]enrollment.CourseEnrollment, error) {
 	return d.MysqlData.GetEnrollments(ctx, studentID)

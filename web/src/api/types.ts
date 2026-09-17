@@ -282,7 +282,7 @@ export interface CourseEnrollment {
     id: string
     student_id?: number | string
     course_id?: string
-    /** 1 在读 / 2 已结业 / 3 已退课。 */
+    /** 1 在读 / 2 已结业 / 3 已退课 / 4 未选课。 */
     status?: number
     enrolled_at?: PbTimestamp
     completed_at?: PbTimestamp
@@ -298,6 +298,7 @@ export const ENROLLMENT_STATUSES: EnumOption[] = [
     { value: 1, label: '在读', tag: 'success' },
     { value: 2, label: '已结业', tag: 'info' },
     { value: 3, label: '已退课', tag: 'danger' },
+    { value: 4, label: '未选课', tag: 'warning' },
 ]
 
 // ---------------------------------------------------------------- Absence

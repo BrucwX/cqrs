@@ -179,7 +179,7 @@ CREATE TABLE IF NOT EXISTS course_enrollment (
   id           bigint           NOT NULL           COMMENT '报名记录 ID',
   student_id   bigint           NOT NULL           COMMENT '学员 ID',
   course_id    varchar(36)      NOT NULL           COMMENT '课程 ID（course.id）',
-  status       tinyint unsigned NOT NULL           COMMENT '1 在读 / 2 已结业 / 3 已退课',
+  status       tinyint unsigned NOT NULL           COMMENT '1 在读 / 2 已结业 / 3 已退课 / 4 未选课',
   enrolled_at  datetime         NOT NULL           COMMENT '报名时间',
   completed_at datetime         NULL DEFAULT NULL  COMMENT '结业时间（未结业为 NULL）',
   dropped_at   datetime         NULL DEFAULT NULL  COMMENT '退课时间（未退课为 NULL）',

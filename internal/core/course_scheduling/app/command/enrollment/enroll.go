@@ -3,6 +3,7 @@ package enrollment
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"cqrs/internal/core/course_scheduling/domain/aggregate/enrollment"
 )
@@ -15,8 +16,8 @@ type StudentEnroll struct {
 
 // StudentEnroll 学生选课
 //
-// 顺序：先判、过了才写。判定交给领域服务 ScheduleConflict.CheckEnrollment，
-// 写回走 EnrollmentCmd.Enroll。
+// 不新建注册记录：记录是报名登记（缴费）时落下的「未选课」资格，
+// 这里只把它推到在读。顺序：① 找未选课记录（没有 = 没资格）→ ② 判冲突 → ③ 改状态写回。
 func (h *Handler) StudentEnroll(ctx context.Context, cmd StudentEnroll) (enroll *enrollment.CourseEnrollment, err error) {
 	ctx, err = h.tx.Begin(ctx)
 	if err != nil {
@@ -24,8 +25,9 @@ func (h *Handler) StudentEnroll(ctx context.Context, cmd StudentEnroll) (enroll 
 	}
 	defer func() { err = h.tx.End(ctx, err) }()
 
-	// 1) 创建选课记录（聚合构造函数负责填参校验）
-	enroll, err = enrollment.NewCourseEnrollment(cmd.StudentID, cmd.CourseID)
+	// 1) 必须已经有一条「未选课」的注册记录，没有就是这门课还没缴费
+	//    —— 未付费错误由仓库直接报出来（ErrEnrollmentNotPaid）。
+	pending, err := h.EnrollmentCmd.GetUnSelectEnrollBySC(ctx, cmd.StudentID, cmd.CourseID)
 	if err != nil {
 		return nil, err
 	}
@@ -40,10 +42,13 @@ func (h *Handler) StudentEnroll(ctx context.Context, cmd StudentEnroll) (enroll 
 		return nil, fmt.Errorf("%w: student %d course %s", enrollment.ErrEnrollmentConflict, cmd.StudentID, cmd.CourseID)
 	}
 
-	// 3) 写回
-	if err := h.EnrollmentCmd.Enroll(ctx, enroll); err != nil {
+	// 3) 未选课 -> 在读，写回同一条记录
+	if err := pending.Enroll(time.Now()); err != nil {
+		return nil, err
+	}
+	if err := h.EnrollmentCmd.Enroll(ctx, &pending); err != nil {
 		return nil, err
 	}
 
-	return enroll, nil
+	return &pending, nil
 }

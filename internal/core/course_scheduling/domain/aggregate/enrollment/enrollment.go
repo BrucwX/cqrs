@@ -23,7 +23,9 @@ func generateID() int64 {
 	return time.Now().UnixNano()
 }
 
-// NewCourseEnrollment 报班注册构造
+// NewCourseEnrollment 报班注册构造（报名登记：已报班 / 已缴费，尚未选课）
+//
+// 落在 StatusNotSelected —— 这条记录代表「选课资格」，正式选课由 Enroll 推到在读。
 func NewCourseEnrollment(
 	studentID int64,
 	courseID string,
@@ -40,8 +42,8 @@ func NewCourseEnrollment(
 		id:         generateID(),
 		studentID:  studentID,
 		courseID:   courseID,
-		status:     StatusEnrolled,
-		enrolledAt: now,
+		status:     StatusNotSelected,
+		enrolledAt: now, // 报名登记时间
 		updatedAt:  now,
 	}, nil
 }
@@ -70,6 +72,19 @@ func Reconstitute(
 }
 
 // --- 核心领域行为 (Domain Behaviors) ---
+
+// Enroll 正式选课：把「未选课的注册记录」推到在读。
+//
+// 不新建记录 —— 记录本身是报名登记（缴费）时落下的选课资格，
+// 这里只做状态流转（准入判定由调用方在调过来之前做完）。
+func (e *CourseEnrollment) Enroll(now time.Time) error {
+	if e.status != StatusNotSelected {
+		return ErrEnrollmentNotSelectable
+	}
+	e.status = StatusEnrolled
+	e.updatedAt = now
+	return nil
+}
 
 // Complete 结业（可由教务人员录入结业成绩、或课程整体周期结束后统一触发）
 func (e *CourseEnrollment) Complete(now time.Time) error {
@@ -109,3 +124,4 @@ func (e *CourseEnrollment) DroppedAt() time.Time   { return e.droppedAt }
 func (e *CourseEnrollment) UpdatedAt() time.Time   { return e.updatedAt }
 func (e *CourseEnrollment) IsActive() bool         { return e.status == StatusEnrolled }
 func (e *CourseEnrollment) IsCompleted() bool      { return e.status == StatusCompleted }
+func (e *CourseEnrollment) IsNotSelected() bool    { return e.status == StatusNotSelected }

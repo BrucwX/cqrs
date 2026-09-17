@@ -2,17 +2,17 @@ syntax = "proto3";
 
 package v1.course_scheduling;
 
-import "v1/course_scheduling/course/course.proto";
-import "v1/course_scheduling/student/student.proto";
 import "google/api/annotations.proto";
 import "google/api/field_behavior.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
+import "v1/course_scheduling/course/course.proto";
+import "v1/course_scheduling/student/student.proto";
 
 option go_package = "cqrs/api/v1/course_scheduling/enrollment;enrollmentv1";
 option java_multiple_files = true;
-option java_package = "io.grpc.examples.course_scheduling.v1";
 option java_outer_classname = "EnrollmentProto";
+option java_package = "io.grpc.examples.course_scheduling.v1";
 
 // ============================================================
 // CourseEnrollment
@@ -24,6 +24,8 @@ enum EnrollmentStatus {
   ENROLLMENT_STATUS_ENROLLED = 1;
   ENROLLMENT_STATUS_COMPLETED = 2;
   ENROLLMENT_STATUS_DROPPED = 3;
+  // Not selected a course yet.
+  ENROLLMENT_STATUS_NOT_SELECTED = 4;
 }
 
 // CourseEnrollment represents a student's enrollment in a course.
@@ -83,11 +85,10 @@ message DeleteEnrollmentRequest {
 // Student: they are enrollment questions ("which rows link X and Y") whose
 // answers happen to be courses or students.
 service EnrollmentService {
-
   // --- commands ---
 
   // EnrollStudent enrolls a student in a course.
-  rpc EnrollStudent (EnrollStudentRequest) returns (google.protobuf.Empty) {
+  rpc EnrollStudent(EnrollStudentRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       post: "/v1/enrollments"
       body: "enrollment"
@@ -95,39 +96,29 @@ service EnrollmentService {
   }
 
   // DeleteEnrollment hard-deletes an enrollment record by ID.
-  rpc DeleteEnrollment (DeleteEnrollmentRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {
-      delete: "/v1/enrollments/{id}"
-    };
+  rpc DeleteEnrollment(DeleteEnrollmentRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/v1/enrollments/{id}"};
   }
 
   // --- queries ---
 
   // GetEnrollment returns a single enrollment record by ID.
-  rpc GetEnrollment (GetEnrollmentRequest) returns (CourseEnrollment) {
-    option (google.api.http) = {
-      get: "/v1/enrollments/{id}"
-    };
+  rpc GetEnrollment(GetEnrollmentRequest) returns (CourseEnrollment) {
+    option (google.api.http) = {get: "/v1/enrollments/{id}"};
   }
 
   // ListEnrollments returns a page of enrollment records.
-  rpc ListEnrollments (ListEnrollmentsRequest) returns (CourseEnrollmentSet) {
-    option (google.api.http) = {
-      get: "/v1/enrollments"
-    };
+  rpc ListEnrollments(ListEnrollmentsRequest) returns (CourseEnrollmentSet) {
+    option (google.api.http) = {get: "/v1/enrollments"};
   }
 
   // ListEnrolledCoursesByStudentID returns all courses a student is enrolled in.
-  rpc ListEnrolledCoursesByStudentID (ListEnrolledCoursesByStudentIDRequest) returns (CourseSet) {
-    option (google.api.http) = {
-      get: "/v1/students/{student_id}/courses"
-    };
+  rpc ListEnrolledCoursesByStudentID(ListEnrolledCoursesByStudentIDRequest) returns (CourseSet) {
+    option (google.api.http) = {get: "/v1/students/{student_id}/courses"};
   }
 
   // ListEnrolledStudentsByCourseID returns all students enrolled in a course.
-  rpc ListEnrolledStudentsByCourseID (ListEnrolledStudentsByCourseIDRequest) returns (StudentSet) {
-    option (google.api.http) = {
-      get: "/v1/courses/{course_id}/students"
-    };
+  rpc ListEnrolledStudentsByCourseID(ListEnrolledStudentsByCourseIDRequest) returns (StudentSet) {
+    option (google.api.http) = {get: "/v1/courses/{course_id}/students"};
   }
 }

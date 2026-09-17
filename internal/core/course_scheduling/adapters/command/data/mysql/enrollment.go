@@ -79,6 +79,33 @@ func (c *MysqlData) Enroll(ctx context.Context, e *enrollment.CourseEnrollment) 
 	return c.SaveEnrollment(ctx, e)
 }
 
+// GetUnSelectEnrollBySC 取该学员在该课程下「未选课」的那条注册记录。
+//
+// 同一门课可能有多条记录（退课后重新登记会再多一条），取 ID 最小的那条；
+// 取不到时报 ErrEnrollmentNotPaid（没这条记录 = 这门课还没缴费）。
+func (c *MysqlData) GetUnSelectEnrollBySC(ctx context.Context, studentID int64, courseID string) (enrollment.CourseEnrollment, error) {
+	po, err := help.ScanEnrollment(c.Conn(ctx).QueryRowContext(ctx, `
+SELECT `+help.EnrollmentColumns+`
+  FROM course_enrollment
+ WHERE student_id = ? AND course_id = ? AND status = ?
+ ORDER BY id
+ LIMIT 1`, studentID, courseID, int(enrollment.StatusNotSelected)))
+	if errors.Is(err, sql.ErrNoRows) {
+		return enrollment.CourseEnrollment{}, fmt.Errorf(
+			"%w: student %d course %s",
+			enrollment.ErrEnrollmentNotPaid, studentID, courseID,
+		)
+	}
+	if err != nil {
+		return enrollment.CourseEnrollment{}, err
+	}
+	do, err := model.EnrollmentToDO(po)
+	if err != nil {
+		return enrollment.CourseEnrollment{}, err
+	}
+	return *do, nil
+}
+
 // GetEnrollments 取该学员的全部报名记录。
 func (c *MysqlData) GetEnrollments(ctx context.Context, studentID int64) ([]enrollment.CourseEnrollment, error) {
 	rows, err := c.Conn(ctx).QueryContext(ctx, `

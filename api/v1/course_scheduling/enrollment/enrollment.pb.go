@@ -34,6 +34,8 @@ const (
 	EnrollmentStatus_ENROLLMENT_STATUS_ENROLLED    EnrollmentStatus = 1
 	EnrollmentStatus_ENROLLMENT_STATUS_COMPLETED   EnrollmentStatus = 2
 	EnrollmentStatus_ENROLLMENT_STATUS_DROPPED     EnrollmentStatus = 3
+	// Not selected a course yet.
+	EnrollmentStatus_ENROLLMENT_STATUS_NOT_SELECTED EnrollmentStatus = 4
 )
 
 // Enum value maps for EnrollmentStatus.
@@ -43,12 +45,14 @@ var (
 		1: "ENROLLMENT_STATUS_ENROLLED",
 		2: "ENROLLMENT_STATUS_COMPLETED",
 		3: "ENROLLMENT_STATUS_DROPPED",
+		4: "ENROLLMENT_STATUS_NOT_SELECTED",
 	}
 	EnrollmentStatus_value = map[string]int32{
-		"ENROLLMENT_STATUS_UNSPECIFIED": 0,
-		"ENROLLMENT_STATUS_ENROLLED":    1,
-		"ENROLLMENT_STATUS_COMPLETED":   2,
-		"ENROLLMENT_STATUS_DROPPED":     3,
+		"ENROLLMENT_STATUS_UNSPECIFIED":  0,
+		"ENROLLMENT_STATUS_ENROLLED":     1,
+		"ENROLLMENT_STATUS_COMPLETED":    2,
+		"ENROLLMENT_STATUS_DROPPED":      3,
+		"ENROLLMENT_STATUS_NOT_SELECTED": 4,
 	}
 )
 
@@ -557,12 +561,13 @@ const file_v1_course_scheduling_enrollment_enrollment_proto_rawDesc = "" +
 	"%ListEnrolledStudentsByCourseIDRequest\x12 \n" +
 	"\tcourse_id\x18\x01 \x01(\tB\x03\xe0A\x02R\bcourseId\".\n" +
 	"\x17DeleteEnrollmentRequest\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\x03B\x03\xe0A\x02R\x02id*\x95\x01\n" +
+	"\x02id\x18\x01 \x01(\x03B\x03\xe0A\x02R\x02id*\xb9\x01\n" +
 	"\x10EnrollmentStatus\x12!\n" +
 	"\x1dENROLLMENT_STATUS_UNSPECIFIED\x10\x00\x12\x1e\n" +
 	"\x1aENROLLMENT_STATUS_ENROLLED\x10\x01\x12\x1f\n" +
 	"\x1bENROLLMENT_STATUS_COMPLETED\x10\x02\x12\x1d\n" +
-	"\x19ENROLLMENT_STATUS_DROPPED\x10\x032\xe8\x06\n" +
+	"\x19ENROLLMENT_STATUS_DROPPED\x10\x03\x12\"\n" +
+	"\x1eENROLLMENT_STATUS_NOT_SELECTED\x10\x042\xe8\x06\n" +
 	"\x11EnrollmentService\x12x\n" +
 	"\rEnrollStudent\x12*.v1.course_scheduling.EnrollStudentRequest\x1a\x16.google.protobuf.Empty\"#\x82\xd3\xe4\x93\x02\x1d:\n" +
 	"enrollment\"\x0f/v1/enrollments\x12w\n" +

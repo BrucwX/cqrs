@@ -19,8 +19,8 @@
 --   2026-09-07 ~ 2027-01-15  教学周期
 --
 -- 期望行数：course_type 2 / classroom 2 / student 3 / teacher 3 / course 4 /
---           course_slot 6 / course_slot_change 2 / course_enrollment 4 /
---           absence_record 2 / student_makeup 2 / qualification 5  = 35 行
+--           course_slot 6 / course_slot_change 2 / course_enrollment 5 /
+--           absence_record 2 / student_makeup 2 / qualification 5  = 36 行
 --
 -- 刻意保留的一处「模型对不上」的数据（见建表脚本头部注释）：
 --   course_slot_change 的原计划时间是 "09:00" 字符串，目标时间是 datetime。
@@ -132,13 +132,15 @@ INSERT INTO course_slot_change (
    '讲师出差，由李娜代课', @demo_now, @demo_now);
 
 -- 选课报名：103 的 C002 那条是「已结业」，用来验证查询侧不过滤状态
+-- status 口径：1 在读 / 2 已结业 / 3 已退课 / 4 未选课
 INSERT INTO course_enrollment (
   id, student_id, course_id, status, enrolled_at, completed_at, dropped_at, updated_at
 ) VALUES
   (1, 101, 'C001', 1, '2026-08-20 09:00:00', NULL,       NULL, @demo_now),
   (2, 102, 'C002', 1, '2026-08-20 09:00:00', NULL,       NULL, @demo_now),
   (3, 103, 'C001', 1, '2026-08-21 09:00:00', NULL,       NULL, @demo_now),
-  (4, 103, 'C002', 2, '2026-08-21 09:00:00', @demo_now,   NULL, @demo_now);
+  (4, 103, 'C002', 2, '2026-08-21 09:00:00', @demo_now,   NULL, @demo_now),
+  (5, 101, 'C003', 4, @demo_now,              NULL,       NULL, @demo_now);
 
 -- 缺勤记录：1 条事假 + 1 条旷课（absence_type 1 事假 / 2 公假 / 3 旷课）
 -- ⚠️ course_slot_id 存 int64 的 2/3，同样指不到 uuid 的 course_slot.id
@@ -189,7 +191,7 @@ UNION ALL SELECT 'teacher',            COUNT(*), 3 FROM teacher
 UNION ALL SELECT 'course',             COUNT(*), 4 FROM course
 UNION ALL SELECT 'course_slot',        COUNT(*), 6 FROM course_slot
 UNION ALL SELECT 'course_slot_change', COUNT(*), 2 FROM course_slot_change
-UNION ALL SELECT 'course_enrollment',  COUNT(*), 4 FROM course_enrollment
+UNION ALL SELECT 'course_enrollment',  COUNT(*), 5 FROM course_enrollment
 UNION ALL SELECT 'absence_record',     COUNT(*), 2 FROM absence_record
 UNION ALL SELECT 'student_makeup',     COUNT(*), 2 FROM student_makeup
 UNION ALL SELECT 'qualification',      COUNT(*), 5 FROM qualification;

@@ -3,6 +3,7 @@ package enrollment
 import (
 	"context"
 	"errors"
+	"fmt"
 	"testing"
 	"time"
 
@@ -18,7 +19,8 @@ import (
 )
 
 const (
-	// courseFree 窗口内、未满、周二 09:00-11:00，与学员 A 现有课程不撞
+	// courseFree 窗口内、未满、周二 09:00-11:00，与学员 A 现有课程不撞；
+	// 学员 A 有一条「未选课」注册记录 → 可以正式选课
 	courseFree = "c-free"
 	// courseTaken 学员 A 已在学，周一 09:00-11:00
 	courseTaken = "c-taken"
@@ -28,16 +30,24 @@ const (
 	courseFull = "c-full"
 	// courseClosed 窗口已关闭
 	courseClosed = "c-closed"
-	// courseRetake 窗口内，学员 A 曾选过但已退课 → 可以重选
+	// courseRetake 窗口内，学员 A 曾选过但已退课，且已重新登记一条未选课记录 → 可以重选
 	courseRetake = "c-retake"
 	// courseDupe 窗口内，学员 A 已在学（同一门课重复选 → 走时间冲突规则拦下）
 	courseDupe = "c-dupe"
+	// courseNoQuota 窗口内、未满、不撞时间，但学员 A 一条注册记录都没有 → 没资格
+	courseNoQuota = "c-no-quota"
+	// courseRepay 窗口内、未满、不撞时间，但学员 A 只有一条「已退课」记录（没重新登记）→ 没资格
+	courseRepay = "c-repay"
 
 	studentA = int64(1)
 )
 
 // newData 造一份干净的内存数据：
-// 7 门课 + 7 条排期 + 学员 A 的 3 条注册记录（courseTaken/courseDupe 在学，courseRetake 已退课）。
+// 9 门课 + 9 条排期 + 学员 A 的 11 条注册记录。
+//
+// 注册记录分三类：在学（courseTaken / courseDupe）、已退课（courseRetake 的旧记录、courseRepay）、
+// 未选课（= 已报班/已缴费的选课资格）。选课要求先有未选课记录，所以 courseFree /
+// courseClash / courseFull / courseClosed / courseDupe / courseRetake / c-not-exist 各挂了一条。
 func newData(t *testing.T) *memImp4test.Data {
 	t.Helper()
 
@@ -63,6 +73,8 @@ func newData(t *testing.T) *memImp4test.Data {
 		newCourse(t, courseClosed, closedWindow, 10, 0),
 		newCourse(t, courseRetake, openWindow, 10, 0),
 		newCourse(t, courseDupe, openWindow, 10, 1),
+		newCourse(t, courseNoQuota, openWindow, 10, 0),
+		newCourse(t, courseRepay, openWindow, 10, 0),
 	)
 	d.SeedCourseSlot(
 		newSlot(t, courseFree, time.Tuesday, 9, 11),
@@ -72,9 +84,11 @@ func newData(t *testing.T) *memImp4test.Data {
 		newSlot(t, courseClosed, time.Saturday, 9, 11),
 		newSlot(t, courseRetake, time.Thursday, 9, 11),
 		newSlot(t, courseDupe, time.Wednesday, 9, 11),
+		newSlot(t, courseNoQuota, time.Tuesday, 13, 15),
+		newSlot(t, courseRepay, time.Thursday, 13, 15),
 	)
 
-	// 学员 A：courseTaken、courseDupe 在学；courseRetake 已退课
+	// 学员 A：在学 2 条、已退课 2 条、未选课 7 条
 	d.SeedEnrollment(
 		enrollment.Reconstitute(
 			1, studentA, courseTaken, enrollment.StatusEnrolled,
@@ -84,23 +98,62 @@ func newData(t *testing.T) *memImp4test.Data {
 			2, studentA, courseDupe, enrollment.StatusEnrolled,
 			now, time.Time{}, time.Time{}, now,
 		),
+		// courseRetake：先退课，之后重新登记了一条资格（ID 4）
 		enrollment.Reconstitute(
 			3, studentA, courseRetake, enrollment.StatusDropped,
 			now, time.Time{}, now, now,
+		),
+		enrollment.Reconstitute(
+			4, studentA, courseRetake, enrollment.StatusNotSelected,
+			now, time.Time{}, time.Time{}, now,
+		),
+		// courseRepay：只有已退课，没重新登记 → 不能重选
+		enrollment.Reconstitute(
+			5, studentA, courseRepay, enrollment.StatusDropped,
+			now, time.Time{}, now, now,
+		),
+		// 未选课（选课资格）
+		enrollment.Reconstitute(
+			6, studentA, courseFree, enrollment.StatusNotSelected,
+			now, time.Time{}, time.Time{}, now,
+		),
+		enrollment.Reconstitute(
+			7, studentA, courseClash, enrollment.StatusNotSelected,
+			now, time.Time{}, time.Time{}, now,
+		),
+		enrollment.Reconstitute(
+			8, studentA, courseFull, enrollment.StatusNotSelected,
+			now, time.Time{}, time.Time{}, now,
+		),
+		enrollment.Reconstitute(
+			9, studentA, courseClosed, enrollment.StatusNotSelected,
+			now, time.Time{}, time.Time{}, now,
+		),
+		enrollment.Reconstitute(
+			10, studentA, courseDupe, enrollment.StatusNotSelected,
+			now, time.Time{}, time.Time{}, now,
+		),
+		enrollment.Reconstitute(
+			11, studentA, "c-not-exist", enrollment.StatusNotSelected,
+			now, time.Time{}, time.Time{}, now,
 		),
 	)
 
 	return d
 }
 
-// TestStudentEnroll_Allowed 四项检查都通过时应当写入。
+// TestStudentEnroll_Allowed 有资格且三项检查都通过时，把那条未选课记录推到在读（不新建记录）。
 func TestStudentEnroll_Allowed(t *testing.T) {
 	cases := []struct {
 		name     string
 		courseID string
+		// wantID 应当被流转的那条未选课记录
+		wantID int64
+		// wantKept 不该被碰的那条记录（0 = 没有）
+		wantKept int64
 	}{
-		{"首次选课", courseFree},
-		{"退课后重新选课", courseRetake},
+		{"已有未选课记录", courseFree, 6, 0},
+		{"退课后重新登记再选", courseRetake, 4, 3},
 	}
 
 	for _, tc := range cases {
@@ -117,27 +170,46 @@ func TestStudentEnroll_Allowed(t *testing.T) {
 			if err != nil {
 				t.Fatalf("StudentEnroll: %v", err)
 			}
+			if got.ID() != tc.wantID {
+				t.Errorf("流转的记录 ID = %d, want %d", got.ID(), tc.wantID)
+			}
 			if got.CourseID() != tc.courseID || got.StudentID() != studentA {
 				t.Errorf("enrollment = (%d, %s), want (%d, %s)",
 					got.StudentID(), got.CourseID(), studentA, tc.courseID)
 			}
 			if !got.IsActive() {
-				t.Errorf("新选课应当是 StatusEnrolled，实际 %v", got.Status())
+				t.Errorf("选课后应当是 StatusEnrolled，实际 %v", got.Status())
 			}
-			if after := len(d.Enrollments()); after != before+1 {
-				t.Errorf("选课记录数 = %d, want %d", after, before+1)
+			// 写回的是库里那条，不是只改了内存副本
+			if stored := findByID(t, d, tc.wantID); !stored.IsActive() {
+				t.Errorf("库里的记录 %d 状态 = %v, want %v",
+					tc.wantID, stored.Status(), enrollment.StatusEnrolled)
+			}
+			// 不再新建记录
+			if after := len(d.Enrollments()); after != before {
+				t.Errorf("选课不应新建记录，记录数 = %d, want %d", after, before)
+			}
+			// 旧的已退课记录不受影响
+			if tc.wantKept != 0 {
+				if stored := findByID(t, d, tc.wantKept); stored.Status() != enrollment.StatusDropped {
+					t.Errorf("记录 %d 不应被改动，状态 = %v", tc.wantKept, stored.Status())
+				}
 			}
 		})
 	}
 }
 
-// TestStudentEnroll_Rejected 三条规则任一不过都应拒绝且不落库。
+// TestStudentEnroll_Rejected 没资格 或 任一规则不过都应拒绝且不落库。
 func TestStudentEnroll_Rejected(t *testing.T) {
 	cases := []struct {
 		name     string
 		courseID string
 		wantErr  error
 	}{
+		// 没有「未选课」的注册记录 = 这门课还没缴费
+		{"一条记录都没有", courseNoQuota, enrollment.ErrEnrollmentNotPaid},
+		{"只有已退课记录（没重新缴费）", courseRepay, enrollment.ErrEnrollmentNotPaid},
+		// 有资格但准入不过
 		{"重复选课", courseDupe, enrollment.ErrEnrollmentConflict},
 		{"窗口已关闭", courseClosed, enrollment.ErrEnrollmentConflict},
 		{"课程已满", courseFull, enrollment.ErrEnrollmentConflict},
@@ -152,6 +224,7 @@ func TestStudentEnroll_Rejected(t *testing.T) {
 			h := newHandler(d)
 
 			before := len(d.Enrollments())
+			beforeStatus := fmt.Sprint(enrollmentStatuses(d, studentA, tc.courseID))
 
 			got, err := h.StudentEnroll(context.Background(), StudentEnroll{
 				StudentID: studentA,
@@ -166,11 +239,39 @@ func TestStudentEnroll_Rejected(t *testing.T) {
 			if after := len(d.Enrollments()); after != before {
 				t.Errorf("被拒绝时不应写入，记录数 = %d, want %d", after, before)
 			}
+			if afterStatus := fmt.Sprint(enrollmentStatuses(d, studentA, tc.courseID)); afterStatus != beforeStatus {
+				t.Errorf("被拒绝时状态不应变化：%s -> %s", beforeStatus, afterStatus)
+			}
 		})
 	}
 }
 
 // --- 测试辅助 ---
+
+// findByID 按 ID 取库里的注册记录（取不到直接失败）。
+func findByID(t *testing.T, d *memImp4test.Data, id int64) enrollment.CourseEnrollment {
+	t.Helper()
+
+	for _, e := range d.Enrollments() {
+		if e.ID() == id {
+			return *e
+		}
+	}
+
+	t.Fatalf("注册记录 %d 不存在", id)
+	return enrollment.CourseEnrollment{}
+}
+
+// enrollmentStatuses 该学员在该课程下的全部记录状态（按 ID 升序，用于比对「没被改动」）。
+func enrollmentStatuses(d *memImp4test.Data, studentID int64, courseID string) []string {
+	out := make([]string, 0, 1)
+	for _, e := range d.Enrollments() {
+		if e.StudentID() == studentID && e.CourseID() == courseID {
+			out = append(out, fmt.Sprintf("%d:%v", e.ID(), e.Status()))
+		}
+	}
+	return out
+}
 
 // newHandler 装配一个处理器：写侧仓库拿写侧窄面，读侧仓库拿读侧窄面。
 //

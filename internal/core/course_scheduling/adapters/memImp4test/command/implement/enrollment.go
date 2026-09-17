@@ -62,6 +62,23 @@ func (c *EnrollmentCommand) Enroll(ctx context.Context, e *enrollment.CourseEnro
 	return c.SaveEnrollment(ctx, e)
 }
 
+// GetUnSelectEnrollBySC 取该学员在该课程下「未选课」的那条注册记录。
+//
+// 同一门课可能有多条记录（退课后重新登记会再多一条），取 ID 最小的那条 ——
+// Enrollments() 已按 ID 升序，第一个命中的就是。
+// 取不到时报 ErrEnrollmentNotPaid（没这条记录 = 这门课还没缴费）。
+func (c *EnrollmentCommand) GetUnSelectEnrollBySC(ctx context.Context, studentID int64, courseID string) (enrollment.CourseEnrollment, error) {
+	for _, item := range c.data.Enrollments() {
+		if item.StudentID() == studentID && item.CourseID() == courseID && item.Status() == enrollment.StatusNotSelected {
+			return *item, nil
+		}
+	}
+	return enrollment.CourseEnrollment{}, fmt.Errorf(
+		"%w: student %d course %s",
+		enrollment.ErrEnrollmentNotPaid, studentID, courseID,
+	)
+}
+
 // GetEnrollments 取该学员的全部报名记录。
 func (c *EnrollmentCommand) GetEnrollments(ctx context.Context, studentID int64) ([]enrollment.CourseEnrollment, error) {
 	out := make([]enrollment.CourseEnrollment, 0)

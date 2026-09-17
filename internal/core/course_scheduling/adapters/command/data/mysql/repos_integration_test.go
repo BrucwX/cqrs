@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"context"
+	"errors"
 	"testing"
 	"time"
 
@@ -140,7 +141,7 @@ func TestReposRoundTrip(t *testing.T) {
 
 	t.Run("enrollment", func(t *testing.T) {
 		c := newCommandData(t)
-		do := enrollment.Reconstitute(9900004, 9900001, "it-course-1", 1, itNow, time.Time{}, time.Time{}, itNow)
+		do := enrollment.Reconstitute(9900004, 9900001, "it-course-1", enrollment.StatusNotSelected, itNow, time.Time{}, time.Time{}, itNow)
 
 		if err := c.SaveEnrollment(context.Background(), do); err != nil {
 			t.Fatalf("Save: %v", err)
@@ -151,13 +152,25 @@ func TestReposRoundTrip(t *testing.T) {
 		if err != nil {
 			t.Fatalf("MustGet: %v", err)
 		}
-		if got.StudentID() != 9900001 || !got.IsActive() {
+		if got.StudentID() != 9900001 || !got.IsNotSelected() {
 			t.Errorf("roundtrip mismatch: %+v", got)
 		}
 
 		list, err := c.GetEnrollments(context.Background(), 9900001)
 		if err != nil || len(list) != 1 {
 			t.Fatalf("GetEnrollments = %v, %v; want 1 row", list, err)
+		}
+
+		found, err := c.GetUnSelectEnrollBySC(context.Background(), 9900001, "it-course-1")
+		if err != nil {
+			t.Fatalf("GetUnSelectEnrollBySC: %v", err)
+		}
+		if found.ID() != do.ID() {
+			t.Errorf("GetUnSelectEnrollBySC = %+v, want id %d", found, do.ID())
+		}
+		// 这门课没有未选课记录时报「未付费」，而不是返回一条不相干的记录
+		if _, err := c.GetUnSelectEnrollBySC(context.Background(), 9900001, "it-course-none"); !errors.Is(err, enrollment.ErrEnrollmentNotPaid) {
+			t.Errorf("err = %v, want %v", err, enrollment.ErrEnrollmentNotPaid)
 		}
 	})
 
