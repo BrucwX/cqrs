@@ -5,10 +5,10 @@ import (
 
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	coursev1 "cqrs/api/v1/course_scheduling/course"
-	coursecmd "cqrs/internal/app/command/course"
-	courseqry "cqrs/internal/app/query/course"
-	coursedo "cqrs/internal/domain/aggregate/course"
+	coursev1 "courseScheduling/api/v1/course_scheduling/course"
+	coursecmd "courseScheduling/internal/app/command/course"
+	courseqry "courseScheduling/internal/app/query/course"
+	coursedo "courseScheduling/internal/domain/aggregate/course"
 )
 
 // CourseService 课程服务。

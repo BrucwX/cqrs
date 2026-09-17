@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"cqrs/internal/adapters/memImp4test/command"
-	"cqrs/internal/domain/aggregate/courseSlotChange"
-	repo "cqrs/internal/domain/repo/command"
+	"courseScheduling/internal/adapters/memImp4test/command"
+	"courseScheduling/internal/domain/aggregate/courseSlotChange"
+	repo "courseScheduling/internal/domain/repo/command"
 )
 
 // CourseSlotChangeCommand 课表变更命令实现（内存版）。

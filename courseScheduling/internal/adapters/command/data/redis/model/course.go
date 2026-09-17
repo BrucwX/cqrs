@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"cqrs/internal/domain/aggregate/course"
+	"courseScheduling/internal/domain/aggregate/course"
 )
 
 // Course 是 Redis 快照（对应 course），领域模型是 course.Course。

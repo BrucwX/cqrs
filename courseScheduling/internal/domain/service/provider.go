@@ -3,9 +3,9 @@ package service
 import (
 	"github.com/google/wire"
 
-	"cqrs/internal/domain/service/classroomCapacity"
-	"cqrs/internal/domain/service/qualificationCheck"
-	"cqrs/internal/domain/service/scheduleConflict"
+	"courseScheduling/internal/domain/service/classroomCapacity"
+	"courseScheduling/internal/domain/service/qualificationCheck"
+	"courseScheduling/internal/domain/service/scheduleConflict"
 )
 
 // ProviderSet 领域判定服务的构造器。

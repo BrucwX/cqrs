@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"cqrs/internal/domain/aggregate/teacher"
+	"courseScheduling/internal/domain/aggregate/teacher"
 )
 
 // Teacher 对应表 teacher，领域模型是 teacher.Teacher。

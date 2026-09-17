@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"cqrs/internal/domain/aggregate/enrollment"
+	"courseScheduling/internal/domain/aggregate/enrollment"
 )
 
 func TestCourseEnrollmentQueryPage(t *testing.T) {

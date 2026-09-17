@@ -3,7 +3,7 @@ package command
 import (
 	"context"
 
-	"cqrs/internal/domain/aggregate/course"
+	"courseScheduling/internal/domain/aggregate/course"
 )
 
 // CourseCommand 课程命令接口

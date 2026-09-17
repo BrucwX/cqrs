@@ -5,13 +5,13 @@ import (
 
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	coursetypev1 "cqrs/api/v1/course_scheduling/course_type"
-	qualificationv1 "cqrs/api/v1/course_scheduling/qualification"
-	teacherv1 "cqrs/api/v1/course_scheduling/teacher"
-	qualificationcmd "cqrs/internal/app/command/qualification"
-	qualificationqry "cqrs/internal/app/query/qualification"
-	coursetypedo "cqrs/internal/domain/aggregate/courseType"
-	qualificationdo "cqrs/internal/domain/aggregate/qualification"
+	coursetypev1 "courseScheduling/api/v1/course_scheduling/course_type"
+	qualificationv1 "courseScheduling/api/v1/course_scheduling/qualification"
+	teacherv1 "courseScheduling/api/v1/course_scheduling/teacher"
+	qualificationcmd "courseScheduling/internal/app/command/qualification"
+	qualificationqry "courseScheduling/internal/app/query/qualification"
+	coursetypedo "courseScheduling/internal/domain/aggregate/courseType"
+	qualificationdo "courseScheduling/internal/domain/aggregate/qualification"
 )
 
 // QualificationService 授课资质服务。

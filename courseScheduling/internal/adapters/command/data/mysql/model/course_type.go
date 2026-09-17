@@ -3,7 +3,7 @@ package model
 import (
 	"time"
 
-	"cqrs/internal/domain/aggregate/courseType"
+	"courseScheduling/internal/domain/aggregate/courseType"
 )
 
 // CourseType 对应表 course_type，领域模型是 courseType.CourseType。

@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	"cqrs/internal/domain/aggregate/student"
+	"courseScheduling/internal/domain/aggregate/student"
 )
 
 func strPtr(v string) *string { return &v }

@@ -3,9 +3,9 @@ package query
 import (
 	"context"
 
-	"cqrs/internal/domain/aggregate/course"
-	"cqrs/internal/domain/aggregate/enrollment"
-	"cqrs/internal/domain/aggregate/student"
+	"courseScheduling/internal/domain/aggregate/course"
+	"courseScheduling/internal/domain/aggregate/enrollment"
+	"courseScheduling/internal/domain/aggregate/student"
 )
 
 // CourseEnrollmentQuery 课程注册查询接口

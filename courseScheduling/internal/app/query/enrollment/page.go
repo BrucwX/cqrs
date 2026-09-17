@@ -3,7 +3,7 @@ package enrollment
 import (
 	"context"
 
-	"cqrs/internal/domain/aggregate/enrollment"
+	"courseScheduling/internal/domain/aggregate/enrollment"
 )
 
 // PageEnrollments 查询输入：课程注册分页列表

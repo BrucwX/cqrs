@@ -3,7 +3,7 @@ package command
 import (
 	"context"
 
-	"cqrs/internal/domain/aggregate/courseSlotChange"
+	"courseScheduling/internal/domain/aggregate/courseSlotChange"
 )
 
 // CourseSlotChangeCommand 课表变更命令接口

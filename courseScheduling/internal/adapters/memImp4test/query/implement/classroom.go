@@ -3,9 +3,9 @@ package implement
 import (
 	"context"
 
-	"cqrs/internal/adapters/memImp4test/query"
-	"cqrs/internal/domain/aggregate/classroom"
-	repoquery "cqrs/internal/domain/repo/query"
+	"courseScheduling/internal/adapters/memImp4test/query"
+	"courseScheduling/internal/domain/aggregate/classroom"
+	repoquery "courseScheduling/internal/domain/repo/query"
 )
 
 // classroomQuery 是 repoquery.ClassroomQuery 的内存实现。

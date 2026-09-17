@@ -3,7 +3,7 @@ package model
 import (
 	"fmt"
 
-	"cqrs/internal/domain/aggregate/classroom"
+	"courseScheduling/internal/domain/aggregate/classroom"
 )
 
 // Classroom 对应表 classroom，领域模型是 classroom.Classroom。

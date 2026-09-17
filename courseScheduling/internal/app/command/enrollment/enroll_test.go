@@ -7,15 +7,15 @@ import (
 	"testing"
 	"time"
 
-	"cqrs/internal/adapters/memImp4test"
-	commandmemory "cqrs/internal/adapters/memImp4test/command"
-	memorycmd "cqrs/internal/adapters/memImp4test/command/implement"
-	querymemory "cqrs/internal/adapters/memImp4test/query"
-	memoryquery "cqrs/internal/adapters/memImp4test/query/implement"
-	"cqrs/internal/domain/aggregate/course"
-	"cqrs/internal/domain/aggregate/courseSlot"
-	"cqrs/internal/domain/aggregate/enrollment"
-	"cqrs/internal/domain/service/scheduleConflict"
+	"courseScheduling/internal/adapters/memImp4test"
+	commandmemory "courseScheduling/internal/adapters/memImp4test/command"
+	memorycmd "courseScheduling/internal/adapters/memImp4test/command/implement"
+	querymemory "courseScheduling/internal/adapters/memImp4test/query"
+	memoryquery "courseScheduling/internal/adapters/memImp4test/query/implement"
+	"courseScheduling/internal/domain/aggregate/course"
+	"courseScheduling/internal/domain/aggregate/courseSlot"
+	"courseScheduling/internal/domain/aggregate/enrollment"
+	"courseScheduling/internal/domain/service/scheduleConflict"
 )
 
 const (

@@ -8,8 +8,8 @@ package qualificationv1
 
 import (
 	context "context"
-	course_type "cqrs/api/v1/course_scheduling/course_type"
-	teacher "cqrs/api/v1/course_scheduling/teacher"
+	course_type "courseScheduling/api/v1/course_scheduling/course_type"
+	teacher "courseScheduling/api/v1/course_scheduling/teacher"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"

@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"time"
 
-	"cqrs/internal/domain/aggregate/enrollment"
+	"courseScheduling/internal/domain/aggregate/enrollment"
 )
 
 // CourseEnrollment 对应表 course_enrollment，领域模型是 enrollment.CourseEnrollment。

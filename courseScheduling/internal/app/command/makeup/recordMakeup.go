@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"cqrs/internal/domain/aggregate/makeup"
+	"courseScheduling/internal/domain/aggregate/makeup"
 )
 
 // RecordMakeup 记录学生补课命令

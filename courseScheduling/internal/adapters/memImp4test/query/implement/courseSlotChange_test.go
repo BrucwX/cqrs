@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"cqrs/internal/domain/aggregate/courseSlotChange"
+	"courseScheduling/internal/domain/aggregate/courseSlotChange"
 )
 
 func TestCourseSlotChangeQueryPage(t *testing.T) {

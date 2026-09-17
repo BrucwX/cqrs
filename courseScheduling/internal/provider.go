@@ -3,12 +3,12 @@ package course_scheduling
 import (
 	"github.com/google/wire"
 
-	commandimpl "cqrs/internal/adapters/command/Impl"
-	queryimpl "cqrs/internal/adapters/query/Impl"
-	commandproviders "cqrs/internal/app/command"
-	"cqrs/internal/app/query"
-	"cqrs/internal/ports"
-	"cqrs/internal/service"
+	commandimpl "courseScheduling/internal/adapters/command/Impl"
+	queryimpl "courseScheduling/internal/adapters/query/Impl"
+	commandproviders "courseScheduling/internal/app/command"
+	"courseScheduling/internal/app/query"
+	"courseScheduling/internal/ports"
+	"courseScheduling/internal/service"
 )
 
 // ProviderSet is course_scheduling providers：只做组装，细节在各自包里。

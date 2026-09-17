@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"cqrs/internal/domain/aggregate/courseSlotChange"
+	"courseScheduling/internal/domain/aggregate/courseSlotChange"
 )
 
 // ChangeCourseSlot 临时换课命令

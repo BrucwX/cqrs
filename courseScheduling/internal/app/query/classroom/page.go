@@ -3,7 +3,7 @@ package classroom
 import (
 	"context"
 
-	"cqrs/internal/domain/aggregate/classroom"
+	"courseScheduling/internal/domain/aggregate/classroom"
 )
 
 // PageClassrooms 查询输入：教室分页列表

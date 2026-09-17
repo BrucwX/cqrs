@@ -3,7 +3,7 @@ package makeup
 import (
 	"context"
 
-	"cqrs/internal/domain/aggregate/student"
+	"courseScheduling/internal/domain/aggregate/student"
 )
 
 // StudentsByCourseID 查询输入：根据课程 ID 获取已补课的学员

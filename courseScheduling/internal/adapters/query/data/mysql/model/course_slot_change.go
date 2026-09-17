@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"cqrs/internal/domain/aggregate/courseSlotChange"
+	"courseScheduling/internal/domain/aggregate/courseSlotChange"
 )
 
 // CourseSlotChange 对应表 course_slot_change，领域模型是 courseSlotChange.CourseSlotChange。

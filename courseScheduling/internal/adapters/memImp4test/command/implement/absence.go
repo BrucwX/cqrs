@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"cqrs/internal/adapters/memImp4test/command"
-	"cqrs/internal/domain/aggregate/absence"
-	repo "cqrs/internal/domain/repo/command"
+	"courseScheduling/internal/adapters/memImp4test/command"
+	"courseScheduling/internal/domain/aggregate/absence"
+	repo "courseScheduling/internal/domain/repo/command"
 )
 
 // AbsenceCommand 缺勤记录命令实现（内存版）。

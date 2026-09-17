@@ -2,10 +2,10 @@ package query
 
 import (
 	"context"
-	"cqrs/internal/domain/aggregate/courseType"
-	"cqrs/internal/domain/aggregate/qualification"
-	"cqrs/internal/domain/aggregate/teacher"
-	repoquery "cqrs/internal/domain/repo/query"
+	"courseScheduling/internal/domain/aggregate/courseType"
+	"courseScheduling/internal/domain/aggregate/qualification"
+	"courseScheduling/internal/domain/aggregate/teacher"
+	repoquery "courseScheduling/internal/domain/repo/query"
 )
 
 var _ repoquery.QualificationQuery = (*QueryImpl)(nil)

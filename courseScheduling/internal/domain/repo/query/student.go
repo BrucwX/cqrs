@@ -3,7 +3,7 @@ package query
 import (
 	"context"
 
-	"cqrs/internal/domain/aggregate/student"
+	"courseScheduling/internal/domain/aggregate/student"
 )
 
 // StudentQuery 学员查询接口

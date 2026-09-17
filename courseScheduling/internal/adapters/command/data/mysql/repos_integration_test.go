@@ -6,16 +6,16 @@ import (
 	"testing"
 	"time"
 
-	"cqrs/internal/domain/aggregate/absence"
-	"cqrs/internal/domain/aggregate/course"
-	"cqrs/internal/domain/aggregate/courseSlot"
-	"cqrs/internal/domain/aggregate/courseSlotChange"
-	"cqrs/internal/domain/aggregate/courseType"
-	"cqrs/internal/domain/aggregate/enrollment"
-	"cqrs/internal/domain/aggregate/makeup"
-	"cqrs/internal/domain/aggregate/qualification"
-	"cqrs/internal/domain/aggregate/student"
-	"cqrs/internal/domain/aggregate/teacher"
+	"courseScheduling/internal/domain/aggregate/absence"
+	"courseScheduling/internal/domain/aggregate/course"
+	"courseScheduling/internal/domain/aggregate/courseSlot"
+	"courseScheduling/internal/domain/aggregate/courseSlotChange"
+	"courseScheduling/internal/domain/aggregate/courseType"
+	"courseScheduling/internal/domain/aggregate/enrollment"
+	"courseScheduling/internal/domain/aggregate/makeup"
+	"courseScheduling/internal/domain/aggregate/qualification"
+	"courseScheduling/internal/domain/aggregate/student"
+	"courseScheduling/internal/domain/aggregate/teacher"
 )
 
 // 写侧命令仓库的集成测试：对着独立测试库（见 newCommandData）做一次写入→读回

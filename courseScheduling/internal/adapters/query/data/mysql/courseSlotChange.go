@@ -3,9 +3,9 @@ package mysql
 import (
 	"context"
 
-	"cqrs/internal/adapters/query/data/mysql/help"
-	"cqrs/internal/adapters/query/data/mysql/model"
-	"cqrs/internal/domain/aggregate/courseSlotChange"
+	"courseScheduling/internal/adapters/query/data/mysql/help"
+	"courseScheduling/internal/adapters/query/data/mysql/model"
+	"courseScheduling/internal/domain/aggregate/courseSlotChange"
 )
 
 // Page 分页查询课表变更列表，按 ID 升序。

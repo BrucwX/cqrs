@@ -4,10 +4,10 @@ import (
 	"context"
 	"time"
 
-	"cqrs/internal/adapters/memImp4test/query"
-	"cqrs/internal/domain/aggregate/course"
-	"cqrs/internal/domain/aggregate/courseSlot"
-	repoquery "cqrs/internal/domain/repo/query"
+	"courseScheduling/internal/adapters/memImp4test/query"
+	"courseScheduling/internal/domain/aggregate/course"
+	"courseScheduling/internal/domain/aggregate/courseSlot"
+	repoquery "courseScheduling/internal/domain/repo/query"
 )
 
 // courseQuery 是 repoquery.CourseQuery 的内存实现。

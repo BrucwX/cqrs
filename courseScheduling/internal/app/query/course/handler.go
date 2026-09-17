@@ -1,6 +1,6 @@
 package course
 
-import "cqrs/internal/domain/repo/query"
+import "courseScheduling/internal/domain/repo/query"
 
 // Handler 课程查询处理器
 type Handler struct {

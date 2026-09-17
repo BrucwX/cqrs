@@ -1,8 +1,8 @@
 package course
 
 import (
-	appcommand "cqrs/internal/app/command/appRepo"
-	"cqrs/internal/domain/repo/command"
+	appcommand "courseScheduling/internal/app/command/appRepo"
+	"courseScheduling/internal/domain/repo/command"
 )
 
 // Handler 课程命令处理器

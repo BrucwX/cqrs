@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"cqrs/internal/domain/aggregate/makeup"
+	"courseScheduling/internal/domain/aggregate/makeup"
 )
 
 // StudentMakeupCommand 补课申请命令接口

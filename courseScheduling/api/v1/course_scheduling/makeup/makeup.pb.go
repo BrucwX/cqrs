@@ -7,8 +7,8 @@
 package makeupv1
 
 import (
-	course "cqrs/api/v1/course_scheduling/course"
-	student "cqrs/api/v1/course_scheduling/student"
+	course "courseScheduling/api/v1/course_scheduling/course"
+	student "courseScheduling/api/v1/course_scheduling/student"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -608,8 +608,8 @@ const file_v1_course_scheduling_makeup_makeup_proto_rawDesc = "" +
 	"\tGetMakeup\x12&.v1.course_scheduling.GetMakeupRequest\x1a#.v1.course_scheduling.StudentMakeup\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/v1/makeups/{id}\x12t\n" +
 	"\vListMakeups\x12(.v1.course_scheduling.ListMakeupsRequest\x1a&.v1.course_scheduling.StudentMakeupSet\"\x13\x82\xd3\xe4\x93\x02\r\x12\v/v1/makeups\x12\x99\x01\n" +
 	"\x16ListMakeupsByStudentID\x123.v1.course_scheduling.ListMakeupsByStudentIDRequest\x1a\x1f.v1.course_scheduling.CourseSet\")\x82\xd3\xe4\x93\x02#\x12!/v1/students/{student_id}/makeups\x12\x96\x01\n" +
-	"\x15ListMakeupsByCourseID\x122.v1.course_scheduling.ListMakeupsByCourseIDRequest\x1a .v1.course_scheduling.StudentSet\"'\x82\xd3\xe4\x93\x02!\x12\x1f/v1/courses/{course_id}/makeupsBe\n" +
-	"%io.grpc.examples.course_scheduling.v1B\vMakeupProtoP\x01Z-cqrs/api/v1/course_scheduling/makeup;makeupv1b\x06proto3"
+	"\x15ListMakeupsByCourseID\x122.v1.course_scheduling.ListMakeupsByCourseIDRequest\x1a .v1.course_scheduling.StudentSet\"'\x82\xd3\xe4\x93\x02!\x12\x1f/v1/courses/{course_id}/makeupsBq\n" +
+	"%io.grpc.examples.course_scheduling.v1B\vMakeupProtoP\x01Z9courseScheduling/api/v1/course_scheduling/makeup;makeupv1b\x06proto3"
 
 var (
 	file_v1_course_scheduling_makeup_makeup_proto_rawDescOnce sync.Once

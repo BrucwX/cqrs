@@ -3,7 +3,7 @@ package makeup
 import (
 	"context"
 
-	"cqrs/internal/domain/aggregate/makeup"
+	"courseScheduling/internal/domain/aggregate/makeup"
 )
 
 // PageMakeups 查询输入：补课申请分页列表

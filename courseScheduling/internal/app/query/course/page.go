@@ -3,7 +3,7 @@ package course
 import (
 	"context"
 
-	"cqrs/internal/domain/aggregate/course"
+	"courseScheduling/internal/domain/aggregate/course"
 )
 
 // PageCourses 查询输入：课程分页列表

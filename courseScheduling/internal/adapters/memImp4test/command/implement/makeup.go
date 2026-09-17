@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"cqrs/internal/adapters/memImp4test/command"
-	"cqrs/internal/domain/aggregate/makeup"
-	repo "cqrs/internal/domain/repo/command"
+	"courseScheduling/internal/adapters/memImp4test/command"
+	"courseScheduling/internal/domain/aggregate/makeup"
+	repo "courseScheduling/internal/domain/repo/command"
 )
 
 // MakeupCommand 补课预约命令实现（内存版）。

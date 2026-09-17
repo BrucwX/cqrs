@@ -507,8 +507,8 @@ const file_v1_course_scheduling_classroom_classroom_proto_rawDesc = "" +
 	"\rSaveClassroom\x12*.v1.course_scheduling.SaveClassroomRequest\x1a\x16.google.protobuf.Empty\"!\x82\xd3\xe4\x93\x02\x1b:\tclassroom\"\x0e/v1/classrooms\x12t\n" +
 	"\x0fDeleteClassroom\x12,.v1.course_scheduling.DeleteClassroomRequest\x1a\x16.google.protobuf.Empty\"\x1b\x82\xd3\xe4\x93\x02\x15*\x13/v1/classrooms/{id}\x12w\n" +
 	"\fGetClassroom\x12).v1.course_scheduling.GetClassroomRequest\x1a\x1f.v1.course_scheduling.Classroom\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/v1/classrooms/{id}\x12y\n" +
-	"\x0eListClassrooms\x12+.v1.course_scheduling.ListClassroomsRequest\x1a\".v1.course_scheduling.ClassroomSet\"\x16\x82\xd3\xe4\x93\x02\x10\x12\x0e/v1/classroomsBn\n" +
-	"%io.grpc.examples.course_scheduling.v1B\x0eClassroomProtoP\x01Z3cqrs/api/v1/course_scheduling/classroom;classroomv1b\x06proto3"
+	"\x0eListClassrooms\x12+.v1.course_scheduling.ListClassroomsRequest\x1a\".v1.course_scheduling.ClassroomSet\"\x16\x82\xd3\xe4\x93\x02\x10\x12\x0e/v1/classroomsBz\n" +
+	"%io.grpc.examples.course_scheduling.v1B\x0eClassroomProtoP\x01Z?courseScheduling/api/v1/course_scheduling/classroom;classroomv1b\x06proto3"
 
 var (
 	file_v1_course_scheduling_classroom_classroom_proto_rawDescOnce sync.Once

@@ -3,7 +3,7 @@ package query
 import (
 	"context"
 
-	"cqrs/internal/domain/aggregate/courseSlot"
+	"courseScheduling/internal/domain/aggregate/courseSlot"
 )
 
 // CourseSlotQuery 课表槽位查询接口

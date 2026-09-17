@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"cqrs/internal/domain/aggregate/course"
+	"courseScheduling/internal/domain/aggregate/course"
 )
 
 func strPtr(v string) *string { return &v }

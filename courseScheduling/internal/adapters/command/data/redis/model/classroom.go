@@ -3,7 +3,7 @@ package model
 import (
 	"fmt"
 
-	"cqrs/internal/domain/aggregate/classroom"
+	"courseScheduling/internal/domain/aggregate/classroom"
 )
 
 // Classroom 是 Redis 快照（对应 classroom），领域模型是 classroom.Classroom。

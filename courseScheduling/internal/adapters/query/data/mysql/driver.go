@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"cqrs/internal/conf"
+	"courseScheduling/internal/conf"
 
 	// 注册 database/sql 的 "mysql" 驱动。
 	"github.com/go-kratos/kratos/v3/log"

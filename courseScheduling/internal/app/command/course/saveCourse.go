@@ -3,7 +3,7 @@ package course
 import (
 	"context"
 
-	"cqrs/internal/domain/aggregate/course"
+	"courseScheduling/internal/domain/aggregate/course"
 )
 
 // CourseInput 保存课程命令

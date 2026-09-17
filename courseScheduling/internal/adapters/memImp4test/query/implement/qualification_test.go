@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"cqrs/internal/adapters/memImp4test/query"
-	"cqrs/internal/domain/aggregate/qualification"
+	"courseScheduling/internal/adapters/memImp4test/query"
+	"courseScheduling/internal/domain/aggregate/qualification"
 )
 
 func TestQualificationQueryPage(t *testing.T) {

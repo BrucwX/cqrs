@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"cqrs/internal/domain/aggregate/course"
-	"cqrs/internal/domain/aggregate/courseSlot"
+	"courseScheduling/internal/domain/aggregate/course"
+	"courseScheduling/internal/domain/aggregate/courseSlot"
 )
 
 // TestAssignCourse 课程在该时段没有别的排期时配置成功。

@@ -6,9 +6,9 @@ import (
 	"errors"
 	"fmt"
 
-	"cqrs/internal/adapters/command/data/mysql/help"
-	"cqrs/internal/adapters/command/data/mysql/model"
-	"cqrs/internal/domain/aggregate/qualification"
+	"courseScheduling/internal/adapters/command/data/mysql/help"
+	"courseScheduling/internal/adapters/command/data/mysql/model"
+	"courseScheduling/internal/domain/aggregate/qualification"
 )
 
 // GrantQualification 授予授课资质：够不够格由调用方判完，这里只落库。

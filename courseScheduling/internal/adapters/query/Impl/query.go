@@ -6,7 +6,7 @@
 package query
 
 import (
-	"cqrs/internal/adapters/query/data/mysql"
+	"courseScheduling/internal/adapters/query/data/mysql"
 )
 
 // QueryImpl 读侧查询实现。

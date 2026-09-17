@@ -3,7 +3,7 @@ package command
 import (
 	"context"
 
-	appcmd "cqrs/internal/app/command/appRepo"
+	appcmd "courseScheduling/internal/app/command/appRepo"
 )
 
 // Begin 开启事务，转发给 MysqlData。

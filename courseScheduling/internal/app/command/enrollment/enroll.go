@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"cqrs/internal/domain/aggregate/enrollment"
+	"courseScheduling/internal/domain/aggregate/enrollment"
 )
 
 // StudentEnroll 学生选课命令

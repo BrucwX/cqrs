@@ -7,9 +7,9 @@ import (
 	"os"
 	"testing"
 
-	"cqrs/internal/conf"
-	"cqrs/internal/domain/aggregate/classroom"
-	repo "cqrs/internal/domain/repo/command"
+	"courseScheduling/internal/conf"
+	"courseScheduling/internal/domain/aggregate/classroom"
+	repo "courseScheduling/internal/domain/repo/command"
 )
 
 // 命令侧集成测试连一个独立库，与读侧集成测试（course_scheduling 种子库）

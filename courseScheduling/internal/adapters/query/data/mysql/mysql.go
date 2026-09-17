@@ -24,7 +24,7 @@ import (
 	"database/sql"
 	"errors"
 
-	"cqrs/internal/conf"
+	"courseScheduling/internal/conf"
 )
 
 // Data 持有读库连接池，读侧的所有仓库共享它。

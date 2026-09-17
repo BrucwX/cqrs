@@ -5,11 +5,11 @@ import (
 
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	courseschedulingv1 "cqrs/api/v1/course_scheduling"
-	teacherv1 "cqrs/api/v1/course_scheduling/teacher"
-	teachercmd "cqrs/internal/app/command/teacher"
-	teacherqry "cqrs/internal/app/query/teacher"
-	teacherdo "cqrs/internal/domain/aggregate/teacher"
+	courseschedulingv1 "courseScheduling/api/v1/course_scheduling"
+	teacherv1 "courseScheduling/api/v1/course_scheduling/teacher"
+	teachercmd "courseScheduling/internal/app/command/teacher"
+	teacherqry "courseScheduling/internal/app/query/teacher"
+	teacherdo "courseScheduling/internal/domain/aggregate/teacher"
 )
 
 // TeacherService 讲师服务。

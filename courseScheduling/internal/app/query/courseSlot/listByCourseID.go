@@ -3,7 +3,7 @@ package courseSlot
 import (
 	"context"
 
-	"cqrs/internal/domain/aggregate/courseSlot"
+	"courseScheduling/internal/domain/aggregate/courseSlot"
 )
 
 // ListByCourseID 查询输入：根据课程 ID 获取课表槽位

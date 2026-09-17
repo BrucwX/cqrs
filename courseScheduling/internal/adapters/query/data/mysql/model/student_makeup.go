@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"time"
 
-	"cqrs/internal/domain/aggregate/makeup"
+	"courseScheduling/internal/domain/aggregate/makeup"
 )
 
 // StudentMakeup 对应表 student_makeup，领域模型是 makeup.StudentMakeup。

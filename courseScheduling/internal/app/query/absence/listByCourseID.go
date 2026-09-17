@@ -3,7 +3,7 @@ package absence
 import (
 	"context"
 
-	"cqrs/internal/domain/aggregate/absence"
+	"courseScheduling/internal/domain/aggregate/absence"
 )
 
 // ListByCourseID 查询输入：根据课程 ID 获取缺勤记录

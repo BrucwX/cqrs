@@ -731,8 +731,8 @@ const file_v1_course_scheduling_course_course_proto_rawDesc = "" +
 	"\vListCourses\x12(.v1.course_scheduling.ListCoursesRequest\x1a\x1f.v1.course_scheduling.CourseSet\"\x13\x82\xd3\xe4\x93\x02\r\x12\v/v1/courses\x12\xaf\x01\n" +
 	" ListCoursesAvailableForClassroom\x12=.v1.course_scheduling.ListCoursesAvailableForClassroomRequest\x1a\x1f.v1.course_scheduling.CourseSet\"+\x82\xd3\xe4\x93\x02%\x12#/v1/courses/available-for-classroom\x12\xa9\x01\n" +
 	"\x1eListCoursesAvailableForStudent\x12;.v1.course_scheduling.ListCoursesAvailableForStudentRequest\x1a\x1f.v1.course_scheduling.CourseSet\")\x82\xd3\xe4\x93\x02#\x12!/v1/courses/available-for-student\x12\xa9\x01\n" +
-	"\x1eListCoursesAvailableForTeacher\x12;.v1.course_scheduling.ListCoursesAvailableForTeacherRequest\x1a\x1f.v1.course_scheduling.CourseSet\")\x82\xd3\xe4\x93\x02#\x12!/v1/courses/available-for-teacherBe\n" +
-	"%io.grpc.examples.course_scheduling.v1B\vCourseProtoP\x01Z-cqrs/api/v1/course_scheduling/course;coursev1b\x06proto3"
+	"\x1eListCoursesAvailableForTeacher\x12;.v1.course_scheduling.ListCoursesAvailableForTeacherRequest\x1a\x1f.v1.course_scheduling.CourseSet\")\x82\xd3\xe4\x93\x02#\x12!/v1/courses/available-for-teacherBq\n" +
+	"%io.grpc.examples.course_scheduling.v1B\vCourseProtoP\x01Z9courseScheduling/api/v1/course_scheduling/course;coursev1b\x06proto3"
 
 var (
 	file_v1_course_scheduling_course_course_proto_rawDescOnce sync.Once

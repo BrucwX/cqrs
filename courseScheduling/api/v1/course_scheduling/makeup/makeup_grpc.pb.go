@@ -8,8 +8,8 @@ package makeupv1
 
 import (
 	context "context"
-	course "cqrs/api/v1/course_scheduling/course"
-	student "cqrs/api/v1/course_scheduling/student"
+	course "courseScheduling/api/v1/course_scheduling/course"
+	student "courseScheduling/api/v1/course_scheduling/student"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"

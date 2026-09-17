@@ -1,6 +1,6 @@
 package classroomCapacity
 
-import "cqrs/internal/domain/repo/command"
+import "courseScheduling/internal/domain/repo/command"
 
 // Service 教室容量相容判定。
 //

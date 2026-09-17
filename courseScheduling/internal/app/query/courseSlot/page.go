@@ -3,7 +3,7 @@ package courseSlot
 import (
 	"context"
 
-	"cqrs/internal/domain/aggregate/courseSlot"
+	"courseScheduling/internal/domain/aggregate/courseSlot"
 )
 
 // PageCourseSlots 查询输入：课表槽位分页列表

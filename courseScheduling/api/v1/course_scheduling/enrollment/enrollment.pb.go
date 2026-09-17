@@ -7,8 +7,8 @@
 package enrollmentv1
 
 import (
-	course "cqrs/api/v1/course_scheduling/course"
-	student "cqrs/api/v1/course_scheduling/student"
+	course "courseScheduling/api/v1/course_scheduling/course"
+	student "courseScheduling/api/v1/course_scheduling/student"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -528,7 +528,7 @@ var File_v1_course_scheduling_enrollment_enrollment_proto protoreflect.FileDescr
 
 const file_v1_course_scheduling_enrollment_enrollment_proto_rawDesc = "" +
 	"\n" +
-	"0v1/course_scheduling/enrollment/enrollment.proto\x12\x14v1.course_scheduling\x1a(v1/course_scheduling/course/course.proto\x1a*v1/course_scheduling/student/student.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x90\x03\n" +
+	"0v1/course_scheduling/enrollment/enrollment.proto\x12\x14v1.course_scheduling\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a(v1/course_scheduling/course/course.proto\x1a*v1/course_scheduling/student/student.proto\"\x90\x03\n" +
 	"\x10CourseEnrollment\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1d\n" +
 	"\n" +
@@ -575,8 +575,8 @@ const file_v1_course_scheduling_enrollment_enrollment_proto_rawDesc = "" +
 	"\rGetEnrollment\x12*.v1.course_scheduling.GetEnrollmentRequest\x1a&.v1.course_scheduling.CourseEnrollment\"\x1c\x82\xd3\xe4\x93\x02\x16\x12\x14/v1/enrollments/{id}\x12\x83\x01\n" +
 	"\x0fListEnrollments\x12,.v1.course_scheduling.ListEnrollmentsRequest\x1a).v1.course_scheduling.CourseEnrollmentSet\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/v1/enrollments\x12\xa9\x01\n" +
 	"\x1eListEnrolledCoursesByStudentID\x12;.v1.course_scheduling.ListEnrolledCoursesByStudentIDRequest\x1a\x1f.v1.course_scheduling.CourseSet\")\x82\xd3\xe4\x93\x02#\x12!/v1/students/{student_id}/courses\x12\xa9\x01\n" +
-	"\x1eListEnrolledStudentsByCourseID\x12;.v1.course_scheduling.ListEnrolledStudentsByCourseIDRequest\x1a .v1.course_scheduling.StudentSet\"(\x82\xd3\xe4\x93\x02\"\x12 /v1/courses/{course_id}/studentsBq\n" +
-	"%io.grpc.examples.course_scheduling.v1B\x0fEnrollmentProtoP\x01Z5cqrs/api/v1/course_scheduling/enrollment;enrollmentv1b\x06proto3"
+	"\x1eListEnrolledStudentsByCourseID\x12;.v1.course_scheduling.ListEnrolledStudentsByCourseIDRequest\x1a .v1.course_scheduling.StudentSet\"(\x82\xd3\xe4\x93\x02\"\x12 /v1/courses/{course_id}/studentsB}\n" +
+	"%io.grpc.examples.course_scheduling.v1B\x0fEnrollmentProtoP\x01ZAcourseScheduling/api/v1/course_scheduling/enrollment;enrollmentv1b\x06proto3"
 
 var (
 	file_v1_course_scheduling_enrollment_enrollment_proto_rawDescOnce sync.Once

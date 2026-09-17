@@ -1,9 +1,9 @@
 package makeup
 
 import (
-	appcommand "cqrs/internal/app/command/appRepo"
-	"cqrs/internal/domain/repo/command"
-	"cqrs/internal/domain/service/classroomCapacity"
+	appcommand "courseScheduling/internal/app/command/appRepo"
+	"courseScheduling/internal/domain/repo/command"
+	"courseScheduling/internal/domain/service/classroomCapacity"
 )
 
 // Handler 补课预约命令处理器

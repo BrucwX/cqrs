@@ -1,11 +1,11 @@
 package courseSlot
 
 import (
-	appcommand "cqrs/internal/app/command/appRepo"
-	"cqrs/internal/domain/repo/command"
-	"cqrs/internal/domain/service/classroomCapacity"
-	"cqrs/internal/domain/service/qualificationCheck"
-	"cqrs/internal/domain/service/scheduleConflict"
+	appcommand "courseScheduling/internal/app/command/appRepo"
+	"courseScheduling/internal/domain/repo/command"
+	"courseScheduling/internal/domain/service/classroomCapacity"
+	"courseScheduling/internal/domain/service/qualificationCheck"
+	"courseScheduling/internal/domain/service/scheduleConflict"
 )
 
 // Handler 课表槽位命令处理器

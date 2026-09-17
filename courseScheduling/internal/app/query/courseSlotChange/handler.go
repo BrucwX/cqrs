@@ -1,6 +1,6 @@
 package courseSlotChange
 
-import "cqrs/internal/domain/repo/query"
+import "courseScheduling/internal/domain/repo/query"
 
 // Handler 课表变更查询处理器
 type Handler struct {

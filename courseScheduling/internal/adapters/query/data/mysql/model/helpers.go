@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"cqrs/internal/domain/aggregate/courseSlot"
+	"courseScheduling/internal/domain/aggregate/courseSlot"
 )
 
 // 本文件放 model 包内部共用的转换零件：可空时间列与 DayTime 列的互转。

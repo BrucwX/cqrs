@@ -3,12 +3,12 @@ package implement
 import (
 	"context"
 
-	"cqrs/internal/adapters/memImp4test/query"
-	"cqrs/internal/domain/aggregate/course"
-	"cqrs/internal/domain/aggregate/courseType"
-	"cqrs/internal/domain/aggregate/qualification"
-	"cqrs/internal/domain/aggregate/teacher"
-	repoquery "cqrs/internal/domain/repo/query"
+	"courseScheduling/internal/adapters/memImp4test/query"
+	"courseScheduling/internal/domain/aggregate/course"
+	"courseScheduling/internal/domain/aggregate/courseType"
+	"courseScheduling/internal/domain/aggregate/qualification"
+	"courseScheduling/internal/domain/aggregate/teacher"
+	repoquery "courseScheduling/internal/domain/repo/query"
 )
 
 // qualificationQuery 是 repoquery.QualificationQuery 的内存实现。

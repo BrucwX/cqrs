@@ -3,11 +3,11 @@ package mysql
 import (
 	"context"
 
-	"cqrs/internal/adapters/query/data/mysql/help"
-	"cqrs/internal/adapters/query/data/mysql/model"
-	"cqrs/internal/domain/aggregate/courseType"
-	"cqrs/internal/domain/aggregate/qualification"
-	"cqrs/internal/domain/aggregate/teacher"
+	"courseScheduling/internal/adapters/query/data/mysql/help"
+	"courseScheduling/internal/adapters/query/data/mysql/model"
+	"courseScheduling/internal/domain/aggregate/courseType"
+	"courseScheduling/internal/domain/aggregate/qualification"
+	"courseScheduling/internal/domain/aggregate/teacher"
 )
 
 // Page 分页查询授课资质列表，按 ID 升序。

@@ -3,7 +3,7 @@ package model
 import (
 	"time"
 
-	"cqrs/internal/domain/aggregate/courseType"
+	"courseScheduling/internal/domain/aggregate/courseType"
 )
 
 // CourseType 是 Redis 快照（对应 course_type），领域模型是 courseType.CourseType。

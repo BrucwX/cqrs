@@ -6,10 +6,10 @@ import (
 	"testing"
 	"time"
 
-	"cqrs/internal/adapters/memImp4test"
-	commandmemory "cqrs/internal/adapters/memImp4test/command"
-	memorycmd "cqrs/internal/adapters/memImp4test/command/implement"
-	"cqrs/internal/domain/aggregate/student"
+	"courseScheduling/internal/adapters/memImp4test"
+	commandmemory "courseScheduling/internal/adapters/memImp4test/command"
+	memorycmd "courseScheduling/internal/adapters/memImp4test/command/implement"
+	"courseScheduling/internal/domain/aggregate/student"
 )
 
 // newHandler 装配一个跑在干净内存存储上的命令处理器。

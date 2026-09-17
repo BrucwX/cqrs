@@ -3,7 +3,7 @@ package query
 import (
 	"context"
 
-	"cqrs/internal/domain/aggregate/courseSlotChange"
+	"courseScheduling/internal/domain/aggregate/courseSlotChange"
 )
 
 // CourseSlotChangeQuery 课表变更查询接口

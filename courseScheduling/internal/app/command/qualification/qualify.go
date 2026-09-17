@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"cqrs/internal/domain/aggregate/qualification"
+	"courseScheduling/internal/domain/aggregate/qualification"
 )
 
 // QualifyInput 授予授课资质命令

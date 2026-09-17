@@ -3,7 +3,7 @@ package teacher
 import (
 	"context"
 
-	"cqrs/internal/domain/aggregate/teacher"
+	"courseScheduling/internal/domain/aggregate/teacher"
 )
 
 // PageTeachers 查询输入：讲师分页列表

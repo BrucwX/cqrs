@@ -3,7 +3,7 @@ package student
 import (
 	"context"
 
-	"cqrs/internal/domain/aggregate/student"
+	"courseScheduling/internal/domain/aggregate/student"
 )
 
 // StudentInput 保存学员命令

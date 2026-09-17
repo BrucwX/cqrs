@@ -2,8 +2,8 @@ package command
 
 import (
 	"context"
-	"cqrs/internal/domain/aggregate/enrollment"
-	repo "cqrs/internal/domain/repo/command"
+	"courseScheduling/internal/domain/aggregate/enrollment"
+	repo "courseScheduling/internal/domain/repo/command"
 )
 
 var _ repo.CourseEnrollmentCommand = (*CommandImpl)(nil)

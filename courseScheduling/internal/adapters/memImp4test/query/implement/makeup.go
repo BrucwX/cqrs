@@ -3,11 +3,11 @@ package implement
 import (
 	"context"
 
-	"cqrs/internal/adapters/memImp4test/query"
-	"cqrs/internal/domain/aggregate/course"
-	"cqrs/internal/domain/aggregate/makeup"
-	"cqrs/internal/domain/aggregate/student"
-	repoquery "cqrs/internal/domain/repo/query"
+	"courseScheduling/internal/adapters/memImp4test/query"
+	"courseScheduling/internal/domain/aggregate/course"
+	"courseScheduling/internal/domain/aggregate/makeup"
+	"courseScheduling/internal/domain/aggregate/student"
+	repoquery "courseScheduling/internal/domain/repo/query"
 )
 
 // studentMakeupQuery 是 repoquery.StudentMakeupQuery 的内存实现。

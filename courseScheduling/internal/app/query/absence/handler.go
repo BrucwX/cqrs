@@ -1,6 +1,6 @@
 package absence
 
-import "cqrs/internal/domain/repo/query"
+import "courseScheduling/internal/domain/repo/query"
 
 // Handler 缺勤记录查询处理器
 type Handler struct {

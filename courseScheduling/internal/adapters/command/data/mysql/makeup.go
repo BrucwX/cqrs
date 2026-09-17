@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"time"
 
-	"cqrs/internal/adapters/command/data/mysql/help"
-	"cqrs/internal/adapters/command/data/mysql/model"
-	"cqrs/internal/domain/aggregate/makeup"
+	"courseScheduling/internal/adapters/command/data/mysql/help"
+	"courseScheduling/internal/adapters/command/data/mysql/model"
+	"courseScheduling/internal/domain/aggregate/makeup"
 )
 
 // Save 保存补课预约（新增或更新）。

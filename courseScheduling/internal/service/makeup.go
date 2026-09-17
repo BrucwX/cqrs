@@ -5,12 +5,12 @@ import (
 
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	coursev1 "cqrs/api/v1/course_scheduling/course"
-	makeupv1 "cqrs/api/v1/course_scheduling/makeup"
-	studentv1 "cqrs/api/v1/course_scheduling/student"
-	makeupcmd "cqrs/internal/app/command/makeup"
-	makeupqry "cqrs/internal/app/query/makeup"
-	makeupdo "cqrs/internal/domain/aggregate/makeup"
+	coursev1 "courseScheduling/api/v1/course_scheduling/course"
+	makeupv1 "courseScheduling/api/v1/course_scheduling/makeup"
+	studentv1 "courseScheduling/api/v1/course_scheduling/student"
+	makeupcmd "courseScheduling/internal/app/command/makeup"
+	makeupqry "courseScheduling/internal/app/query/makeup"
+	makeupdo "courseScheduling/internal/domain/aggregate/makeup"
 )
 
 // MakeupService 补课服务。

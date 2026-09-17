@@ -8,8 +8,8 @@ package main
 import (
 	"log/slog"
 
-	course_scheduling "cqrs/internal"
-	"cqrs/internal/conf"
+	course_scheduling "courseScheduling/internal"
+	"courseScheduling/internal/conf"
 
 	"github.com/go-kratos/kratos/v3"
 	"github.com/google/wire"

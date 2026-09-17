@@ -3,7 +3,7 @@ package classroom
 import (
 	"context"
 
-	"cqrs/internal/domain/aggregate/classroom"
+	"courseScheduling/internal/domain/aggregate/classroom"
 )
 
 // ClassroomInput 保存教室命令

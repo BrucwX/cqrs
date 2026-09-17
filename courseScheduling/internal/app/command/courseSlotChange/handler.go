@@ -1,9 +1,9 @@
 package courseSlotChange
 
 import (
-	appcommand "cqrs/internal/app/command/appRepo"
-	"cqrs/internal/domain/repo/command"
-	"cqrs/internal/domain/service/scheduleConflict"
+	appcommand "courseScheduling/internal/app/command/appRepo"
+	"courseScheduling/internal/domain/repo/command"
+	"courseScheduling/internal/domain/service/scheduleConflict"
 )
 
 // Handler 课表变更命令处理器

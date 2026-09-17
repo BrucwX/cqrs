@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	"cqrs/internal/domain/aggregate/classroom"
+	"courseScheduling/internal/domain/aggregate/classroom"
 )
 
 func intPtr(v int) *int { return &v }

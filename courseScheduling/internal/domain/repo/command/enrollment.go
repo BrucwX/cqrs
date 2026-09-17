@@ -3,7 +3,7 @@ package command
 import (
 	"context"
 
-	"cqrs/internal/domain/aggregate/enrollment"
+	"courseScheduling/internal/domain/aggregate/enrollment"
 )
 
 // CourseEnrollmentCommand 课程注册命令接口

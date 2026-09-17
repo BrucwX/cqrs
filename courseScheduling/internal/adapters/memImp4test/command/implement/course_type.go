@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"cqrs/internal/adapters/memImp4test/command"
-	"cqrs/internal/domain/aggregate/course"
-	"cqrs/internal/domain/aggregate/courseType"
-	repo "cqrs/internal/domain/repo/command"
+	"courseScheduling/internal/adapters/memImp4test/command"
+	"courseScheduling/internal/domain/aggregate/course"
+	"courseScheduling/internal/domain/aggregate/courseType"
+	repo "courseScheduling/internal/domain/repo/command"
 )
 
 // CourseTypeCommand 课程类型命令实现（内存版）。

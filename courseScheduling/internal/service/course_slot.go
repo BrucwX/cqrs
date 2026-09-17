@@ -5,10 +5,10 @@ import (
 
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	courseslotv1 "cqrs/api/v1/course_scheduling/course_slot"
-	courseslotcmd "cqrs/internal/app/command/courseSlot"
-	courseslotqry "cqrs/internal/app/query/courseSlot"
-	courseslotdo "cqrs/internal/domain/aggregate/courseSlot"
+	courseslotv1 "courseScheduling/api/v1/course_scheduling/course_slot"
+	courseslotcmd "courseScheduling/internal/app/command/courseSlot"
+	courseslotqry "courseScheduling/internal/app/query/courseSlot"
+	courseslotdo "courseScheduling/internal/domain/aggregate/courseSlot"
 )
 
 // CourseSlotService 课表槽位服务。

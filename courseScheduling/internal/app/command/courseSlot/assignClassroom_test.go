@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"cqrs/internal/domain/aggregate/classroom"
-	"cqrs/internal/domain/aggregate/course"
-	"cqrs/internal/domain/aggregate/courseSlot"
+	"courseScheduling/internal/domain/aggregate/classroom"
+	"courseScheduling/internal/domain/aggregate/course"
+	"courseScheduling/internal/domain/aggregate/courseSlot"
 )
 
 // TestAssignClassroom 教室装得下且该时段空闲时安排成功。

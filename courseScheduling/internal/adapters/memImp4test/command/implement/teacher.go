@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"cqrs/internal/adapters/memImp4test/command"
-	"cqrs/internal/domain/aggregate/teacher"
-	repo "cqrs/internal/domain/repo/command"
+	"courseScheduling/internal/adapters/memImp4test/command"
+	"courseScheduling/internal/domain/aggregate/teacher"
+	repo "courseScheduling/internal/domain/repo/command"
 )
 
 // TeacherCommand 讲师命令实现（内存版）。

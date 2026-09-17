@@ -3,11 +3,11 @@ package mysql
 import (
 	"context"
 
-	"cqrs/internal/adapters/query/data/mysql/help"
-	"cqrs/internal/adapters/query/data/mysql/model"
-	"cqrs/internal/domain/aggregate/course"
-	"cqrs/internal/domain/aggregate/enrollment"
-	"cqrs/internal/domain/aggregate/student"
+	"courseScheduling/internal/adapters/query/data/mysql/help"
+	"courseScheduling/internal/adapters/query/data/mysql/model"
+	"courseScheduling/internal/domain/aggregate/course"
+	"courseScheduling/internal/domain/aggregate/enrollment"
+	"courseScheduling/internal/domain/aggregate/student"
 )
 
 // Page 分页查询课程注册列表，按 ID 升序。

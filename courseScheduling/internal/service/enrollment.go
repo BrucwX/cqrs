@@ -5,12 +5,12 @@ import (
 
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	coursev1 "cqrs/api/v1/course_scheduling/course"
-	enrollmentv1 "cqrs/api/v1/course_scheduling/enrollment"
-	studentv1 "cqrs/api/v1/course_scheduling/student"
-	enrollmentcmd "cqrs/internal/app/command/enrollment"
-	enrollmentqry "cqrs/internal/app/query/enrollment"
-	enrollmentdo "cqrs/internal/domain/aggregate/enrollment"
+	coursev1 "courseScheduling/api/v1/course_scheduling/course"
+	enrollmentv1 "courseScheduling/api/v1/course_scheduling/enrollment"
+	studentv1 "courseScheduling/api/v1/course_scheduling/student"
+	enrollmentcmd "courseScheduling/internal/app/command/enrollment"
+	enrollmentqry "courseScheduling/internal/app/query/enrollment"
+	enrollmentdo "courseScheduling/internal/domain/aggregate/enrollment"
 )
 
 // EnrollmentService 报名服务。

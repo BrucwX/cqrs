@@ -83,8 +83,8 @@ const file_v1_course_scheduling_common_proto_rawDesc = "" +
 	"!v1/course_scheduling/common.proto\x12\x14v1.course_scheduling\"9\n" +
 	"\vContactInfo\x12\x14\n" +
 	"\x05phone\x18\x01 \x01(\tR\x05phone\x12\x14\n" +
-	"\x05email\x18\x02 \x01(\tR\x05emailBh\n" +
-	"%io.grpc.examples.course_scheduling.v1B\vCommonProtoP\x01Z0cqrs/api/v1/course_scheduling;courseschedulingv1b\x06proto3"
+	"\x05email\x18\x02 \x01(\tR\x05emailBt\n" +
+	"%io.grpc.examples.course_scheduling.v1B\vCommonProtoP\x01Z<courseScheduling/api/v1/course_scheduling;courseschedulingv1b\x06proto3"
 
 var (
 	file_v1_course_scheduling_common_proto_rawDescOnce sync.Once

@@ -18,7 +18,7 @@ import (
 
 	"github.com/redis/go-redis/v9"
 
-	"cqrs/internal/conf"
+	"courseScheduling/internal/conf"
 )
 
 // RedisData 持有写侧 Redis 连接池，写侧的所有仓库共享它。

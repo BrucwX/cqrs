@@ -3,7 +3,7 @@ package absence
 import (
 	"context"
 
-	"cqrs/internal/domain/aggregate/absence"
+	"courseScheduling/internal/domain/aggregate/absence"
 )
 
 // PageAbsences 查询输入：缺勤记录分页列表

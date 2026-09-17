@@ -2,8 +2,8 @@ package query
 
 import (
 	"context"
-	"cqrs/internal/domain/aggregate/absence"
-	repoquery "cqrs/internal/domain/repo/query"
+	"courseScheduling/internal/domain/aggregate/absence"
+	repoquery "courseScheduling/internal/domain/repo/query"
 )
 
 var _ repoquery.AbsenceRecordQuery = (*QueryImpl)(nil)

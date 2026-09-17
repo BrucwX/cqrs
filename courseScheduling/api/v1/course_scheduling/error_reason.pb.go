@@ -140,8 +140,8 @@ const file_v1_course_scheduling_error_reason_proto_rawDesc = "" +
 	"\x0fMAKEUP_CONFLICT\x10\x16\x12\x17\n" +
 	"\x13TEACHER_UNQUALIFIED\x10\x17\x12\x17\n" +
 	"\x13COURSE_NOT_FINISHED\x10\x18\x12\x14\n" +
-	"\x10INVALID_ARGUMENT\x10\x1eBw\n" +
-	"%io.grpc.examples.course_scheduling.v1B\x1aCourseSchedulingErrorProtoP\x01Z0cqrs/api/v1/course_scheduling;courseschedulingv1b\x06proto3"
+	"\x10INVALID_ARGUMENT\x10\x1eB\x83\x01\n" +
+	"%io.grpc.examples.course_scheduling.v1B\x1aCourseSchedulingErrorProtoP\x01Z<courseScheduling/api/v1/course_scheduling;courseschedulingv1b\x06proto3"
 
 var (
 	file_v1_course_scheduling_error_reason_proto_rawDescOnce sync.Once

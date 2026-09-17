@@ -3,7 +3,7 @@ package enrollment
 import (
 	"context"
 
-	"cqrs/internal/domain/aggregate/course"
+	"courseScheduling/internal/domain/aggregate/course"
 )
 
 // CoursesByStudentID 查询输入：根据学员 ID 获取已注册的课程

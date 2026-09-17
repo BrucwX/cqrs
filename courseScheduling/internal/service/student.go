@@ -6,11 +6,11 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	courseschedulingv1 "cqrs/api/v1/course_scheduling"
-	studentv1 "cqrs/api/v1/course_scheduling/student"
-	studentcmd "cqrs/internal/app/command/student"
-	studentqry "cqrs/internal/app/query/student"
-	studentdo "cqrs/internal/domain/aggregate/student"
+	courseschedulingv1 "courseScheduling/api/v1/course_scheduling"
+	studentv1 "courseScheduling/api/v1/course_scheduling/student"
+	studentcmd "courseScheduling/internal/app/command/student"
+	studentqry "courseScheduling/internal/app/query/student"
+	studentdo "courseScheduling/internal/domain/aggregate/student"
 )
 
 // StudentService 学员服务：把 proto DTO 转成领域输入，调 app 层，再把结果转回 DTO。

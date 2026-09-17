@@ -3,7 +3,7 @@ package courseSlotChange
 import (
 	"context"
 
-	"cqrs/internal/domain/aggregate/courseSlotChange"
+	"courseScheduling/internal/domain/aggregate/courseSlotChange"
 )
 
 // ListByCourseID 查询输入：根据课程 ID 获取课表变更

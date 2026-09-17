@@ -3,7 +3,7 @@ package command
 import (
 	"context"
 
-	"cqrs/internal/domain/aggregate/absence"
+	"courseScheduling/internal/domain/aggregate/absence"
 )
 
 // AbsenceRecordCommand 缺勤记录命令接口

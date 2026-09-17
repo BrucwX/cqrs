@@ -3,9 +3,9 @@ package query
 import (
 	"context"
 
-	"cqrs/internal/domain/aggregate/courseType"
-	"cqrs/internal/domain/aggregate/qualification"
-	"cqrs/internal/domain/aggregate/teacher"
+	"courseScheduling/internal/domain/aggregate/courseType"
+	"courseScheduling/internal/domain/aggregate/qualification"
+	"courseScheduling/internal/domain/aggregate/teacher"
 )
 
 // QualificationQuery 授课资质查询接口

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"cqrs/internal/domain/aggregate/courseSlot"
+	"courseScheduling/internal/domain/aggregate/courseSlot"
 )
 
 // AssignTeacherInput 给具体课表项排老师命令

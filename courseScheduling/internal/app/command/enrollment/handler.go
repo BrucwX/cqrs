@@ -1,10 +1,10 @@
 package enrollment
 
 import (
-	appcommand "cqrs/internal/app/command/appRepo"
-	"cqrs/internal/domain/repo/command"
-	"cqrs/internal/domain/repo/query"
-	"cqrs/internal/domain/service/scheduleConflict"
+	appcommand "courseScheduling/internal/app/command/appRepo"
+	"courseScheduling/internal/domain/repo/command"
+	"courseScheduling/internal/domain/repo/query"
+	"courseScheduling/internal/domain/service/scheduleConflict"
 )
 
 // Handler 课程注册命令处理器

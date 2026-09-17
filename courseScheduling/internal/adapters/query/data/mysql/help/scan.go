@@ -20,7 +20,7 @@
 package help
 
 import (
-	"cqrs/internal/adapters/query/data/mysql/model"
+	"courseScheduling/internal/adapters/query/data/mysql/model"
 )
 
 // Scanner 抽象 *sql.Rows 与 *sql.Row 共有的 Scan 能力，让同一段扫行代码

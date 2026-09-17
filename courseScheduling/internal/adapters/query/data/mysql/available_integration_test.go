@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"cqrs/internal/domain/aggregate/courseSlotChange"
-	"cqrs/internal/domain/aggregate/enrollment"
+	"courseScheduling/internal/domain/aggregate/courseSlotChange"
+	"courseScheduling/internal/domain/aggregate/enrollment"
 )
 
 // 种子排期（星期几 / 时段 / 讲师 / 教室）：

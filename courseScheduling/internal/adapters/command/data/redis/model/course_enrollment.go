@@ -3,7 +3,7 @@ package model
 import (
 	"time"
 
-	"cqrs/internal/domain/aggregate/enrollment"
+	"courseScheduling/internal/domain/aggregate/enrollment"
 )
 
 // CourseEnrollment 是 Redis 快照（对应 course_enrollment），领域模型是 enrollment.CourseEnrollment。

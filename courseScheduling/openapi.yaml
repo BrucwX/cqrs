@@ -16,28 +16,28 @@ paths:
                 - name: page
                   in: query
                   schema:
-                      type: integer
-                      format: int32
+                    type: integer
+                    format: int32
                 - name: pageSize
                   in: query
                   schema:
-                      type: integer
-                      format: int32
+                    type: integer
+                    format: int32
                 - name: filter
                   in: query
                   schema:
-                      type: string
+                    type: string
                 - name: orderBy
                   in: query
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/v1.course_scheduling.AbsenceRecordSet"
+                                $ref: '#/components/schemas/v1.course_scheduling.AbsenceRecordSet'
         post:
             tags:
                 - AbsenceService
@@ -47,7 +47,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: "#/components/schemas/v1.course_scheduling.AbsenceRecord"
+                            $ref: '#/components/schemas/v1.course_scheduling.AbsenceRecord'
                 required: true
             responses:
                 "200":
@@ -64,14 +64,14 @@ paths:
                   in: path
                   required: true
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/v1.course_scheduling.AbsenceRecord"
+                                $ref: '#/components/schemas/v1.course_scheduling.AbsenceRecord'
         delete:
             tags:
                 - AbsenceService
@@ -82,7 +82,7 @@ paths:
                   in: path
                   required: true
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
@@ -97,28 +97,28 @@ paths:
                 - name: page
                   in: query
                   schema:
-                      type: integer
-                      format: int32
+                    type: integer
+                    format: int32
                 - name: pageSize
                   in: query
                   schema:
-                      type: integer
-                      format: int32
+                    type: integer
+                    format: int32
                 - name: filter
                   in: query
                   schema:
-                      type: string
+                    type: string
                 - name: orderBy
                   in: query
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/v1.course_scheduling.ClassroomSet"
+                                $ref: '#/components/schemas/v1.course_scheduling.ClassroomSet'
         post:
             tags:
                 - ClassroomService
@@ -128,7 +128,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: "#/components/schemas/v1.course_scheduling.Classroom"
+                            $ref: '#/components/schemas/v1.course_scheduling.Classroom'
                 required: true
             responses:
                 "200":
@@ -145,14 +145,14 @@ paths:
                   in: path
                   required: true
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/v1.course_scheduling.Classroom"
+                                $ref: '#/components/schemas/v1.course_scheduling.Classroom'
         delete:
             tags:
                 - ClassroomService
@@ -163,7 +163,7 @@ paths:
                   in: path
                   required: true
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
@@ -178,28 +178,28 @@ paths:
                 - name: page
                   in: query
                   schema:
-                      type: integer
-                      format: int32
+                    type: integer
+                    format: int32
                 - name: pageSize
                   in: query
                   schema:
-                      type: integer
-                      format: int32
+                    type: integer
+                    format: int32
                 - name: filter
                   in: query
                   schema:
-                      type: string
+                    type: string
                 - name: orderBy
                   in: query
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/v1.course_scheduling.CourseSlotChangeSet"
+                                $ref: '#/components/schemas/v1.course_scheduling.CourseSlotChangeSet'
         post:
             tags:
                 - CourseSlotChangeService
@@ -211,7 +211,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: "#/components/schemas/v1.course_scheduling.CourseSlotChange"
+                            $ref: '#/components/schemas/v1.course_scheduling.CourseSlotChange'
                 required: true
             responses:
                 "200":
@@ -228,14 +228,14 @@ paths:
                   in: path
                   required: true
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/v1.course_scheduling.CourseSlotChange"
+                                $ref: '#/components/schemas/v1.course_scheduling.CourseSlotChange'
         delete:
             tags:
                 - CourseSlotChangeService
@@ -246,7 +246,7 @@ paths:
                   in: path
                   required: true
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
@@ -261,28 +261,28 @@ paths:
                 - name: page
                   in: query
                   schema:
-                      type: integer
-                      format: int32
+                    type: integer
+                    format: int32
                 - name: pageSize
                   in: query
                   schema:
-                      type: integer
-                      format: int32
+                    type: integer
+                    format: int32
                 - name: filter
                   in: query
                   schema:
-                      type: string
+                    type: string
                 - name: orderBy
                   in: query
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/v1.course_scheduling.CourseSlotSet"
+                                $ref: '#/components/schemas/v1.course_scheduling.CourseSlotSet'
     /v1/course-slots/assign-classroom:
         post:
             tags:
@@ -293,7 +293,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: "#/components/schemas/v1.course_scheduling.AssignClassroomToCourseSlotRequest"
+                            $ref: '#/components/schemas/v1.course_scheduling.AssignClassroomToCourseSlotRequest'
                 required: true
             responses:
                 "200":
@@ -309,7 +309,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: "#/components/schemas/v1.course_scheduling.AssignCourseToCourseSlotRequest"
+                            $ref: '#/components/schemas/v1.course_scheduling.AssignCourseToCourseSlotRequest'
                 required: true
             responses:
                 "200":
@@ -325,7 +325,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: "#/components/schemas/v1.course_scheduling.AssignTeacherToCourseSlotRequest"
+                            $ref: '#/components/schemas/v1.course_scheduling.AssignTeacherToCourseSlotRequest'
                 required: true
             responses:
                 "200":
@@ -342,14 +342,14 @@ paths:
                   in: path
                   required: true
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/v1.course_scheduling.CourseSlot"
+                                $ref: '#/components/schemas/v1.course_scheduling.CourseSlot'
         delete:
             tags:
                 - CourseSlotService
@@ -360,7 +360,7 @@ paths:
                   in: path
                   required: true
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
@@ -378,14 +378,14 @@ paths:
                   in: path
                   required: true
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/v1.course_scheduling.TeacherSet"
+                                $ref: '#/components/schemas/v1.course_scheduling.TeacherSet'
     /v1/courses:
         get:
             tags:
@@ -396,28 +396,28 @@ paths:
                 - name: page
                   in: query
                   schema:
-                      type: integer
-                      format: int32
+                    type: integer
+                    format: int32
                 - name: pageSize
                   in: query
                   schema:
-                      type: integer
-                      format: int32
+                    type: integer
+                    format: int32
                 - name: filter
                   in: query
                   schema:
-                      type: string
+                    type: string
                 - name: orderBy
                   in: query
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/v1.course_scheduling.CourseSet"
+                                $ref: '#/components/schemas/v1.course_scheduling.CourseSet'
         post:
             tags:
                 - CourseService
@@ -427,7 +427,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: "#/components/schemas/v1.course_scheduling.Course"
+                            $ref: '#/components/schemas/v1.course_scheduling.Course'
                 required: true
             responses:
                 "200":
@@ -445,14 +445,14 @@ paths:
                 - name: classroomId
                   in: query
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/v1.course_scheduling.CourseSet"
+                                $ref: '#/components/schemas/v1.course_scheduling.CourseSet'
     /v1/courses/available-for-student:
         get:
             tags:
@@ -463,14 +463,14 @@ paths:
                 - name: studentId
                   in: query
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/v1.course_scheduling.CourseSet"
+                                $ref: '#/components/schemas/v1.course_scheduling.CourseSet'
     /v1/courses/available-for-teacher:
         get:
             tags:
@@ -483,14 +483,14 @@ paths:
                 - name: teacherId
                   in: query
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/v1.course_scheduling.CourseSet"
+                                $ref: '#/components/schemas/v1.course_scheduling.CourseSet'
     /v1/courses/{courseId}/absences:
         get:
             tags:
@@ -502,14 +502,14 @@ paths:
                   in: path
                   required: true
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/v1.course_scheduling.AbsenceRecordSet"
+                                $ref: '#/components/schemas/v1.course_scheduling.AbsenceRecordSet'
     /v1/courses/{courseId}/makeups:
         get:
             tags:
@@ -521,14 +521,14 @@ paths:
                   in: path
                   required: true
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/v1.course_scheduling.StudentSet"
+                                $ref: '#/components/schemas/v1.course_scheduling.StudentSet'
     /v1/courses/{courseId}/slot-changes:
         get:
             tags:
@@ -540,14 +540,14 @@ paths:
                   in: path
                   required: true
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/v1.course_scheduling.CourseSlotChangeSet"
+                                $ref: '#/components/schemas/v1.course_scheduling.CourseSlotChangeSet'
     /v1/courses/{courseId}/slots:
         get:
             tags:
@@ -559,14 +559,14 @@ paths:
                   in: path
                   required: true
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/v1.course_scheduling.CourseSlotSet"
+                                $ref: '#/components/schemas/v1.course_scheduling.CourseSlotSet'
     /v1/courses/{courseId}/students:
         get:
             tags:
@@ -578,14 +578,14 @@ paths:
                   in: path
                   required: true
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/v1.course_scheduling.StudentSet"
+                                $ref: '#/components/schemas/v1.course_scheduling.StudentSet'
     /v1/courses/{id}:
         get:
             tags:
@@ -597,14 +597,14 @@ paths:
                   in: path
                   required: true
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/v1.course_scheduling.Course"
+                                $ref: '#/components/schemas/v1.course_scheduling.Course'
         delete:
             tags:
                 - CourseService
@@ -615,7 +615,7 @@ paths:
                   in: path
                   required: true
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
@@ -630,28 +630,28 @@ paths:
                 - name: page
                   in: query
                   schema:
-                      type: integer
-                      format: int32
+                    type: integer
+                    format: int32
                 - name: pageSize
                   in: query
                   schema:
-                      type: integer
-                      format: int32
+                    type: integer
+                    format: int32
                 - name: filter
                   in: query
                   schema:
-                      type: string
+                    type: string
                 - name: orderBy
                   in: query
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/v1.course_scheduling.CourseEnrollmentSet"
+                                $ref: '#/components/schemas/v1.course_scheduling.CourseEnrollmentSet'
         post:
             tags:
                 - EnrollmentService
@@ -661,7 +661,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: "#/components/schemas/v1.course_scheduling.CourseEnrollment"
+                            $ref: '#/components/schemas/v1.course_scheduling.CourseEnrollment'
                 required: true
             responses:
                 "200":
@@ -678,14 +678,14 @@ paths:
                   in: path
                   required: true
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/v1.course_scheduling.CourseEnrollment"
+                                $ref: '#/components/schemas/v1.course_scheduling.CourseEnrollment'
         delete:
             tags:
                 - EnrollmentService
@@ -696,7 +696,7 @@ paths:
                   in: path
                   required: true
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
@@ -711,28 +711,28 @@ paths:
                 - name: page
                   in: query
                   schema:
-                      type: integer
-                      format: int32
+                    type: integer
+                    format: int32
                 - name: pageSize
                   in: query
                   schema:
-                      type: integer
-                      format: int32
+                    type: integer
+                    format: int32
                 - name: filter
                   in: query
                   schema:
-                      type: string
+                    type: string
                 - name: orderBy
                   in: query
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/v1.course_scheduling.StudentMakeupSet"
+                                $ref: '#/components/schemas/v1.course_scheduling.StudentMakeupSet'
         post:
             tags:
                 - MakeupService
@@ -742,7 +742,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: "#/components/schemas/v1.course_scheduling.StudentMakeup"
+                            $ref: '#/components/schemas/v1.course_scheduling.StudentMakeup'
                 required: true
             responses:
                 "200":
@@ -759,14 +759,14 @@ paths:
                   in: path
                   required: true
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/v1.course_scheduling.StudentMakeup"
+                                $ref: '#/components/schemas/v1.course_scheduling.StudentMakeup'
         delete:
             tags:
                 - MakeupService
@@ -777,7 +777,7 @@ paths:
                   in: path
                   required: true
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
@@ -792,28 +792,28 @@ paths:
                 - name: page
                   in: query
                   schema:
-                      type: integer
-                      format: int32
+                    type: integer
+                    format: int32
                 - name: pageSize
                   in: query
                   schema:
-                      type: integer
-                      format: int32
+                    type: integer
+                    format: int32
                 - name: filter
                   in: query
                   schema:
-                      type: string
+                    type: string
                 - name: orderBy
                   in: query
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/v1.course_scheduling.QualificationSet"
+                                $ref: '#/components/schemas/v1.course_scheduling.QualificationSet'
         post:
             tags:
                 - QualificationService
@@ -823,7 +823,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: "#/components/schemas/v1.course_scheduling.Qualification"
+                            $ref: '#/components/schemas/v1.course_scheduling.Qualification'
                 required: true
             responses:
                 "200":
@@ -841,18 +841,18 @@ paths:
                 - name: teacherId
                   in: query
                   schema:
-                      type: string
+                    type: string
                 - name: courseId
                   in: query
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/v1.course_scheduling.CheckTeacherQualifiedForCourseResponse"
+                                $ref: '#/components/schemas/v1.course_scheduling.CheckTeacherQualifiedForCourseResponse'
     /v1/qualifications/{id}:
         get:
             tags:
@@ -864,14 +864,14 @@ paths:
                   in: path
                   required: true
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/v1.course_scheduling.Qualification"
+                                $ref: '#/components/schemas/v1.course_scheduling.Qualification'
         delete:
             tags:
                 - QualificationService
@@ -882,7 +882,7 @@ paths:
                   in: path
                   required: true
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
@@ -897,28 +897,28 @@ paths:
                 - name: page
                   in: query
                   schema:
-                      type: integer
-                      format: int32
+                    type: integer
+                    format: int32
                 - name: pageSize
                   in: query
                   schema:
-                      type: integer
-                      format: int32
+                    type: integer
+                    format: int32
                 - name: filter
                   in: query
                   schema:
-                      type: string
+                    type: string
                 - name: orderBy
                   in: query
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/v1.course_scheduling.StudentSet"
+                                $ref: '#/components/schemas/v1.course_scheduling.StudentSet'
         post:
             tags:
                 - StudentService
@@ -928,7 +928,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: "#/components/schemas/v1.course_scheduling.Student"
+                            $ref: '#/components/schemas/v1.course_scheduling.Student'
                 required: true
             responses:
                 "200":
@@ -945,14 +945,14 @@ paths:
                   in: path
                   required: true
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/v1.course_scheduling.Student"
+                                $ref: '#/components/schemas/v1.course_scheduling.Student'
         delete:
             tags:
                 - StudentService
@@ -963,7 +963,7 @@ paths:
                   in: path
                   required: true
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
@@ -979,14 +979,14 @@ paths:
                   in: path
                   required: true
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/v1.course_scheduling.AbsenceRecordSet"
+                                $ref: '#/components/schemas/v1.course_scheduling.AbsenceRecordSet'
     /v1/students/{studentId}/courses:
         get:
             tags:
@@ -998,14 +998,14 @@ paths:
                   in: path
                   required: true
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/v1.course_scheduling.CourseSet"
+                                $ref: '#/components/schemas/v1.course_scheduling.CourseSet'
     /v1/students/{studentId}/makeups:
         get:
             tags:
@@ -1017,14 +1017,14 @@ paths:
                   in: path
                   required: true
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/v1.course_scheduling.CourseSet"
+                                $ref: '#/components/schemas/v1.course_scheduling.CourseSet'
     /v1/teachers:
         get:
             tags:
@@ -1035,28 +1035,28 @@ paths:
                 - name: page
                   in: query
                   schema:
-                      type: integer
-                      format: int32
+                    type: integer
+                    format: int32
                 - name: pageSize
                   in: query
                   schema:
-                      type: integer
-                      format: int32
+                    type: integer
+                    format: int32
                 - name: filter
                   in: query
                   schema:
-                      type: string
+                    type: string
                 - name: orderBy
                   in: query
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/v1.course_scheduling.TeacherSet"
+                                $ref: '#/components/schemas/v1.course_scheduling.TeacherSet'
         post:
             tags:
                 - TeacherService
@@ -1066,7 +1066,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: "#/components/schemas/v1.course_scheduling.Teacher"
+                            $ref: '#/components/schemas/v1.course_scheduling.Teacher'
                 required: true
             responses:
                 "200":
@@ -1083,14 +1083,14 @@ paths:
                   in: path
                   required: true
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/v1.course_scheduling.Teacher"
+                                $ref: '#/components/schemas/v1.course_scheduling.Teacher'
         delete:
             tags:
                 - TeacherService
@@ -1101,7 +1101,7 @@ paths:
                   in: path
                   required: true
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
@@ -1119,14 +1119,14 @@ paths:
                   in: path
                   required: true
                   schema:
-                      type: string
+                    type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/v1.course_scheduling.CourseTypeSet"
+                                $ref: '#/components/schemas/v1.course_scheduling.CourseTypeSet'
 components:
     schemas:
         v1.course_scheduling.AbsenceRecord:
@@ -1174,7 +1174,7 @@ components:
                 absences:
                     type: array
                     items:
-                        $ref: "#/components/schemas/v1.course_scheduling.AbsenceRecord"
+                        $ref: '#/components/schemas/v1.course_scheduling.AbsenceRecord'
         v1.course_scheduling.AssignClassroomToCourseSlotRequest:
             required:
                 - slotIds
@@ -1242,7 +1242,7 @@ components:
                     description: System-assigned ID (UUID).
                 location:
                     allOf:
-                        - $ref: "#/components/schemas/v1.course_scheduling.Location"
+                        - $ref: '#/components/schemas/v1.course_scheduling.Location'
                     description: Physical location.
                 capacity:
                     type: integer
@@ -1266,7 +1266,7 @@ components:
                 classrooms:
                     type: array
                     items:
-                        $ref: "#/components/schemas/v1.course_scheduling.Classroom"
+                        $ref: '#/components/schemas/v1.course_scheduling.Classroom'
         v1.course_scheduling.ContactInfo:
             type: object
             properties:
@@ -1288,15 +1288,15 @@ components:
                     description: References the type of course.
                 capacity:
                     allOf:
-                        - $ref: "#/components/schemas/v1.course_scheduling.Capacity"
+                        - $ref: '#/components/schemas/v1.course_scheduling.Capacity'
                     description: Enrollment capacity.
                 enrollment:
                     allOf:
-                        - $ref: "#/components/schemas/v1.course_scheduling.EnrollmentWindow"
+                        - $ref: '#/components/schemas/v1.course_scheduling.EnrollmentWindow'
                     description: Enrollment window.
                 period:
                     allOf:
-                        - $ref: "#/components/schemas/v1.course_scheduling.CoursePeriod"
+                        - $ref: '#/components/schemas/v1.course_scheduling.CoursePeriod'
                     description: Teaching period.
             description: |-
                 Course represents a scheduled course offering.
@@ -1341,7 +1341,7 @@ components:
                 enrollments:
                     type: array
                     items:
-                        $ref: "#/components/schemas/v1.course_scheduling.CourseEnrollment"
+                        $ref: '#/components/schemas/v1.course_scheduling.CourseEnrollment'
         v1.course_scheduling.CoursePeriod:
             type: object
             properties:
@@ -1368,7 +1368,7 @@ components:
                 courses:
                     type: array
                     items:
-                        $ref: "#/components/schemas/v1.course_scheduling.Course"
+                        $ref: '#/components/schemas/v1.course_scheduling.Course'
         v1.course_scheduling.CourseSlot:
             type: object
             properties:
@@ -1384,7 +1384,7 @@ components:
                     format: enum
                 timeRange:
                     allOf:
-                        - $ref: "#/components/schemas/v1.course_scheduling.DayTimeRange"
+                        - $ref: '#/components/schemas/v1.course_scheduling.DayTimeRange'
                     description: Time range within the day.
                 teacherId:
                     type: string
@@ -1419,11 +1419,11 @@ components:
                     format: enum
                 originalPlan:
                     allOf:
-                        - $ref: "#/components/schemas/v1.course_scheduling.OriginalPlan"
+                        - $ref: '#/components/schemas/v1.course_scheduling.OriginalPlan'
                     description: The original schedule plan.
                 targetPlan:
                     allOf:
-                        - $ref: "#/components/schemas/v1.course_scheduling.TargetPlan"
+                        - $ref: '#/components/schemas/v1.course_scheduling.TargetPlan'
                     description: The target schedule plan.
                 reason:
                     type: string
@@ -1443,14 +1443,14 @@ components:
                 courseSlotChanges:
                     type: array
                     items:
-                        $ref: "#/components/schemas/v1.course_scheduling.CourseSlotChange"
+                        $ref: '#/components/schemas/v1.course_scheduling.CourseSlotChange'
         v1.course_scheduling.CourseSlotSet:
             type: object
             properties:
                 courseSlots:
                     type: array
                     items:
-                        $ref: "#/components/schemas/v1.course_scheduling.CourseSlot"
+                        $ref: '#/components/schemas/v1.course_scheduling.CourseSlot'
         v1.course_scheduling.CourseType:
             type: object
             properties:
@@ -1478,7 +1478,7 @@ components:
                 courseTypes:
                     type: array
                     items:
-                        $ref: "#/components/schemas/v1.course_scheduling.CourseType"
+                        $ref: '#/components/schemas/v1.course_scheduling.CourseType'
         v1.course_scheduling.DayTime:
             type: object
             properties:
@@ -1496,11 +1496,11 @@ components:
             properties:
                 start:
                     allOf:
-                        - $ref: "#/components/schemas/v1.course_scheduling.DayTime"
+                        - $ref: '#/components/schemas/v1.course_scheduling.DayTime'
                     description: Start time.
                 end:
                     allOf:
-                        - $ref: "#/components/schemas/v1.course_scheduling.DayTime"
+                        - $ref: '#/components/schemas/v1.course_scheduling.DayTime'
                     description: End time.
             description: DayTimeRange represents a time span within a single day.
         v1.course_scheduling.EnrollmentWindow:
@@ -1587,7 +1587,7 @@ components:
                 qualifications:
                     type: array
                     items:
-                        $ref: "#/components/schemas/v1.course_scheduling.Qualification"
+                        $ref: '#/components/schemas/v1.course_scheduling.Qualification'
         v1.course_scheduling.Student:
             type: object
             properties:
@@ -1603,7 +1603,7 @@ components:
                     format: enum
                 contact:
                     allOf:
-                        - $ref: "#/components/schemas/v1.course_scheduling.ContactInfo"
+                        - $ref: '#/components/schemas/v1.course_scheduling.ContactInfo'
                     description: Contact information.
                 status:
                     type: integer
@@ -1671,14 +1671,14 @@ components:
                 makeups:
                     type: array
                     items:
-                        $ref: "#/components/schemas/v1.course_scheduling.StudentMakeup"
+                        $ref: '#/components/schemas/v1.course_scheduling.StudentMakeup'
         v1.course_scheduling.StudentSet:
             type: object
             properties:
                 students:
                     type: array
                     items:
-                        $ref: "#/components/schemas/v1.course_scheduling.Student"
+                        $ref: '#/components/schemas/v1.course_scheduling.Student'
         v1.course_scheduling.TargetPlan:
             type: object
             properties:
@@ -1714,7 +1714,7 @@ components:
                     description: Professional title (e.g. "Senior Trainer", "Gold Instructor").
                 contact:
                     allOf:
-                        - $ref: "#/components/schemas/v1.course_scheduling.ContactInfo"
+                        - $ref: '#/components/schemas/v1.course_scheduling.ContactInfo'
                     description: Contact information.
                 status:
                     type: integer
@@ -1735,7 +1735,7 @@ components:
                 teachers:
                     type: array
                     items:
-                        $ref: "#/components/schemas/v1.course_scheduling.Teacher"
+                        $ref: '#/components/schemas/v1.course_scheduling.Teacher'
 tags:
     - name: AbsenceService
       description: AbsenceService owns the absence record aggregate.
@@ -1749,16 +1749,16 @@ tags:
       description: CourseSlotService owns the course slot aggregate.
     - name: EnrollmentService
       description: |-
-          EnrollmentService owns the enrollment aggregate.
+        EnrollmentService owns the enrollment aggregate.
 
-           The two cross-aggregate listings stay here rather than moving to Course or
-           Student: they are enrollment questions ("which rows link X and Y") whose
-           answers happen to be courses or students.
+         The two cross-aggregate listings stay here rather than moving to Course or
+         Student: they are enrollment questions ("which rows link X and Y") whose
+         answers happen to be courses or students.
     - name: MakeupService
       description: MakeupService owns the makeup booking aggregate.
     - name: QualificationService
       description: QualificationService owns the qualification aggregate.
     - name: StudentService
-      description: "StudentService owns the student aggregate: commands mutate it, queries read it."
+      description: 'StudentService owns the student aggregate: commands mutate it, queries read it.'
     - name: TeacherService
       description: TeacherService owns the teacher aggregate.

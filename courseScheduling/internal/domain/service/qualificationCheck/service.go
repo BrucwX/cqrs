@@ -1,6 +1,6 @@
 package qualificationCheck
 
-import "cqrs/internal/domain/repo/command"
+import "courseScheduling/internal/domain/repo/command"
 
 // Service 授课资质判定。
 //

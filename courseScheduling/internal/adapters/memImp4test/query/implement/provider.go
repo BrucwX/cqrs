@@ -3,7 +3,7 @@ package implement
 import (
 	"github.com/google/wire"
 
-	"cqrs/internal/adapters/memImp4test/query"
+	"courseScheduling/internal/adapters/memImp4test/query"
 )
 
 // ProviderSet 是读侧内存实现的 provider 集合。

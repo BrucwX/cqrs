@@ -6,9 +6,9 @@ import (
 	"errors"
 	"fmt"
 
-	"cqrs/internal/adapters/command/data/mysql/help"
-	"cqrs/internal/adapters/command/data/mysql/model"
-	"cqrs/internal/domain/aggregate/classroom"
+	"courseScheduling/internal/adapters/command/data/mysql/help"
+	"courseScheduling/internal/adapters/command/data/mysql/model"
+	"courseScheduling/internal/domain/aggregate/classroom"
 )
 
 // Create 新增教室。

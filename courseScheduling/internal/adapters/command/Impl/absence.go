@@ -2,8 +2,8 @@ package command
 
 import (
 	"context"
-	"cqrs/internal/domain/aggregate/absence"
-	repo "cqrs/internal/domain/repo/command"
+	"courseScheduling/internal/domain/aggregate/absence"
+	repo "courseScheduling/internal/domain/repo/command"
 )
 
 var _ repo.AbsenceRecordCommand = (*CommandImpl)(nil)

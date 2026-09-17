@@ -5,10 +5,10 @@ import (
 
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	absencev1 "cqrs/api/v1/course_scheduling/absence"
-	absencecmd "cqrs/internal/app/command/absence"
-	absenceqry "cqrs/internal/app/query/absence"
-	absencedo "cqrs/internal/domain/aggregate/absence"
+	absencev1 "courseScheduling/api/v1/course_scheduling/absence"
+	absencecmd "courseScheduling/internal/app/command/absence"
+	absenceqry "courseScheduling/internal/app/query/absence"
+	absencedo "courseScheduling/internal/domain/aggregate/absence"
 )
 
 // AbsenceService 缺勤记录服务。

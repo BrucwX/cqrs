@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"cqrs/internal/domain/aggregate/absence"
+	"courseScheduling/internal/domain/aggregate/absence"
 )
 
 // RecordAbsence 记录学生缺课命令

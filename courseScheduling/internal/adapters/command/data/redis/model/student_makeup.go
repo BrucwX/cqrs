@@ -3,7 +3,7 @@ package model
 import (
 	"time"
 
-	"cqrs/internal/domain/aggregate/makeup"
+	"courseScheduling/internal/domain/aggregate/makeup"
 )
 
 // StudentMakeup 是 Redis 快照（对应 student_makeup），领域模型是 makeup.StudentMakeup。

@@ -3,7 +3,7 @@ package model
 import (
 	"time"
 
-	"cqrs/internal/domain/aggregate/absence"
+	"courseScheduling/internal/domain/aggregate/absence"
 )
 
 // AbsenceRecord 是 Redis 快照（对应 absence_record），领域模型是 absence.AbsenceRecord。

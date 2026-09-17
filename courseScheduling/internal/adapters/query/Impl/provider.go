@@ -3,8 +3,8 @@ package query
 import (
 	"github.com/google/wire"
 
-	"cqrs/internal/adapters/query/data/mysql"
-	repoquery "cqrs/internal/domain/repo/query"
+	"courseScheduling/internal/adapters/query/data/mysql"
+	repoquery "courseScheduling/internal/domain/repo/query"
 )
 
 // ProviderSet 是读侧查询适配器的 provider 集合：存储客户端 + 载体 + 接口绑定。

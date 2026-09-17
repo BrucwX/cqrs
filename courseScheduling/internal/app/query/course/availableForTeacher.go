@@ -3,7 +3,7 @@ package course
 import (
 	"context"
 
-	"cqrs/internal/domain/aggregate/course"
+	"courseScheduling/internal/domain/aggregate/course"
 )
 
 // AvailableForTeacher 查询输入：与讲师现有排课不冲突的课程

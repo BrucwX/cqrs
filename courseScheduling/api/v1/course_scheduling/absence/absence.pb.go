@@ -586,8 +586,8 @@ const file_v1_course_scheduling_absence_absence_proto_rawDesc = "" +
 	"GetAbsence\x12'.v1.course_scheduling.GetAbsenceRequest\x1a#.v1.course_scheduling.AbsenceRecord\"\x19\x82\xd3\xe4\x93\x02\x13\x12\x11/v1/absences/{id}\x12w\n" +
 	"\fListAbsences\x12).v1.course_scheduling.ListAbsencesRequest\x1a&.v1.course_scheduling.AbsenceRecordSet\"\x14\x82\xd3\xe4\x93\x02\x0e\x12\f/v1/absences\x12\xa3\x01\n" +
 	"\x17ListAbsencesByStudentID\x124.v1.course_scheduling.ListAbsencesByStudentIDRequest\x1a&.v1.course_scheduling.AbsenceRecordSet\"*\x82\xd3\xe4\x93\x02$\x12\"/v1/students/{student_id}/absences\x12\x9f\x01\n" +
-	"\x16ListAbsencesByCourseID\x123.v1.course_scheduling.ListAbsencesByCourseIDRequest\x1a&.v1.course_scheduling.AbsenceRecordSet\"(\x82\xd3\xe4\x93\x02\"\x12 /v1/courses/{course_id}/absencesBh\n" +
-	"%io.grpc.examples.course_scheduling.v1B\fAbsenceProtoP\x01Z/cqrs/api/v1/course_scheduling/absence;absencev1b\x06proto3"
+	"\x16ListAbsencesByCourseID\x123.v1.course_scheduling.ListAbsencesByCourseIDRequest\x1a&.v1.course_scheduling.AbsenceRecordSet\"(\x82\xd3\xe4\x93\x02\"\x12 /v1/courses/{course_id}/absencesBt\n" +
+	"%io.grpc.examples.course_scheduling.v1B\fAbsenceProtoP\x01Z;courseScheduling/api/v1/course_scheduling/absence;absencev1b\x06proto3"
 
 var (
 	file_v1_course_scheduling_absence_absence_proto_rawDescOnce sync.Once

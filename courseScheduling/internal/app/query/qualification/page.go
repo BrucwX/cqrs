@@ -3,7 +3,7 @@ package qualification
 import (
 	"context"
 
-	"cqrs/internal/domain/aggregate/qualification"
+	"courseScheduling/internal/domain/aggregate/qualification"
 )
 
 // PageQualifications 查询输入：授课资质分页列表

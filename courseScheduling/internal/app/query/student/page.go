@@ -3,7 +3,7 @@ package student
 import (
 	"context"
 
-	"cqrs/internal/domain/aggregate/student"
+	"courseScheduling/internal/domain/aggregate/student"
 )
 
 // PageStudents 查询输入：学员分页列表

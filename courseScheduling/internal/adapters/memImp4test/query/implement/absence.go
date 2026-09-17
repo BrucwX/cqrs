@@ -3,9 +3,9 @@ package implement
 import (
 	"context"
 
-	"cqrs/internal/adapters/memImp4test/query"
-	"cqrs/internal/domain/aggregate/absence"
-	repoquery "cqrs/internal/domain/repo/query"
+	"courseScheduling/internal/adapters/memImp4test/query"
+	"courseScheduling/internal/domain/aggregate/absence"
+	repoquery "courseScheduling/internal/domain/repo/query"
 )
 
 // absenceRecordQuery 是 repoquery.AbsenceRecordQuery 的内存实现。

@@ -3,9 +3,9 @@ package implement
 import (
 	"context"
 
-	"cqrs/internal/adapters/memImp4test/query"
-	"cqrs/internal/domain/aggregate/courseSlot"
-	repoquery "cqrs/internal/domain/repo/query"
+	"courseScheduling/internal/adapters/memImp4test/query"
+	"courseScheduling/internal/domain/aggregate/courseSlot"
+	repoquery "courseScheduling/internal/domain/repo/query"
 )
 
 // courseSlotQuery 是 repoquery.CourseSlotQuery 的内存实现。

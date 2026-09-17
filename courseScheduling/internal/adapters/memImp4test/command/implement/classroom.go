@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"cqrs/internal/adapters/memImp4test/command"
-	"cqrs/internal/domain/aggregate/classroom"
-	repo "cqrs/internal/domain/repo/command"
+	"courseScheduling/internal/adapters/memImp4test/command"
+	"courseScheduling/internal/domain/aggregate/classroom"
+	repo "courseScheduling/internal/domain/repo/command"
 )
 
 // ClassroomCommand 教室命令实现（内存版）。

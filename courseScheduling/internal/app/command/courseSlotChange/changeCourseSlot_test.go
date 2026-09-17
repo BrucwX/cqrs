@@ -6,12 +6,12 @@ import (
 	"testing"
 	"time"
 
-	"cqrs/internal/adapters/memImp4test"
-	commandmemory "cqrs/internal/adapters/memImp4test/command"
-	memorycmd "cqrs/internal/adapters/memImp4test/command/implement"
-	"cqrs/internal/domain/aggregate/courseSlot"
-	"cqrs/internal/domain/aggregate/courseSlotChange"
-	"cqrs/internal/domain/service/scheduleConflict"
+	"courseScheduling/internal/adapters/memImp4test"
+	commandmemory "courseScheduling/internal/adapters/memImp4test/command"
+	memorycmd "courseScheduling/internal/adapters/memImp4test/command/implement"
+	"courseScheduling/internal/domain/aggregate/courseSlot"
+	"courseScheduling/internal/domain/aggregate/courseSlotChange"
+	"courseScheduling/internal/domain/service/scheduleConflict"
 )
 
 // 测试用的资源与课程。目标时段统一取「下一个周一 09:00-11:00」。

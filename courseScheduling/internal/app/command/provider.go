@@ -9,17 +9,17 @@ package command
 import (
 	"github.com/google/wire"
 
-	"cqrs/internal/app/command/absence"
-	"cqrs/internal/app/command/classroom"
-	"cqrs/internal/app/command/course"
-	"cqrs/internal/app/command/courseSlot"
-	"cqrs/internal/app/command/courseSlotChange"
-	"cqrs/internal/app/command/enrollment"
-	"cqrs/internal/app/command/makeup"
-	"cqrs/internal/app/command/qualification"
-	"cqrs/internal/app/command/student"
-	"cqrs/internal/app/command/teacher"
-	domainservice "cqrs/internal/domain/service"
+	"courseScheduling/internal/app/command/absence"
+	"courseScheduling/internal/app/command/classroom"
+	"courseScheduling/internal/app/command/course"
+	"courseScheduling/internal/app/command/courseSlot"
+	"courseScheduling/internal/app/command/courseSlotChange"
+	"courseScheduling/internal/app/command/enrollment"
+	"courseScheduling/internal/app/command/makeup"
+	"courseScheduling/internal/app/command/qualification"
+	"courseScheduling/internal/app/command/student"
+	"courseScheduling/internal/app/command/teacher"
+	domainservice "courseScheduling/internal/domain/service"
 )
 
 // ProviderSet 命令侧集合：10 个 handler + 领域判定服务。

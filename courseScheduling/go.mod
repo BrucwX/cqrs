@@ -1,4 +1,4 @@
-module cqrs
+module courseScheduling
 
 go 1.25.7
 

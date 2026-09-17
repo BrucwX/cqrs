@@ -6,12 +6,12 @@ import (
 	"testing"
 	"time"
 
-	"cqrs/internal/adapters/memImp4test"
-	"cqrs/internal/domain/aggregate/absence"
-	"cqrs/internal/domain/aggregate/course"
-	"cqrs/internal/domain/aggregate/enrollment"
-	"cqrs/internal/domain/aggregate/qualification"
-	"cqrs/internal/domain/aggregate/teacher"
+	"courseScheduling/internal/adapters/memImp4test"
+	"courseScheduling/internal/domain/aggregate/absence"
+	"courseScheduling/internal/domain/aggregate/course"
+	"courseScheduling/internal/domain/aggregate/enrollment"
+	"courseScheduling/internal/domain/aggregate/qualification"
+	"courseScheduling/internal/domain/aggregate/teacher"
 )
 
 const (

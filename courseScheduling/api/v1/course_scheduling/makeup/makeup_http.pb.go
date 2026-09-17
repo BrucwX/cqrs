@@ -8,8 +8,8 @@ package makeupv1
 
 import (
 	context "context"
-	course "cqrs/api/v1/course_scheduling/course"
-	student "cqrs/api/v1/course_scheduling/student"
+	course "courseScheduling/api/v1/course_scheduling/course"
+	student "courseScheduling/api/v1/course_scheduling/student"
 	http "github.com/go-kratos/kratos/v3/transport/http"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )

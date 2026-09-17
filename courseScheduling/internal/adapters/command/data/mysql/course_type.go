@@ -6,9 +6,9 @@ import (
 	"errors"
 	"fmt"
 
-	"cqrs/internal/adapters/command/data/mysql/help"
-	"cqrs/internal/adapters/command/data/mysql/model"
-	"cqrs/internal/domain/aggregate/courseType"
+	"courseScheduling/internal/adapters/command/data/mysql/help"
+	"courseScheduling/internal/adapters/command/data/mysql/model"
+	"courseScheduling/internal/domain/aggregate/courseType"
 )
 
 // MustGet 取课程类型聚合；不存在时报 ErrCourseTypeNotFound。

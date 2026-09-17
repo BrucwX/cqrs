@@ -3,9 +3,9 @@ package command
 import (
 	"github.com/google/wire"
 
-	"cqrs/internal/adapters/command/data/mysql"
-	appcmd "cqrs/internal/app/command/appRepo"
-	repo "cqrs/internal/domain/repo/command"
+	"courseScheduling/internal/adapters/command/data/mysql"
+	appcmd "courseScheduling/internal/app/command/appRepo"
+	repo "courseScheduling/internal/domain/repo/command"
 )
 
 // ProviderSet 是写侧命令适配器的 provider 集合：存储客户端 + 载体 + 接口绑定。

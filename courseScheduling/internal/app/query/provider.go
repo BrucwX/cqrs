@@ -3,16 +3,16 @@ package query
 import (
 	"github.com/google/wire"
 
-	"cqrs/internal/app/query/absence"
-	"cqrs/internal/app/query/classroom"
-	"cqrs/internal/app/query/course"
-	"cqrs/internal/app/query/courseSlot"
-	"cqrs/internal/app/query/courseSlotChange"
-	"cqrs/internal/app/query/enrollment"
-	"cqrs/internal/app/query/makeup"
-	"cqrs/internal/app/query/qualification"
-	"cqrs/internal/app/query/student"
-	"cqrs/internal/app/query/teacher"
+	"courseScheduling/internal/app/query/absence"
+	"courseScheduling/internal/app/query/classroom"
+	"courseScheduling/internal/app/query/course"
+	"courseScheduling/internal/app/query/courseSlot"
+	"courseScheduling/internal/app/query/courseSlotChange"
+	"courseScheduling/internal/app/query/enrollment"
+	"courseScheduling/internal/app/query/makeup"
+	"courseScheduling/internal/app/query/qualification"
+	"courseScheduling/internal/app/query/student"
+	"courseScheduling/internal/app/query/teacher"
 )
 
 // ProviderSet query handler 依赖注入

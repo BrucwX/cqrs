@@ -2,8 +2,8 @@ package command
 
 import (
 	"context"
-	"cqrs/internal/domain/aggregate/makeup"
-	repo "cqrs/internal/domain/repo/command"
+	"courseScheduling/internal/domain/aggregate/makeup"
+	repo "courseScheduling/internal/domain/repo/command"
 	"time"
 )
 

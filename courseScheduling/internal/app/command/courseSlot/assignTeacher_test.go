@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"cqrs/internal/domain/aggregate/courseSlot"
-	"cqrs/internal/domain/aggregate/teacher"
+	"courseScheduling/internal/domain/aggregate/courseSlot"
+	"courseScheduling/internal/domain/aggregate/teacher"
 )
 
 // TestAssignTeacher 有资质且时间不冲突时排课成功。

@@ -3,7 +3,7 @@ package qualification
 import (
 	"context"
 
-	"cqrs/internal/domain/aggregate/courseType"
+	"courseScheduling/internal/domain/aggregate/courseType"
 )
 
 // CourseTypesByTeacherID 查询输入：根据讲师 ID 获取有资质的课程类型

@@ -7,8 +7,8 @@
 package qualificationv1
 
 import (
-	course_type "cqrs/api/v1/course_scheduling/course_type"
-	teacher "cqrs/api/v1/course_scheduling/teacher"
+	course_type "courseScheduling/api/v1/course_scheduling/course_type"
+	teacher "courseScheduling/api/v1/course_scheduling/teacher"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -648,8 +648,8 @@ const file_v1_course_scheduling_qualification_qualification_proto_rawDesc = "" +
 	"\x12ListQualifications\x12/.v1.course_scheduling.ListQualificationsRequest\x1a&.v1.course_scheduling.QualificationSet\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/v1/qualifications\x12\xb2\x01\n" +
 	"\x1dListQualificationsByTeacherID\x12:.v1.course_scheduling.ListQualificationsByTeacherIDRequest\x1a#.v1.course_scheduling.CourseTypeSet\"0\x82\xd3\xe4\x93\x02*\x12(/v1/teachers/{teacher_id}/qualifications\x12\xbb\x01\n" +
 	"\"ListTeachersQualifiedForCourseType\x12?.v1.course_scheduling.ListTeachersQualifiedForCourseTypeRequest\x1a .v1.course_scheduling.TeacherSet\"2\x82\xd3\xe4\x93\x02,\x12*/v1/course-types/{course_type_id}/teachers\x12\xbd\x01\n" +
-	"\x1eCheckTeacherQualifiedForCourse\x12;.v1.course_scheduling.CheckTeacherQualifiedForCourseRequest\x1a<.v1.course_scheduling.CheckTeacherQualifiedForCourseResponse\" \x82\xd3\xe4\x93\x02\x1a\x12\x18/v1/qualifications/checkBz\n" +
-	"%io.grpc.examples.course_scheduling.v1B\x12QualificationProtoP\x01Z;cqrs/api/v1/course_scheduling/qualification;qualificationv1b\x06proto3"
+	"\x1eCheckTeacherQualifiedForCourse\x12;.v1.course_scheduling.CheckTeacherQualifiedForCourseRequest\x1a<.v1.course_scheduling.CheckTeacherQualifiedForCourseResponse\" \x82\xd3\xe4\x93\x02\x1a\x12\x18/v1/qualifications/checkB\x86\x01\n" +
+	"%io.grpc.examples.course_scheduling.v1B\x12QualificationProtoP\x01ZGcourseScheduling/api/v1/course_scheduling/qualification;qualificationv1b\x06proto3"
 
 var (
 	file_v1_course_scheduling_qualification_qualification_proto_rawDescOnce sync.Once

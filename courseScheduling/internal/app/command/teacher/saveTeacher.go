@@ -3,7 +3,7 @@ package teacher
 import (
 	"context"
 
-	"cqrs/internal/domain/aggregate/teacher"
+	"courseScheduling/internal/domain/aggregate/teacher"
 )
 
 // TeacherInput 保存讲师命令

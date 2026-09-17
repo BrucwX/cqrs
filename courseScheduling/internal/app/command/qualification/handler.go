@@ -1,9 +1,9 @@
 package qualification
 
 import (
-	appcommand "cqrs/internal/app/command/appRepo"
-	"cqrs/internal/domain/repo/command"
-	"cqrs/internal/domain/service/qualificationCheck"
+	appcommand "courseScheduling/internal/app/command/appRepo"
+	"courseScheduling/internal/domain/repo/command"
+	"courseScheduling/internal/domain/service/qualificationCheck"
 )
 
 // Handler 授课资质命令处理器

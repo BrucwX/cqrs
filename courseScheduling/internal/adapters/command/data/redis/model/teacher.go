@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"cqrs/internal/domain/aggregate/teacher"
+	"courseScheduling/internal/domain/aggregate/teacher"
 )
 
 // Teacher 是 Redis 快照（对应 teacher），领域模型是 teacher.Teacher。

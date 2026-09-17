@@ -1,7 +1,7 @@
 package scheduleConflict
 
 import (
-	"cqrs/internal/domain/repo/command"
+	"courseScheduling/internal/domain/repo/command"
 )
 
 // Service 排期冲突判定。

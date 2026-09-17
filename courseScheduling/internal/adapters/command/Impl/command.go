@@ -6,7 +6,7 @@
 package command
 
 import (
-	"cqrs/internal/adapters/command/data/mysql"
+	"courseScheduling/internal/adapters/command/data/mysql"
 )
 
 // CommandImpl 写侧命令实现。

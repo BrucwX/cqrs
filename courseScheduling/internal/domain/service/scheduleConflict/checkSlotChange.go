@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"cqrs/internal/domain/aggregate/courseSlot"
-	"cqrs/internal/domain/aggregate/courseSlotChange"
+	"courseScheduling/internal/domain/aggregate/courseSlot"
+	"courseScheduling/internal/domain/aggregate/courseSlotChange"
 )
 
 // CheckSlotChange 判断这次临时换课是否存在冲突。

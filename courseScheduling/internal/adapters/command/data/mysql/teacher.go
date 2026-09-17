@@ -6,9 +6,9 @@ import (
 	"errors"
 	"fmt"
 
-	"cqrs/internal/adapters/command/data/mysql/help"
-	"cqrs/internal/adapters/command/data/mysql/model"
-	"cqrs/internal/domain/aggregate/teacher"
+	"courseScheduling/internal/adapters/command/data/mysql/help"
+	"courseScheduling/internal/adapters/command/data/mysql/model"
+	"courseScheduling/internal/domain/aggregate/teacher"
 )
 
 // Create 新增讲师。

@@ -9,7 +9,7 @@ import "google/protobuf/timestamp.proto";
 import "v1/course_scheduling/course/course.proto";
 import "v1/course_scheduling/student/student.proto";
 
-option go_package = "cqrs/api/v1/course_scheduling/enrollment;enrollmentv1";
+option go_package = "courseScheduling/api/v1/course_scheduling/enrollment;enrollmentv1";
 option java_multiple_files = true;
 option java_outer_classname = "EnrollmentProto";
 option java_package = "io.grpc.examples.course_scheduling.v1";

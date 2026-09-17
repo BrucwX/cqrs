@@ -3,7 +3,7 @@ package model
 import (
 	"time"
 
-	"cqrs/internal/domain/aggregate/qualification"
+	"courseScheduling/internal/domain/aggregate/qualification"
 )
 
 // Qualification 是 Redis 快照（对应 qualification），领域模型是 qualification.Qualification。

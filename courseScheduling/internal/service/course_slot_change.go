@@ -5,10 +5,10 @@ import (
 
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	courseslotchangev1 "cqrs/api/v1/course_scheduling/course_slot_change"
-	courseslotchangecmd "cqrs/internal/app/command/courseSlotChange"
-	courseslotchangeqry "cqrs/internal/app/query/courseSlotChange"
-	courseslotchangedo "cqrs/internal/domain/aggregate/courseSlotChange"
+	courseslotchangev1 "courseScheduling/api/v1/course_scheduling/course_slot_change"
+	courseslotchangecmd "courseScheduling/internal/app/command/courseSlotChange"
+	courseslotchangeqry "courseScheduling/internal/app/query/courseSlotChange"
+	courseslotchangedo "courseScheduling/internal/domain/aggregate/courseSlotChange"
 )
 
 // CourseSlotChangeService 临时换课服务。

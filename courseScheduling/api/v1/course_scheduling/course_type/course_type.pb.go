@@ -163,8 +163,8 @@ const file_v1_course_scheduling_course_type_course_type_proto_rawDesc = "" +
 	"\n" +
 	"updated_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"T\n" +
 	"\rCourseTypeSet\x12C\n" +
-	"\fcourse_types\x18\x01 \x03(\v2 .v1.course_scheduling.CourseTypeR\vcourseTypesBr\n" +
-	"%io.grpc.examples.course_scheduling.v1B\x0fCourseTypeProtoP\x01Z6cqrs/api/v1/course_scheduling/course_type;coursetypev1b\x06proto3"
+	"\fcourse_types\x18\x01 \x03(\v2 .v1.course_scheduling.CourseTypeR\vcourseTypesB~\n" +
+	"%io.grpc.examples.course_scheduling.v1B\x0fCourseTypeProtoP\x01ZBcourseScheduling/api/v1/course_scheduling/course_type;coursetypev1b\x06proto3"
 
 var (
 	file_v1_course_scheduling_course_type_course_type_proto_rawDescOnce sync.Once

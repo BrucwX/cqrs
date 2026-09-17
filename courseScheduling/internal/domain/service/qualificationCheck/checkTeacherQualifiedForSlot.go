@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"cqrs/internal/domain/aggregate/courseSlot"
+	"courseScheduling/internal/domain/aggregate/courseSlot"
 )
 
 // CheckTeacherQualifiedForSlot 判断该讲师有没有资格教这一个槽位。

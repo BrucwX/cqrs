@@ -712,8 +712,8 @@ const file_v1_course_scheduling_course_slot_change_course_slot_change_proto_rawD
 	"\x16DeleteCourseSlotChange\x123.v1.course_scheduling.DeleteCourseSlotChangeRequest\x1a\x16.google.protobuf.Empty\"$\x82\xd3\xe4\x93\x02\x1e*\x1c/v1/course-slot-changes/{id}\x12\x95\x01\n" +
 	"\x13GetCourseSlotChange\x120.v1.course_scheduling.GetCourseSlotChangeRequest\x1a&.v1.course_scheduling.CourseSlotChange\"$\x82\xd3\xe4\x93\x02\x1e\x12\x1c/v1/course-slot-changes/{id}\x12\x97\x01\n" +
 	"\x15ListCourseSlotChanges\x122.v1.course_scheduling.ListCourseSlotChangesRequest\x1a).v1.course_scheduling.CourseSlotChangeSet\"\x1f\x82\xd3\xe4\x93\x02\x19\x12\x17/v1/course-slot-changes\x12\xb8\x01\n" +
-	"\x1fListCourseSlotChangesByCourseID\x12<.v1.course_scheduling.ListCourseSlotChangesByCourseIDRequest\x1a).v1.course_scheduling.CourseSlotChangeSet\",\x82\xd3\xe4\x93\x02&\x12$/v1/courses/{course_id}/slot-changesB\x85\x01\n" +
-	"%io.grpc.examples.course_scheduling.v1B\x15CourseSlotChangeProtoP\x01ZCcqrs/api/v1/course_scheduling/course_slot_change;courseslotchangev1b\x06proto3"
+	"\x1fListCourseSlotChangesByCourseID\x12<.v1.course_scheduling.ListCourseSlotChangesByCourseIDRequest\x1a).v1.course_scheduling.CourseSlotChangeSet\",\x82\xd3\xe4\x93\x02&\x12$/v1/courses/{course_id}/slot-changesB\x91\x01\n" +
+	"%io.grpc.examples.course_scheduling.v1B\x15CourseSlotChangeProtoP\x01ZOcourseScheduling/api/v1/course_scheduling/course_slot_change;courseslotchangev1b\x06proto3"
 
 var (
 	file_v1_course_scheduling_course_slot_change_course_slot_change_proto_rawDescOnce sync.Once

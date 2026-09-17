@@ -23,7 +23,7 @@ import (
 	"database/sql"
 	"errors"
 
-	"cqrs/internal/conf"
+	"courseScheduling/internal/conf"
 )
 
 // MysqlData 持有写库连接池，写侧的所有仓库共享它。

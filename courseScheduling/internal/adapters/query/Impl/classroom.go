@@ -2,8 +2,8 @@ package query
 
 import (
 	"context"
-	"cqrs/internal/domain/aggregate/classroom"
-	repoquery "cqrs/internal/domain/repo/query"
+	"courseScheduling/internal/domain/aggregate/classroom"
+	repoquery "courseScheduling/internal/domain/repo/query"
 )
 
 var _ repoquery.ClassroomQuery = (*QueryImpl)(nil)

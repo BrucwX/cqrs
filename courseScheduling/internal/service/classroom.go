@@ -5,10 +5,10 @@ import (
 
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	classroomv1 "cqrs/api/v1/course_scheduling/classroom"
-	classroomcmd "cqrs/internal/app/command/classroom"
-	classroomqry "cqrs/internal/app/query/classroom"
-	classroomdo "cqrs/internal/domain/aggregate/classroom"
+	classroomv1 "courseScheduling/api/v1/course_scheduling/classroom"
+	classroomcmd "courseScheduling/internal/app/command/classroom"
+	classroomqry "courseScheduling/internal/app/query/classroom"
+	classroomdo "courseScheduling/internal/domain/aggregate/classroom"
 )
 
 // ClassroomService 教室服务。

@@ -3,9 +3,9 @@ package mysql
 import (
 	"context"
 
-	"cqrs/internal/adapters/query/data/mysql/help"
-	"cqrs/internal/adapters/query/data/mysql/model"
-	"cqrs/internal/domain/aggregate/teacher"
+	"courseScheduling/internal/adapters/query/data/mysql/help"
+	"courseScheduling/internal/adapters/query/data/mysql/model"
+	"courseScheduling/internal/domain/aggregate/teacher"
 )
 
 // Page 分页查询讲师列表，按 ID 升序。

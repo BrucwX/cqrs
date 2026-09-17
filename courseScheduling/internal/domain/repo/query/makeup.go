@@ -3,9 +3,9 @@ package query
 import (
 	"context"
 
-	"cqrs/internal/domain/aggregate/course"
-	"cqrs/internal/domain/aggregate/makeup"
-	"cqrs/internal/domain/aggregate/student"
+	"courseScheduling/internal/domain/aggregate/course"
+	"courseScheduling/internal/domain/aggregate/makeup"
+	"courseScheduling/internal/domain/aggregate/student"
 )
 
 // StudentMakeupQuery 补课申请查询接口

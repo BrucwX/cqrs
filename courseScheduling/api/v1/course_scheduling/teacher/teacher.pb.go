@@ -7,7 +7,7 @@
 package teacherv1
 
 import (
-	course_scheduling "cqrs/api/v1/course_scheduling"
+	course_scheduling "courseScheduling/api/v1/course_scheduling"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -472,8 +472,8 @@ const file_v1_course_scheduling_teacher_teacher_proto_rawDesc = "" +
 	"\rDeleteTeacher\x12*.v1.course_scheduling.DeleteTeacherRequest\x1a\x16.google.protobuf.Empty\"\x19\x82\xd3\xe4\x93\x02\x13*\x11/v1/teachers/{id}\x12o\n" +
 	"\n" +
 	"GetTeacher\x12'.v1.course_scheduling.GetTeacherRequest\x1a\x1d.v1.course_scheduling.Teacher\"\x19\x82\xd3\xe4\x93\x02\x13\x12\x11/v1/teachers/{id}\x12q\n" +
-	"\fListTeachers\x12).v1.course_scheduling.ListTeachersRequest\x1a .v1.course_scheduling.TeacherSet\"\x14\x82\xd3\xe4\x93\x02\x0e\x12\f/v1/teachersBh\n" +
-	"%io.grpc.examples.course_scheduling.v1B\fTeacherProtoP\x01Z/cqrs/api/v1/course_scheduling/teacher;teacherv1b\x06proto3"
+	"\fListTeachers\x12).v1.course_scheduling.ListTeachersRequest\x1a .v1.course_scheduling.TeacherSet\"\x14\x82\xd3\xe4\x93\x02\x0e\x12\f/v1/teachersBt\n" +
+	"%io.grpc.examples.course_scheduling.v1B\fTeacherProtoP\x01Z;courseScheduling/api/v1/course_scheduling/teacher;teacherv1b\x06proto3"
 
 var (
 	file_v1_course_scheduling_teacher_teacher_proto_rawDescOnce sync.Once

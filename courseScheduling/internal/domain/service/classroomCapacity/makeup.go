@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"cqrs/internal/domain/aggregate/courseSlot"
-	"cqrs/internal/domain/aggregate/makeup"
+	"courseScheduling/internal/domain/aggregate/courseSlot"
+	"courseScheduling/internal/domain/aggregate/makeup"
 )
 
 // CheckMakeup 判断学员补到某节课上时，那节课的教室装不装得下。

@@ -7,7 +7,7 @@
 package studentv1
 
 import (
-	course_scheduling "cqrs/api/v1/course_scheduling"
+	course_scheduling "courseScheduling/api/v1/course_scheduling"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -516,8 +516,8 @@ const file_v1_course_scheduling_student_student_proto_rawDesc = "" +
 	"\rDeleteStudent\x12*.v1.course_scheduling.DeleteStudentRequest\x1a\x16.google.protobuf.Empty\"\x19\x82\xd3\xe4\x93\x02\x13*\x11/v1/students/{id}\x12o\n" +
 	"\n" +
 	"GetStudent\x12'.v1.course_scheduling.GetStudentRequest\x1a\x1d.v1.course_scheduling.Student\"\x19\x82\xd3\xe4\x93\x02\x13\x12\x11/v1/students/{id}\x12q\n" +
-	"\fListStudents\x12).v1.course_scheduling.ListStudentsRequest\x1a .v1.course_scheduling.StudentSet\"\x14\x82\xd3\xe4\x93\x02\x0e\x12\f/v1/studentsBh\n" +
-	"%io.grpc.examples.course_scheduling.v1B\fStudentProtoP\x01Z/cqrs/api/v1/course_scheduling/student;studentv1b\x06proto3"
+	"\fListStudents\x12).v1.course_scheduling.ListStudentsRequest\x1a .v1.course_scheduling.StudentSet\"\x14\x82\xd3\xe4\x93\x02\x0e\x12\f/v1/studentsBt\n" +
+	"%io.grpc.examples.course_scheduling.v1B\fStudentProtoP\x01Z;courseScheduling/api/v1/course_scheduling/student;studentv1b\x06proto3"
 
 var (
 	file_v1_course_scheduling_student_student_proto_rawDescOnce sync.Once
