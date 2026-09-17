@@ -1,0 +1,17 @@
+package makeup
+
+import (
+	"context"
+
+	"cqrs/internal/domain/aggregate/course"
+)
+
+// CoursesByStudentID 查询输入：根据学员 ID 获取已补课的课程
+type CoursesByStudentID struct {
+	StudentID int64
+}
+
+// CoursesByStudentID 根据学员 ID 获取已补课的课程
+func (h *Handler) CoursesByStudentID(ctx context.Context, q CoursesByStudentID) ([]*course.Course, error) {
+	return h.Query.MakeupCoursesByStudentID(ctx, q.StudentID)
+}

@@ -1,0 +1,13 @@
+package qualification
+
+import "cqrs/internal/domain/repo/query"
+
+// Handler 授课资质查询处理器
+type Handler struct {
+	Query query.QualificationQuery
+}
+
+// NewHandler 创建授课资质查询处理器
+func NewHandler(q query.QualificationQuery) *Handler {
+	return &Handler{Query: q}
+}
