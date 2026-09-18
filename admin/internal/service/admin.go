@@ -1,0 +1,257 @@
+package service
+
+import (
+	"context"
+	"time"
+
+	v1 "admin/api/kratos/admin/v1"
+	"admin/internal/biz"
+	"admin/pkg/auth"
+	"github.com/go-kratos/kratos/v3/errors"
+
+	"github.com/google/uuid"
+	"go.einride.tech/aip/fieldmask"
+	"go.einride.tech/aip/filtering"
+	"go.einride.tech/aip/ordering"
+	"go.einride.tech/aip/pagination"
+	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/timestamppb"
+)
+
+func convertAdmin(m *biz.Admin) *v1.Admin {
+	return &v1.Admin{
+		Id:        m.ID.String(),
+		Name:      m.Name,
+		Email:     m.Email,
+		Avatar:    m.Avatar,
+		Access:    m.Access,
+		Status:    v1.Admin_Status(m.Status),
+		CreatedAt: timestamppb.New(m.CreatedAt),
+		UpdatedAt: timestamppb.New(m.UpdatedAt),
+	}
+}
+
+// parseAdminID turns a wire ID into a UUID, reporting a bad one as a typed
+// error so callers see a 400 instead of a not-found.
+func parseAdminID(id string) (uuid.UUID, error) {
+	parsed, err := uuid.Parse(id)
+	if err != nil {
+		return uuid.Nil, biz.ErrInvalidAdminID
+	}
+	return parsed, nil
+}
+
+// AdminService is a greeter service.
+type AdminService struct {
+	v1.UnimplementedAdminServiceServer
+
+	uc *biz.AdminUsecase
+}
+
+// NewAdminService new a greeter service.
+func NewAdminService(uc *biz.AdminUsecase) *AdminService {
+	return &AdminService{uc: uc}
+}
+
+// Current implements auth current admin retrieval.
+func (s *AdminService) Current(ctx context.Context, req *emptypb.Empty) (*v1.Admin, error) {
+	a, ok := auth.FromContext(ctx)
+	if !ok {
+		return nil, auth.ErrUnauthenticated
+	}
+	admin, err := s.uc.GetAdmin(ctx, a.UserID)
+	if err != nil {
+		return nil, err
+	}
+	return convertAdmin(admin), nil
+}
+
+// Login implements auth login.
+func (s *AdminService) Login(ctx context.Context, req *v1.LoginRequest) (*v1.Admin, error) {
+	var (
+		err   error
+		admin *biz.Admin
+	)
+	switch v := req.Identity.(type) {
+	case *v1.LoginRequest_Username:
+		admin, err = s.uc.LoginByUsername(ctx, v.Username, req.Password)
+		if err != nil {
+			return nil, err
+		}
+	case *v1.LoginRequest_Email:
+		admin, err = s.uc.LoginByEmail(ctx, v.Email, req.Password)
+		if err != nil {
+			return nil, err
+		}
+	default:
+		return nil, errors.BadRequest(v1.ErrorReason_INVALID_IDENTITY_TYPE.String(), "unsupported identity type")
+	}
+	if err := auth.SetCookie(ctx, admin.ID, admin.Access, time.Now().Add(7*24*time.Hour)); err != nil {
+		return nil, err
+	}
+	return convertAdmin(admin), nil
+}
+
+// Logout implements auth logout.
+func (s *AdminService) Logout(ctx context.Context, req *emptypb.Empty) (*emptypb.Empty, error) {
+	a, ok := auth.FromContext(ctx)
+	if !ok {
+		return nil, auth.ErrUnauthenticated
+	}
+	if err := s.uc.Logout(ctx, a.UserID); err != nil {
+		return nil, err
+	}
+	if err := auth.DeleteCookie(ctx); err != nil {
+		return nil, err
+	}
+	return &emptypb.Empty{}, nil
+}
+
+// CreateAdmin implements admin creation.
+func (s *AdminService) CreateAdmin(ctx context.Context, req *v1.CreateAdminRequest) (*v1.Admin, error) {
+	a, ok := auth.FromContext(ctx)
+	if !ok {
+		return nil, auth.ErrUnauthenticated
+	}
+	if !a.HasAdminAccess() {
+		return nil, auth.ErrPermissionDenied
+	}
+	admin, err := s.uc.CreateAdmin(ctx, &biz.Admin{
+		Name:     req.Admin.Name,
+		Email:    req.Admin.Email,
+		Password: req.Admin.Password,
+		Avatar:   req.Admin.Avatar,
+		Access:   req.Admin.Access,
+		Status:   biz.AdminStatus(req.Admin.Status),
+	})
+	if err != nil {
+		return nil, err
+	}
+	return convertAdmin(admin), nil
+}
+
+// UpdateAdmin implements admin update.
+func (s *AdminService) UpdateAdmin(ctx context.Context, req *v1.UpdateAdminRequest) (*v1.Admin, error) {
+	a, ok := auth.FromContext(ctx)
+	if !ok {
+		return nil, auth.ErrUnauthenticated
+	}
+	if !a.HasAdminAccess() {
+		return nil, auth.ErrPermissionDenied
+	}
+	admin, err := s.GetAdmin(ctx, &v1.GetAdminRequest{Id: req.Admin.Id})
+	if err != nil {
+		return nil, err
+	}
+	fieldmask.Update(req.UpdateMask, admin, req.Admin)
+	id, err := parseAdminID(admin.Id)
+	if err != nil {
+		return nil, err
+	}
+	updated, err := s.uc.UpdateAdmin(ctx, &biz.Admin{
+		ID:       id,
+		Name:     admin.Name,
+		Email:    admin.Email,
+		Password: admin.Password,
+		Avatar:   admin.Avatar,
+		Access:   admin.Access,
+		Status:   biz.AdminStatus(admin.Status),
+	})
+	if err != nil {
+		return nil, err
+	}
+	return convertAdmin(updated), nil
+}
+
+// DeleteAdmin implements admin deletion.
+func (s *AdminService) DeleteAdmin(ctx context.Context, req *v1.DeleteAdminRequest) (*emptypb.Empty, error) {
+	a, ok := auth.FromContext(ctx)
+	if !ok {
+		return nil, auth.ErrUnauthenticated
+	}
+	if !a.HasAdminAccess() {
+		return nil, auth.ErrPermissionDenied
+	}
+	id, err := parseAdminID(req.Id)
+	if err != nil {
+		return nil, err
+	}
+	if err := s.uc.DeleteAdmin(ctx, id); err != nil {
+		return nil, err
+	}
+	return &emptypb.Empty{}, nil
+}
+
+// GetAdmin implements admin retrieval.
+func (s *AdminService) GetAdmin(ctx context.Context, req *v1.GetAdminRequest) (*v1.Admin, error) {
+	a, ok := auth.FromContext(ctx)
+	if !ok {
+		return nil, auth.ErrUnauthenticated
+	}
+	if !a.HasAdminAccess() {
+		return nil, auth.ErrPermissionDenied
+	}
+	id, err := parseAdminID(req.Id)
+	if err != nil {
+		return nil, err
+	}
+	admin, err := s.uc.GetAdmin(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return convertAdmin(admin), nil
+}
+
+// ListAdmins implements admin listing with filtering, ordering, and pagination.
+func (s *AdminService) ListAdmins(ctx context.Context, req *v1.ListAdminsRequest) (*v1.AdminSet, error) {
+	a, ok := auth.FromContext(ctx)
+	if !ok {
+		return nil, auth.ErrUnauthenticated
+	}
+	if !a.HasAdminAccess() {
+		return nil, auth.ErrPermissionDenied
+	}
+	declarations, err := filtering.NewDeclarations(
+		filtering.DeclareStandardFunctions(),
+		filtering.DeclareIdent("name", filtering.TypeString),
+		filtering.DeclareIdent("email", filtering.TypeString),
+		filtering.DeclareIdent("created_at", filtering.TypeTimestamp),
+	)
+	if err != nil {
+		return nil, err
+	}
+	filter, err := filtering.ParseFilter(req, declarations)
+	if err != nil {
+		return nil, err
+	}
+	pageToken, err := pagination.ParsePageToken(req)
+	if err != nil {
+		return nil, err
+	}
+	orderBy, err := ordering.ParseOrderBy(req)
+	if err != nil {
+		return nil, err
+	}
+	if req.PageSize <= 0 {
+		req.PageSize = 20
+	}
+	admins, err := s.uc.ListAdmins(ctx,
+		biz.ListFilter(filter),
+		biz.ListOrderBy(orderBy),
+		biz.ListLimit(int(req.PageSize)),
+		biz.ListOffset(int(pageToken.Offset)),
+	)
+	if err != nil {
+		return nil, err
+	}
+	adminSet := &v1.AdminSet{
+		Admins: make([]*v1.Admin, 0, len(admins)),
+	}
+	if len(admins) >= int(req.PageSize) {
+		adminSet.NextPageToken = pageToken.Next(req).String()
+	}
+	for _, admin := range admins {
+		adminSet.Admins = append(adminSet.Admins, convertAdmin(admin))
+	}
+	return adminSet, nil
+}
