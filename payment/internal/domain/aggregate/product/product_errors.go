@@ -7,6 +7,11 @@ var (
 	ErrProductNameRequired = errors.New("product name is required")
 	// ErrInvalidPrice 售价必须大于 0（单位：分）。
 	ErrInvalidPrice = errors.New("product price must be greater than zero")
+	// ErrInvalidStock 库存数量不合法：有限库存的剩余不能为负；出库 / 退单 / 进货的件数
+	// 必须大于 0，退单不能超过累计销售量。
+	ErrInvalidStock = errors.New("product stock quantity is invalid")
+	// ErrInsufficientStock 库存不足，卖不出这么多。
+	ErrInsufficientStock = errors.New("insufficient product stock")
 
 	// ErrProductAlreadyOnSale 商品已经在售了。
 	ErrProductAlreadyOnSale = errors.New("product is already on sale")
