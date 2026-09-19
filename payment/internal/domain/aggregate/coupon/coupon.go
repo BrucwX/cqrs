@@ -123,7 +123,7 @@ func (c *Coupon) ensureRedeemable(now time.Time) error {
 func (c *Coupon) ensureUsable(
 	ct *couponType.CouponType,
 	orderAmount int64,
-	productTypeID int64,
+	productTypeCode string,
 	now time.Time,
 ) error {
 	if err := c.ensureRedeemable(now); err != nil {
@@ -132,7 +132,7 @@ func (c *Coupon) ensureUsable(
 	if orderAmount <= 0 {
 		return ErrInvalidOrderAmount
 	}
-	if !ct.Scope().Covers(productTypeID) {
+	if !ct.Scope().Covers(productTypeCode) {
 		return ErrCouponNotApplicable
 	}
 	if !ct.Benefit().MeetsThreshold(orderAmount) {
@@ -145,10 +145,10 @@ func (c *Coupon) ensureUsable(
 func (c *Coupon) DiscountFor(
 	ct *couponType.CouponType,
 	orderAmount int64,
-	productTypeID int64,
+	productTypeCode string,
 	now time.Time,
 ) (int64, error) {
-	if err := c.ensureUsable(ct, orderAmount, productTypeID, now); err != nil {
+	if err := c.ensureUsable(ct, orderAmount, productTypeCode, now); err != nil {
 		return 0, err
 	}
 	return ct.Benefit().DiscountFor(orderAmount), nil
@@ -158,10 +158,10 @@ func (c *Coupon) DiscountFor(
 func (c *Coupon) IsUsableAt(
 	ct *couponType.CouponType,
 	orderAmount int64,
-	productTypeID int64,
+	productTypeCode string,
 	now time.Time,
 ) bool {
-	return c.ensureUsable(ct, orderAmount, productTypeID, now) == nil
+	return c.ensureUsable(ct, orderAmount, productTypeCode, now) == nil
 }
 
 // Redeem 核销：把券打到指定订单上，只做状态流转与登记 —— 优惠额由 DiscountFor 先算好

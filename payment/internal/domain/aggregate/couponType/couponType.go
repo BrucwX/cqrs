@@ -148,8 +148,10 @@ func (t *CouponType) ChangeScope(scope Scope) error {
 }
 
 // CoversProductType 某类商品能不能用这种券（核销前的准入判定）。
-func (t *CouponType) CoversProductType(productTypeID int64) bool {
-	return t.scope.Covers(productTypeID)
+//
+// productTypeCode 就是 product.Type.Code（分类是值对象、没有 id）。
+func (t *CouponType) CoversProductType(productTypeCode string) bool {
+	return t.scope.Covers(productTypeCode)
 }
 
 // IsSoldOut 是否已发完（不限量永远不发完）。

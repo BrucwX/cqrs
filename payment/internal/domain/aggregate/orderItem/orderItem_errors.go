@@ -14,13 +14,6 @@ var (
 	// ErrInvalidQuantity 数量必须大于 0。
 	ErrInvalidQuantity = errors.New("quantity must be positive")
 
-	// ErrQuantityBelowRefunded 新数量不能小于已退款数量。
-	ErrQuantityBelowRefunded = errors.New("quantity can not be less than refunded quantity")
-	// ErrRefundQuantityExceeded 退款数量超过了可退数量（已购 - 已退）。
-	ErrRefundQuantityExceeded = errors.New("refund quantity exceeds refundable quantity")
-	// ErrRestoreQuantityExceeded 还原的退款数量超过了已登记退款数量。
-	ErrRestoreQuantityExceeded = errors.New("restore quantity exceeds refunded quantity")
-
 	// ErrOrderItemRequired 传入的订单行项为空。
 	ErrOrderItemRequired = errors.New("order item is required")
 	// ErrOrderItemNotFound 指定的订单行项不存在。

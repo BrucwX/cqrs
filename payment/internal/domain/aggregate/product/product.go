@@ -20,17 +20,27 @@ type Product struct {
 	name        string
 	description string
 	price       int64 // 售价（分）
+	productType Type  // 商品分类（值对象，不是独立聚合）
 	stock       Stock // 库存：是否不限量 / 剩余可售 / 销售量
 	status      Status
 }
 
 // NewProduct 建商品：默认「未上架」，要 PutOnSale 之后才能被下单。
-func NewProduct(name string, description string, price int64, stock Stock) (*Product, error) {
+func NewProduct(
+	name string,
+	description string,
+	price int64,
+	productType Type,
+	stock Stock,
+) (*Product, error) {
 	if strings.TrimSpace(name) == "" {
 		return nil, ErrProductNameRequired
 	}
 	if price <= 0 {
 		return nil, ErrInvalidPrice
+	}
+	if !productType.valid() {
+		return nil, ErrInvalidProductType
 	}
 	if !stock.valid() {
 		return nil, ErrInvalidStock
@@ -41,6 +51,7 @@ func NewProduct(name string, description string, price int64, stock Stock) (*Pro
 		name:        name,
 		description: description,
 		price:       price,
+		productType: productType,
 		stock:       stock,
 		status:      StatusDraft,
 	}, nil
@@ -52,6 +63,7 @@ func Reconstitute(
 	name string,
 	description string,
 	price int64,
+	productType Type,
 	stock Stock,
 	status Status,
 ) *Product {
@@ -60,6 +72,7 @@ func Reconstitute(
 		name:        name,
 		description: description,
 		price:       price,
+		productType: productType,
 		stock:       stock,
 		status:      status,
 	}
@@ -110,6 +123,15 @@ func (p *Product) UpdateDescription(description string) {
 	p.description = description
 }
 
+// ChangeType 换分类（比如课程从「数码」改到「课程」）。
+func (p *Product) ChangeType(productType Type) error {
+	if !productType.valid() {
+		return ErrInvalidProductType
+	}
+	p.productType = productType
+	return nil
+}
+
 // --- 库存 ---
 
 // ReserveStock 出库 n 件（下单时调用）：剩余减、销售量加。
@@ -153,5 +175,6 @@ func (p *Product) ID() int64           { return p.id }
 func (p *Product) Name() string        { return p.name }
 func (p *Product) Description() string { return p.description }
 func (p *Product) Price() int64        { return p.price }
+func (p *Product) ProductType() Type   { return p.productType }
 func (p *Product) Stock() Stock        { return p.stock }
 func (p *Product) Status() Status      { return p.status }
