@@ -11,7 +11,8 @@ import (
 // **只读**批量视图（筛选、汇总）。
 //
 // ⚠️ 它不是聚合根：每一行自己就是聚合根，要改行项还是得改那一行（值语义，换一份新的）。
-// 所以这里只有读，没有任何改数据的口子 —— 免得出现「改了一半的集合」这种半成品状态。
+// 所以这里只有读，以及**值语义的批量迁移**（`ConfirmAll` 返回一批新行项，旧的集合一个字节不动）——
+// 没有就地改数据的口子，免得出「改了一半的集合」这种半成品状态。
 type OrderItems []OrderItem
 
 // Drafts 挑出还没归到订单上的草稿行（正在拼装的那些）。
@@ -47,6 +48,43 @@ func (items OrderItems) AllDraft() bool {
 		}
 	}
 	return true
+}
+
+// ConfirmAll 把这一批行项都归到 orderID 上 → 返回一批**正式行**（值语义，旧的集合不动）。
+//
+// 草稿行才认识怎么变成正式行，所以这里按具体类型取；**有一行不是草稿就整体报错**
+// （同一批行项不能被两张订单共用）。全部成功才返回，不会交出「一半归了单」的集合。
+func (items OrderItems) ConfirmAll(orderID int64) (OrderItems, error) {
+	confirmed := make(OrderItems, 0, len(items))
+	for _, item := range items {
+		draft, ok := item.(DraftOrderItem)
+		if !ok {
+			return nil, ErrOrderItemAlreadyConfirmed
+		}
+		next, err := draft.Confirm(orderID)
+		if err != nil {
+			return nil, err
+		}
+		confirmed = append(confirmed, next)
+	}
+	return confirmed, nil
+}
+
+// Total 这一批行项的小计合计（各行单价×数量相加）—— 建订单时的原价就是它。
+//
+// 金额只长在公共元数据上，而接口刻意不暴露它；两种状态都内嵌了元数据，
+// 所以这里按具体类型取（跟落库时取状态名一个路子）。
+func (items OrderItems) Total() int64 {
+	var total int64
+	for _, item := range items {
+		switch item := item.(type) {
+		case DraftOrderItem:
+			total += item.Amount()
+		case ConfirmedOrderItem:
+			total += item.Amount()
+		}
+	}
+	return total
 }
 
 // CustomerIDs 这批行涉及到的**受赠人**（去重 + 升序）：同一批东西送给同一个人时只查一次客户。

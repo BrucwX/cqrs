@@ -25,7 +25,7 @@ type OrderItem interface {
 	ProductID() int64  // 常用聚合根归属标识：买的是哪件商品
 	Quantity() int32   // 下单数量（库存预检要按商品汇总它）
 	// IsDraft 这一行是不是还没归到订单上的**草稿行**（正在拼装）。
-	// 还没确认的行项不该参与扣库存 / 算订单金额，用它一票闸在前面。
+	// 下单前要确认这一批都还是草稿（别已经被别的订单占用了），所以需要有它。
 	IsDraft() bool
 	isOrderItemState() // 密封约束，防止包外随意实现
 }

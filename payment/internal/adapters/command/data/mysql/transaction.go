@@ -5,8 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-
-	"github.com/go-kratos/kratos/v3/log"
 )
 
 // txKey 是 context 里携带事务的 key。
@@ -39,21 +37,25 @@ func (d *MysqlData) Begin(ctx context.Context) (context.Context, error) {
 	return context.WithValue(ctx, txKey{}, txValue{Querier: Debug(tx, d.debug), tx: tx}), nil
 }
 
-// End 结束事务：err 非 nil 就回滚，否则提交。
-//
-// 必须传 Begin 返回的那个 ctx。传错 ctx 时报错而不是默默什么都不做 ——
-// 那意味着事务根本没开，写进去的东西也不会提交。
-func (d *MysqlData) End(ctx context.Context, err error) error {
+// Commit 提交事务。必须传 Begin 返回的那个 ctx。
+func (d *MysqlData) Commit(ctx context.Context) error {
 	txv, ok := ctx.Value(txKey{}).(txValue)
 	if !ok {
-		return fmt.Errorf("mysql: end: no transaction in context")
-	}
-
-	if err != nil {
-		if rbErr := txv.tx.Rollback(); rbErr != nil && !errors.Is(rbErr, sql.ErrTxDone) {
-			log.Error("mysql rollback", "err", rbErr)
-		}
-		return err
+		return fmt.Errorf("mysql: commit: no transaction in context")
 	}
 	return txv.tx.Commit()
+}
+
+// Rollback 回滚事务。必须传 Begin 返回的那个 ctx。
+//
+// 已经结束的事务（sql.ErrTxDone）不算错 —— defer 里重复回滚不该再报一次。
+func (d *MysqlData) Rollback(ctx context.Context) error {
+	txv, ok := ctx.Value(txKey{}).(txValue)
+	if !ok {
+		return fmt.Errorf("mysql: rollback: no transaction in context")
+	}
+	if err := txv.tx.Rollback(); err != nil && !errors.Is(err, sql.ErrTxDone) {
+		return err
+	}
+	return nil
 }

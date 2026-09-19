@@ -8,13 +8,13 @@
 // 同一个库，所以两侧各带一套自己的连接与 model，互不共用。
 //
 //	mysql.go        本文件：写库连接池（MysqlData / NewMysqlData）
-//	transaction.go  事务与连接选择（Conn / Begin / End）
+//	transaction.go  事务与连接选择（Conn / Begin / Commit / Rollback）
 //	driver.go       连库底座：Querier 抽象、DSN 归一化、Open、SQL 日志
 //	<资源>.go       各聚合根的 repo 实现（MysqlData 直接实现全部接口）
 //	model/          PO 与 DO 转换（与读侧逐字节相同）
 //	help/           Scanner 抽象 + 列清单 + 扫行辅助
 //
-// 与读侧的关键差别是事务：写侧提供 Begin / End，把事务放进 context，
+// 与读侧的关键差别是事务：写侧提供 Begin / Commit / Rollback，把事务放进 context，
 // 这样「先读排期判冲突、再写回」里那些经仓库发起的读也能落在同一个事务上。
 // ⚠️ 前提是读也走写库；如果读走 adapters/query/data/mysql 的从库，就不构成原子读了。
 package mysql

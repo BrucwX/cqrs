@@ -15,8 +15,8 @@ var (
 	ErrInvalidUnitPrice = errors.New("unit price must be greater than zero")
 	// ErrInvalidQuantity 数量必须大于 0。
 	ErrInvalidQuantity = errors.New("quantity must be positive")
-	// ErrOrderItemNotBelongOrder 这一行还没归到订单上（还是草稿行）。
-	ErrOrderItemNotBelongOrder = errors.New("order item does not belong to an order")
+	// ErrOrderItemAlreadyConfirmed 这一行已经归到订单上了（不是草稿行）。
+	ErrOrderItemAlreadyConfirmed = errors.New("order item is already confirmed")
 
 	// ErrOrderItemRequired 传入的订单行项为空。
 	ErrOrderItemRequired = errors.New("order item is required")
