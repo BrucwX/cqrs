@@ -1,6 +1,6 @@
-package buyer
+package customer
 
-// Status 买家状态。
+// Status 客户状态。
 type Status int
 
 const (

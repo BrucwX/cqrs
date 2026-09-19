@@ -1,106 +1,37 @@
 package orderItem
 
-import (
-	"strings"
+// --- 聚合根接口 ---
 
-	"payment/pkg/uuid"
+// OrderItem 是订单行聚合根的接口：公共元数据 + 密封。
+//
+// 「这一行处于什么状态」由**具体类型**表达，不再有状态枚举：
+//
+//	DraftOrderItem      草稿行：正在拼装（像购物车里的那一行），**不属于任何订单**
+//	ConfirmedOrderItem  正式行：已经 Confirm 到某张订单上，从此有 orderID
+//
+// 于是「草稿行属于哪张订单」这个问题在**编译期**就不存在 —— `DraftOrderItem` 没有
+// orderID 字段、也没有 OrderID() 方法，不是「orderID 为 0」那种靠约定，而是根本拿不到；
+// 想挂到订单上，只能走 Confirm 换成正式行。
+//
+// 状态迁移一律**返回新状态**（值语义，不改旧值）：
+//
+//	draft, err := orderItem.NewDraftOrderItem(customerID, productID, productName, unitPrice, quantity)
+//	confirmed, err := draft.Confirm(orderID)
+//
+// 落库时按具体类型取状态名（type switch），不需要额外的枚举。
+type OrderItem interface {
+	ID() int64         // 标识符放在第一位
+	CustomerID() int64 // 这一行**给谁**（受赠人）：自己买给自己＝下单的客户，送礼时不是
+	ProductID() int64  // 常用聚合根归属标识：买的是哪件商品
+	Quantity() int32   // 下单数量（库存预检要按商品汇总它）
+	// IsDraft 这一行是不是还没归到订单上的**草稿行**（正在拼装）。
+	// 还没确认的行项不该参与扣库存 / 算订单金额，用它一票闸在前面。
+	IsDraft() bool
+	isOrderItemState() // 密封约束，防止包外随意实现
+}
+
+// 编译期断言：两种状态都必须满足 OrderItem —— 漏了内嵌 OrderItemMeta 在这里就会编译失败。
+var (
+	_ OrderItem = DraftOrderItem{}
+	_ OrderItem = ConfirmedOrderItem{}
 )
-
-// --- 聚合根 (Aggregate Root) ---
-
-// OrderItem 是「订单里的一行」的聚合根：买了哪件商品、单价多少、几件。
-//
-// 商品名与单价是**下单那一刻的快照** —— 商品事后改名、调价、下架，
-// 已经下过的单都不受影响。
-//
-// 它只记「买了什么、买了几件」；退了几件不在这里管 —— 退款数量由退款流程自己核
-// （要防超额退款就拿本行的 quantity 去比对）。
-//
-// 金额一律用「分」的 int64。
-type OrderItem struct {
-	id          int64
-	orderID     int64
-	productID   int64
-	productName string // 下单时的商品名快照
-	unitPrice   int64  // 下单时的单价快照（分）
-	quantity    int32  // 购买数量
-}
-
-// NewOrderItem 下单时建行项。
-func NewOrderItem(
-	orderID int64,
-	productID int64,
-	productName string,
-	unitPrice int64,
-	quantity int32,
-) (*OrderItem, error) {
-	if orderID <= 0 {
-		return nil, ErrOrderRequired
-	}
-	if productID <= 0 {
-		return nil, ErrProductRequired
-	}
-	if strings.TrimSpace(productName) == "" {
-		return nil, ErrProductNameRequired
-	}
-	if unitPrice <= 0 {
-		return nil, ErrInvalidUnitPrice
-	}
-	if quantity <= 0 {
-		return nil, ErrInvalidQuantity
-	}
-
-	return &OrderItem{
-		id:          uuid.NewInt64(),
-		orderID:     orderID,
-		productID:   productID,
-		productName: productName,
-		unitPrice:   unitPrice,
-		quantity:    quantity,
-	}, nil
-}
-
-// Reconstitute 仓储恢复：字段全部由外部给定，不做校验。
-func Reconstitute(
-	id int64,
-	orderID int64,
-	productID int64,
-	productName string,
-	unitPrice int64,
-	quantity int32,
-) *OrderItem {
-	return &OrderItem{
-		id:          id,
-		orderID:     orderID,
-		productID:   productID,
-		productName: productName,
-		unitPrice:   unitPrice,
-		quantity:    quantity,
-	}
-}
-
-// --- 核心领域行为 (Domain Behaviors) ---
-
-// Amount 小计 = 单价 × 数量（算出来的，不存字段，免得与数量漂移）。
-func (i *OrderItem) Amount() int64 { return i.unitPrice * int64(i.quantity) }
-
-// ChangeQuantity 改购买数量（比如下单后改件数）。
-func (i *OrderItem) ChangeQuantity(quantity int32) error {
-	if quantity <= 0 {
-		return ErrInvalidQuantity
-	}
-	i.quantity = quantity
-	return nil
-}
-
-// BelongsTo 这一行是否属于某张订单（调用方拼装/校验用）。
-func (i *OrderItem) BelongsTo(orderID int64) bool { return i.orderID == orderID }
-
-// --- 属性只读访问器 (Getters) ---
-
-func (i *OrderItem) ID() int64           { return i.id }
-func (i *OrderItem) OrderID() int64      { return i.orderID }
-func (i *OrderItem) ProductID() int64    { return i.productID }
-func (i *OrderItem) ProductName() string { return i.productName }
-func (i *OrderItem) UnitPrice() int64    { return i.unitPrice }
-func (i *OrderItem) Quantity() int32     { return i.quantity }
