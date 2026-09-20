@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	appRepo "payment/internal/app/command/appRepo"
 	orderagg "payment/internal/domain/aggregate/order"
 	orderitem "payment/internal/domain/aggregate/orderItem"
 	"payment/internal/domain/aggregate/product"
@@ -19,34 +20,53 @@ type BuyCourseIn struct {
 	pc           orderagg.PayChannel
 }
 
-func (h *Handler) BuyCourse(ctx context.Context, in BuyCourseIn) (err error) {
-	h.tx.Begin(ctx)
+func (h *Handler) BuyCourse(ctx context.Context, in BuyCourseIn) (result appRepo.PayResult, err error) {
+	ctx, err = h.tx.Begin(ctx)
+	if err != nil {
+		return appRepo.PayResult{}, err
+	}
+	defer func() {
+		if err != nil {
+			_ = h.tx.Rollback(ctx)
+		}
+	}()
 
-	defer h.tx.Rollback(ctx)
-
-	// 取数
+	// 取数：要买的行项 + 下单的人
 	items, err := h.orderItemCommand.MustGetOrderItems(ctx, in.OrderItemIDs)
 	if err != nil {
-		return err
+		return appRepo.PayResult{}, err
 	}
-	c, err2 := h.customerCommand.MustGetCustomer(ctx, in.CustomerID)
-	if err2 != nil {
-		return err2
-	}
-
-	// 检测能不能买，以及减库存
-	err = h.CheckCanBuy(ctx, items)
+	c, err := h.customerCommand.MustGetCustomer(ctx, in.CustomerID)
 	if err != nil {
-		return err
+		return appRepo.PayResult{}, err
 	}
 
-	// 创建订单
+	// 能不能买（只买课：课程侧校验并报名）
+	if err = h.CheckCanBuy(ctx, items); err != nil {
+		return appRepo.PayResult{}, err
+	}
+
+	// 建单（草稿行 → 待支付订单）
 	po, err := h.CreateOrder(ctx, in.CustomerID, items)
+	if err != nil {
+		return appRepo.PayResult{}, err
+	}
 
-	// 支付
-	h.pay.Pay(ctx, c.ID(), po.ID(), in.pc)
+	// 发起支付：把「怎么付」（二维码 / 跳转链接 / 预支付参数）交回给调用方。
+	result, err = h.pay.Prepare(ctx, appRepo.PayIntent{
+		OrderID:    po.ID(),
+		CustomerID: c.ID(),
+		Amount:     po.PayableAmount(),
+		Channel:    in.pc,
+	})
+	if err != nil {
+		return appRepo.PayResult{}, err
+	}
 
-	return h.tx.Commit(ctx)
+	if err = h.tx.Commit(ctx); err != nil {
+		return appRepo.PayResult{}, err
+	}
+	return result, nil
 }
 
 // CheckCanBuy 买之前的校验：把 items 涉及到的商品和客户都取出来，交给课程那边校验报名。
@@ -90,7 +110,8 @@ func (h *Handler) CreateOrder(ctx context.Context, cID int64, items orderitem.Or
 		return nil, orderitem.ErrOrderItemAlreadyConfirmed
 	}
 
-	// 建单：原价按行项合计，优惠留到之后（券的抵扣由 coupon 聚合先算好再 ApplyDiscount）。
+	// 建单：原价按行项合计。
+	// 先不考虑优惠
 	now := time.Now()
 	window := defaultPaymentWindow
 	pending, err := orderagg.NewOrder(cID, items.Total(), now, window)

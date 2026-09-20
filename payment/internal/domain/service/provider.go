@@ -12,7 +12,6 @@ import (
 	"github.com/google/wire"
 
 	ordercheck "payment/internal/domain/service/orderCheck"
-	orderitemscheck "payment/internal/domain/service/orderItemsCheck"
 )
 
 // ProviderSet 领域服务集合。
@@ -20,5 +19,4 @@ import (
 // 加服务时：NewXxxService 写进这里。
 var ProviderSet = wire.NewSet(
 	ordercheck.NewService,
-	orderitemscheck.NewService,
 )
