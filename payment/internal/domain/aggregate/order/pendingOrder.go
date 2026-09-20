@@ -81,9 +81,11 @@ func (o PendingOrder) HasDiscount() bool { return o.discountAmount > 0 }
 
 // MarkPaid 支付成功 → PaidOrder。
 //
-// 三个硬性约束：超时的订单不能再支付（要先 CloseIfExpired 关掉）；
+// 硬性约束：超时的订单不能再支付（要先 CloseIfExpired 关掉）；
 // 实付金额必须与应付一致（部分支付不属于本聚合的能力）；
-// 必须说清**走的是哪条支付途径**（对账、退款原路返回都要靠它）。
+// 必须说清**第三方平台的交易流水号**（对账、退款原路返回都要靠它）与**支付途径**。
+//
+// ⚠️ 商户单号这里不存：就用订单号（ID）当商户单号传给平台，不用额外一个字段。
 func (o PendingOrder) MarkPaid(
 	paidAmount int64,
 	payChannel PayChannel,

@@ -9,7 +9,7 @@ type PaidOrder struct {
 	OrderMeta
 	paidAmount int64
 	paidAt     time.Time
-	tradeNo    string     // 支付流水号，对账用
+	tradeNo    string     // 支付流水号（第三方平台交易号），对账用
 	payChannel PayChannel // 支付途径：钱从哪条路进来的（微信 / 支付宝 / 余额…）
 }
 

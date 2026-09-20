@@ -19,6 +19,14 @@ type PayService interface {
 
 	// Query 查一笔支付在渠道侧的状态：没有回调的渠道、对账、超时补偿用。
 	Query(ctx context.Context, orderID int64) (PayStatus, error)
+
+	// Close 关闭渠道侧订单：关单 / 超时后，让渠道那边也把单关掉
+	// （微信有 closeorder，支付宝超时自动关，调了也无妨）。渠道侧关成功才返回 nil。
+	Close(ctx context.Context, orderID int64) error
+
+	// Refund 申请退款：让渠道把支付的钱**原路退回**。
+	// 返回渠道的退款流水号与受理结果；异步打款的渠道，最终结果还要靠退款回调 / 查单确认。
+	Refund(ctx context.Context, req RefundRequest) (RefundResult, error)
 }
 
 // PayIntent 一次支付的「意图」：谁、哪张单、多少钱、走哪条路。
@@ -26,7 +34,8 @@ type PayService interface {
 // 渠道专属的东西（openid / return_url / 场景）不进领域，丢进 Scene / Extra，
 // 由渠道实现自己解读。
 type PayIntent struct {
-	OrderID    int64
+	OrderID int64
+
 	CustomerID int64
 	Amount     int64            // 分：跟订单 payableAmount 对齐
 	Channel    order.PayChannel // 支付途径（微信 / 支付宝 / 银行卡…）
@@ -49,4 +58,30 @@ const (
 	PaySuccess                      // 已成功
 	PayFailed                       // 失败
 	PayClosed                       // 已关单 / 超时
+)
+
+// RefundRequest 一次退款申请：哪笔订单、退多少钱、退款单号。
+//
+// 退款是「原路退回」，所以要带上原支付的渠道流水号；退款单号（商户侧）我们自己生成。
+type RefundRequest struct {
+	OrderID  int64  // 原订单（也当商户单号用）
+	RefundID int64  // 商户退款单号（refund 聚合的 id）
+	TradeNo  string // 原支付的渠道流水号
+	Amount   int64  // 退款金额（分）
+	Reason   string // 退款原因
+}
+
+// RefundResult 一次退款申请的结果。
+type RefundResult struct {
+	RefundTradeNo string       // 渠道退款流水号
+	Status        RefundStatus // 已受理 / 已退 / 失败
+}
+
+// RefundStatus 退款在渠道侧的状态。
+type RefundStatus int
+
+const (
+	RefundPending RefundStatus = iota + 1 // 已受理，等渠道打款（异步渠道常态）
+	RefundSuccess                         // 已退
+	RefundFailed                          // 退款失败
 )
