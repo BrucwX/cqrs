@@ -7,16 +7,14 @@ package course
 
 import (
 	appRepo "payment/internal/app/command/appRepo"
-	appService "payment/internal/app/command/appService"
 	"payment/internal/domain/repo"
-	orderitemscheck "payment/internal/domain/service/orderItemsCheck"
 )
 
 type Handler struct {
 	orderCommand     repo.OrderCommand
 	orderItemCommand repo.OrderItemCommand
-	itemsCheck       *orderitemscheck.Service
-	courseService    appService.CourseService
+	customerCommand  repo.CustomerCommand
+	courseService    appRepo.CourseService
 	tx               appRepo.Transaction
 }
 
@@ -24,13 +22,15 @@ type Handler struct {
 func NewHandler(
 	orderCommand repo.OrderCommand,
 	orderItemCommand repo.OrderItemCommand,
-	itemsCheck *orderitemscheck.Service,
+	customerCommand repo.CustomerCommand,
+	courseService appRepo.CourseService,
 	tx appRepo.Transaction,
 ) *Handler {
 	return &Handler{
 		orderCommand:     orderCommand,
 		orderItemCommand: orderItemCommand,
-		itemsCheck:       itemsCheck,
+		customerCommand:  customerCommand,
+		courseService:    courseService,
 		tx:               tx,
 	}
 }

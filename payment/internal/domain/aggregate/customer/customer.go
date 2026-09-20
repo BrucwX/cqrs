@@ -10,7 +10,7 @@ import "payment/pkg/uuid"
 // 积分直接放在这里：只记一个余额，不记流水、不分类型、不管适用范围。
 type Customer struct {
 	id        int64
-	accountID int64 // 这个客户对应的**登录账号** ID（账号体系在别处）；聚合自己的主键是 id
+	accountID string // 这个客户对应的**登录账号** ID（账号体系在别处）；聚合自己的主键是 id
 	contact   Contact
 	status    Status
 	points    int64
@@ -113,11 +113,11 @@ func (c *Customer) CanAffordPoints(points int64) bool {
 
 // --- 属性只读访问器 (Getters) ---
 
-func (c *Customer) ID() int64        { return c.id }
-func (c *Customer) AccountID() int64 { return c.accountID }
-func (c *Customer) Contact() Contact { return c.contact }
-func (c *Customer) Status() Status   { return c.status }
-func (c *Customer) Points() int64    { return c.points }
+func (c *Customer) ID() int64         { return c.id }
+func (c *Customer) AccountID() string { return c.accountID }
+func (c *Customer) Contact() Contact  { return c.contact }
+func (c *Customer) Status() Status    { return c.status }
+func (c *Customer) Points() int64     { return c.points }
 
 // 下面是联系方式的透传访问器，省得调用方每次都写 c.Contact().Name()。
 

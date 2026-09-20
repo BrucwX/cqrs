@@ -17,6 +17,8 @@ var (
 	ErrInvalidQuantity = errors.New("quantity must be positive")
 	// ErrOrderItemAlreadyConfirmed 这一行已经归到订单上了（不是草稿行）。
 	ErrOrderItemAlreadyConfirmed = errors.New("order item is already confirmed")
+	// ErrOrderItemWrongType 行项里商品的分类型不是指定的那一类（一张单只装同一类商品）。
+	ErrOrderItemWrongType = errors.New("order item product type does not match")
 
 	// ErrOrderItemRequired 传入的订单行项为空。
 	ErrOrderItemRequired = errors.New("order item is required")

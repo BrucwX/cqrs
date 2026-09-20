@@ -21,7 +21,7 @@ type Product interface {
 	Price() int64 // 标价（分）；单位含义随具体类型而定
 	Status() Status
 	IsOnSale() bool
-	Type() string     // 分类 code：课程 / 数码 / 服务包（券的适用范围按它匹配）
+	Type() Type       // 分类值对象：课程 / 数码 / 服务包（券的适用范围按它匹配）
 	TargetId() string // 具体类型的标识（如课程 / 服务包的 id），由具体类型自己定义
 	isProductKind()   // 密封约束，防止包外随意实现（内嵌 ProductMeta 就自动满足）
 }

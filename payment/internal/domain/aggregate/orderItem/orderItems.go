@@ -1,10 +1,5 @@
 package orderItem
 
-import (
-	"maps"
-	"slices"
-)
-
 // --- 订单行集合 ---
 
 // OrderItems 是一组订单行：把 []OrderItem 起个名字，好在上面挂几个「一次看一批行」的
@@ -87,13 +82,16 @@ func (items OrderItems) Total() int64 {
 	return total
 }
 
-// CustomerIDs 这批行涉及到的**受赠人**（去重 + 升序）：同一批东西送给同一个人时只查一次客户。
+// CustomerIDs 这一批行**各自**给谁（有几个行项就有几个，顺序照原样）。
+//
+// 拿去批量查客户时用。⚠️ 不去重：同一个受赠人被多行指着就会出现多次，
+// 要按人去重的话调用方自己收一下。
 func (items OrderItems) CustomerIDs() []int64 {
-	seen := make(map[int64]struct{}, len(items))
+	ids := make([]int64, 0, len(items))
 	for _, item := range items {
-		seen[item.CustomerID()] = struct{}{}
+		ids = append(ids, item.CustomerID())
 	}
-	return slices.Sorted(maps.Keys(seen))
+	return ids
 }
 
 // QuantityByProduct 按商品汇总数量：同一个商品出现在多行也会累加到一起，
