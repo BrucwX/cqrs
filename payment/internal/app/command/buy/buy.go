@@ -13,13 +13,17 @@ import (
 const defaultPaymentWindow = 30 * time.Minute
 
 // CreateOrderIn 下单入参。
-type BuyProductIn struct {
+type BuyCourseIn struct {
 	CustomerID   int64   // 下单的客户（不是行上的受赠人；原价按行项合计）
 	OrderItemIDs []int64 // 已经拼好的草稿行（购物车式的行项）
 	pc           orderagg.PayChannel
 }
 
-func (h *Handler) BuyProduct(ctx context.Context, in BuyProductIn) (err error) {
+func (h *Handler) BuyCourse(ctx context.Context, in BuyCourseIn) (err error) {
+	h.tx.Begin(ctx)
+
+	defer h.tx.Rollback(ctx)
+
 	// 取数
 	items, err := h.orderItemCommand.MustGetOrderItems(ctx, in.OrderItemIDs)
 	if err != nil {
@@ -42,7 +46,7 @@ func (h *Handler) BuyProduct(ctx context.Context, in BuyProductIn) (err error) {
 	// 支付
 	h.pay.Pay(ctx, c.ID(), po.ID(), in.pc)
 
-	return nil
+	return h.tx.Commit(ctx)
 }
 
 // CheckCanBuy 买之前的校验：把 items 涉及到的商品和客户都取出来，交给课程那边校验报名。
