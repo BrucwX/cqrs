@@ -1,4 +1,4 @@
-package couponType
+package coupon
 
 import "strings"
 
@@ -20,8 +20,8 @@ func (k Kind) Valid() bool {
 
 // Benefit 是券的权益规格：这张券长什么样、能减多少。
 //
-// 它由「券种类」（couponType 聚合）定义，**发券时快照进每一张具体的券** ——
-// 之后种类改名、改面额、下架，都不影响已经发出去的券。
+// 它是**发券时快照进券里**的规格 —— 之后改规格、下架之类的动作都不影响已经发出去的券
+// （券自己拿着这一份，要是想改这张券的面额，就改这张券）。
 //
 // 金额一律用「分」的 int64 表示。
 type Benefit struct {

@@ -1,4 +1,4 @@
-package couponType
+package coupon
 
 import (
 	"maps"
@@ -14,8 +14,10 @@ import (
 //   - 通用：任何商品都能用（NewUniversalScope）；
 //   - 限定：只能用在指定**商品分类**下的商品（NewLimitedScope）。
 //
-// 按分类（product.Type 的 code）而不是按单个商品限定：新商品只要归到该分类就自动可用，
-// 不用维护白名单。分类是值对象、没有 id，所以这里也用 code 当键。
+// 按**分类 code** 而不是按单个商品限定：新商品只要归到该分类就自动可用，不用维护白名单。
+// 这里只存 code 这串字符串 —— 券不认识 product 包，分类别处怎么表达跟它无关。
+//
+// 它是**发券时快照进券里**的：券自己拿着这一份，适用范围不会再被别处改动。
 type Scope struct {
 	universal        bool
 	productTypeCodes map[string]struct{}

@@ -5,62 +5,71 @@ import (
 	"time"
 
 	"payment/pkg/uuid"
-
-	"payment/internal/domain/aggregate/couponType"
 )
 
 // --- 聚合根 (Aggregate Root) ---
 
 // Coupon 是「一张已经发到客户手上的优惠券」的聚合根。
 //
-// 券种类（权益规格、适用商品类别、有效期规则、发放配额）活在另一个聚合 couponType 里，
-// 本聚合只存一个 couponTypeID —— **不复制权益与适用范围的副本**，要用的时候由调用方
-// 按这个 ID 把种类查出来，一起传进判定方法。
+// 券就是券，**没有「券种类」这一层** —— 权益规格（Benefit）与适用范围（Scope）在发券时
+// 就快照到券自己身上，之后改规格不影响已经发出去的券。
 //
-// 券自己持有的事实只有：券码、持有人、有效期（发券时按种类规则算好，之后固定）、
-// 生命周期状态与核销记录。
+// 券自己持有的事实：券码、持有人、权益快照、适用范围快照、有效期（发券时按规则算好，
+// 之后固定）、生命周期状态与核销记录。
 //
 // 金额一律用「分」的 int64 表示，不引入浮点。
 type Coupon struct {
-	id           int64
-	code         string // 券码：对外展示、核销时按它找券
-	ownerID      int64  // 持有人
-	couponTypeID int64  // 来源券种类：权益 / 适用范围都按它现查
+	id      int64
+	code    string // 券码：对外展示、核销时按它找券
+	ownerID int64  // 持有人
 
-	validFrom time.Time // 发券时按种类的有效期规则算出来的窗口
+	benefit Benefit // 权益快照：能减多少、什么门槛
+	scope   Scope   // 适用范围快照：能用在哪些商品分类上
+
+	validFrom time.Time // 发券时按有效期规则算出来的窗口
 	validTo   time.Time
 	status    Status // 生命周期状态
 	orderID   int64  // 核销到哪张订单
 	usedAt    time.Time
 }
 
-// NewCoupon 发券：由调用方拿券种类 Issue 出来的有效期窗口调过来，券从「未使用」开始。
+// NewCoupon 发券：权益与适用范围随券一起落库（快照），有效期按规则以发券时刻为基准算出来。
 //
-// 校验只剩「券自己这半边」：持有人、来源种类、有效期窗口；权益与适用范围不落库。
+// 券从「未使用」开始。有效期固定窗口已经过去时报 ErrCouponExpired（相对窗口不会命中，days > 0）。
 func NewCoupon(
 	ownerID int64,
-	couponTypeID int64,
-	validFrom time.Time,
-	validTo time.Time,
+	benefit Benefit,
+	scope Scope,
+	validity Validity,
+	now time.Time,
 ) (*Coupon, error) {
 	if ownerID <= 0 {
 		return nil, ErrCouponOwnerRequired
 	}
-	if couponTypeID <= 0 {
-		return nil, ErrCouponTypeRequired
+	if !benefit.Kind().Valid() {
+		return nil, ErrBenefitRequired
 	}
-	if !validFrom.Before(validTo) {
-		return nil, ErrInvalidValidity
+	if !scope.valid() {
+		return nil, ErrInvalidScope
+	}
+	if !validity.valid() {
+		return nil, ErrInvalidValidityRule
+	}
+
+	validFrom, validTo := validity.Resolve(now)
+	if !now.Before(validTo) {
+		return nil, ErrCouponExpired
 	}
 
 	return &Coupon{
-		id:           uuid.NewInt64(),
-		code:         generateCode(),
-		ownerID:      ownerID,
-		couponTypeID: couponTypeID,
-		validFrom:    validFrom,
-		validTo:      validTo,
-		status:       StatusUnused,
+		id:        uuid.NewInt64(),
+		code:      generateCode(),
+		ownerID:   ownerID,
+		benefit:   benefit,
+		scope:     scope,
+		validFrom: validFrom,
+		validTo:   validTo,
+		status:    StatusUnused,
 	}, nil
 }
 
@@ -69,7 +78,8 @@ func Reconstitute(
 	id int64,
 	code string,
 	ownerID int64,
-	couponTypeID int64,
+	benefit Benefit,
+	scope Scope,
 	validFrom time.Time,
 	validTo time.Time,
 	status Status,
@@ -77,15 +87,16 @@ func Reconstitute(
 	usedAt time.Time,
 ) *Coupon {
 	return &Coupon{
-		id:           id,
-		code:         code,
-		ownerID:      ownerID,
-		couponTypeID: couponTypeID,
-		validFrom:    validFrom,
-		validTo:      validTo,
-		status:       status,
-		orderID:      orderID,
-		usedAt:       usedAt,
+		id:        id,
+		code:      code,
+		ownerID:   ownerID,
+		benefit:   benefit,
+		scope:     scope,
+		validFrom: validFrom,
+		validTo:   validTo,
+		status:    status,
+		orderID:   orderID,
+		usedAt:    usedAt,
 	}
 }
 
@@ -118,10 +129,8 @@ func (c *Coupon) ensureRedeemable(now time.Time) error {
 
 // ensureUsable 判定券此刻能否用在「某类商品 + orderAmount」上（不改状态）。
 //
-// 券这半边看状态与有效期；种类那半边看适用商品类别与门槛 —— 所以种类要传进来，
-// 不能靠券上存副本（券只留 couponTypeID）。
+// 看三样：券自身的状态与有效期、适用范围（Scope 快照）、门槛（Benefit 快照）。
 func (c *Coupon) ensureUsable(
-	ct *couponType.CouponType,
 	orderAmount int64,
 	productTypeCode string,
 	now time.Time,
@@ -132,10 +141,10 @@ func (c *Coupon) ensureUsable(
 	if orderAmount <= 0 {
 		return ErrInvalidOrderAmount
 	}
-	if !ct.Scope().Covers(productTypeCode) {
+	if !c.scope.Covers(productTypeCode) {
 		return ErrCouponNotApplicable
 	}
-	if !ct.Benefit().MeetsThreshold(orderAmount) {
+	if !c.benefit.MeetsThreshold(orderAmount) {
 		return ErrThresholdNotMet
 	}
 	return nil
@@ -143,25 +152,23 @@ func (c *Coupon) ensureUsable(
 
 // DiscountFor 预演这张券在某类商品、某个订单金额上能减多少（只读，不改状态）。
 func (c *Coupon) DiscountFor(
-	ct *couponType.CouponType,
 	orderAmount int64,
 	productTypeCode string,
 	now time.Time,
 ) (int64, error) {
-	if err := c.ensureUsable(ct, orderAmount, productTypeCode, now); err != nil {
+	if err := c.ensureUsable(orderAmount, productTypeCode, now); err != nil {
 		return 0, err
 	}
-	return ct.Benefit().DiscountFor(orderAmount), nil
+	return c.benefit.DiscountFor(orderAmount), nil
 }
 
 // IsUsableAt 券此刻是否可用于「某类商品 + orderAmount」（只判不读优惠额，给「展示可用券列表」用）。
 func (c *Coupon) IsUsableAt(
-	ct *couponType.CouponType,
 	orderAmount int64,
 	productTypeCode string,
 	now time.Time,
 ) bool {
-	return c.ensureUsable(ct, orderAmount, productTypeCode, now) == nil
+	return c.ensureUsable(orderAmount, productTypeCode, now) == nil
 }
 
 // Redeem 核销：把券打到指定订单上，只做状态流转与登记 —— 优惠额由 DiscountFor 先算好
@@ -229,7 +236,8 @@ func (c *Coupon) EffectiveStatus(now time.Time) Status {
 func (c *Coupon) ID() int64            { return c.id }
 func (c *Coupon) Code() string         { return c.code }
 func (c *Coupon) OwnerID() int64       { return c.ownerID }
-func (c *Coupon) CouponTypeID() int64  { return c.couponTypeID }
+func (c *Coupon) Benefit() Benefit     { return c.benefit }
+func (c *Coupon) Scope() Scope         { return c.scope }
 func (c *Coupon) ValidFrom() time.Time { return c.validFrom }
 func (c *Coupon) ValidTo() time.Time   { return c.validTo }
 func (c *Coupon) Status() Status       { return c.status }

@@ -1,4 +1,4 @@
-package couponType
+package coupon
 
 import "time"
 
@@ -16,7 +16,10 @@ const (
 //
 // 两种口径二选一：
 //   - 固定窗口：活动券，统一在某个区间内有效；
-//   - 相对窗口：领券时才算得出来，就是「领取后 N 天内有效」（按自然日，含领取当天）。
+//   - 相对窗口：发券时才算得出来，就是「领取后 N 天内有效」（按自然日，含领取当天）。
+//
+// 它只活在**发券**这一步：`Coupon.NewCoupon` 拿它按发券时刻算出窗口，算完就只留
+// validFrom / validTo 在券上，规则本身不再跟着券走。
 type Validity struct {
 	kind ValidityKind
 	from time.Time

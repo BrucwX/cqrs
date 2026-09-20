@@ -6,70 +6,23 @@ import (
 	"payment/internal/domain/aggregate/orderItem"
 )
 
-// CanOrderCreate 下单前的预检：把几个单项检查串起来，一个不过就整体不过。
+// CanOrderCreate 下单前的预检：这批行项能不能拿去下单。
 //
-// 真正的规则都在各自的 CheckXxx 里（商品库存 / 受赠人可交易），这里只负责「取数 + 逐个过」。
+// 现在只有一条：**都还是草稿** —— 有一行已经归到别的订单上，就不能再拿去建新单
+// （否则同一批行项会被两张订单共用）。
 //
-// ⚠️ 预检只是「提前说不行」：真正扣库存是下单时 LimitedProduct.ReserveStock 的事，
-// 那一步才挡得住并发（这里到那里之间的 TOCTOU 谁都躲不掉）。
+// ⚠️ 预检只是「提前说不行」：判完之后到真正下单之间，这批行项仍可能被别人用掉，
+// 兜底靠的是下单时把行项 ConfirmAll 到订单上那一步（这段 TOCTOU 谁都躲不掉）。
 func (s *Service) CanOrderCreate(ctx context.Context, orderItemIDs []int64) (bool, error) {
 	orderItems, err := s.repo.MustGetOrderItems(ctx, orderItemIDs)
 	if err != nil {
 		return false, err
 	}
-
 	// 要下单的这批行项必须**都还是草稿**：有一行已经归到别的订单上，就不能再拿去
 	// 建新单（否则同一批行项会被两张订单共用）。
 	if !orderItems.AllDraft() {
 		return false, orderItem.ErrOrderItemAlreadyConfirmed
 	}
 
-	for _, check := range []func(context.Context, orderItem.OrderItems) (bool, error){
-		s.CheckProductQuantity,
-		s.CheckCustomerReceive,
-	} {
-		ok, err := check(ctx, orderItems)
-		if err != nil || !ok {
-			return false, err
-		}
-	}
-
-	return true, nil
-}
-
-// CheckProductQuantity 每件商品的库存够不够。
-//
-// 汇总（同一个商品多行会累加）是集合自己的事，判定是商品自己的事（HasStockFor）——
-// 服务类商品压根没有库存这回事，无限类商品没有上限，两个都会答「够」。
-func (s *Service) CheckProductQuantity(ctx context.Context, orderItems orderItem.OrderItems) (bool, error) {
-	// 按商品汇总（同一个商品多行会累加）是集合自己的事，这里只管一个个商品去问库存。
-	// 接出来存一份：汇总会遍历一遍并新建 map，别在循环条件里反复求值（读起来也容易误会）。
-	needByProduct := orderItems.QuantityByProduct()
-	for productID, need := range needByProduct {
-		p, err := s.repo.MustGetProduct(ctx, productID)
-		if err != nil {
-			return false, err
-		}
-		if !p.HasStockFor(need) {
-			return false, nil
-		}
-	}
-
-	return true, nil
-}
-
-// CheckCustomerReceive 每一行的**受赠人**都得存在、而且能交易（冻结的客户不能收东西）。
-//
-// 自己买给自己、还是买来送人，规则是同一个 —— 收东西的人本身得是「可交易」状态。
-func (s *Service) CheckCustomerReceive(ctx context.Context, orderItems orderItem.OrderItems) (bool, error) {
-	for _, customerID := range orderItems.CustomerIDs() {
-		customer, err := s.repo.MustGetCustomer(ctx, customerID)
-		if err != nil {
-			return false, err
-		}
-		if !customer.CanTrade() {
-			return false, nil
-		}
-	}
 	return true, nil
 }
