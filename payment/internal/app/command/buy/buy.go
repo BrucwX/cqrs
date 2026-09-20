@@ -2,6 +2,7 @@ package buy
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	appRepo "payment/internal/app/command/appRepo"
@@ -66,7 +67,51 @@ func (h *Handler) BuyCourse(ctx context.Context, in BuyCourseIn) (result appRepo
 	if err = h.tx.Commit(ctx); err != nil {
 		return appRepo.PayResult{}, err
 	}
+
+	// 开启超时关单：支付窗口过了还没付，就把这张订单关掉（异步，不在本事务里）。
+	// id 带订单号：之后可以按 id 精确取消（比如用户在窗口内提前付了、或主动取消）。
+	if _, err := h.scheduler.AfterFunc(
+		fmt.Sprintf("close-unpaid-order-%d", po.ID()),
+		defaultPaymentWindow,
+		func(ctx context.Context) error {
+			return h.closeIfUnpaid(ctx, po.ID())
+		},
+	); err != nil {
+		return appRepo.PayResult{}, err
+	}
+
 	return result, nil
+}
+
+// closeIfUnpaid 支付窗口到了还没付的订单，关掉它：
+// 领域关单（CloseIfExpired）→ 落库 → 渠道侧关单（pay.Close）。
+// 已经不是待支付（付了 / 取消 / 已关单）或还没到点，就什么都不做。
+func (h *Handler) closeIfUnpaid(ctx context.Context, orderID int64) error {
+	o, err := h.orderCommand.MustGetOrder(ctx, orderID)
+	if err != nil {
+		return err
+	}
+
+	pending, ok := o.(orderagg.PendingOrder)
+	if !ok {
+		return nil // 付了 / 取消 / 已关单，没得可关
+	}
+
+	now := time.Now()
+	if !pending.IsExpired(now) {
+		return nil // 定时器提前触发，还没到点
+	}
+
+	closed, err := pending.CloseIfExpired(now)
+	if err != nil {
+		return err
+	}
+	if err := h.orderCommand.Save(ctx, closed); err != nil {
+		return err
+	}
+
+	// 渠道侧也关一下（微信 closeorder；支付宝自动关 / 无副作用）。
+	return h.pay.Close(ctx, orderID)
 }
 
 // CheckCanBuy 买之前的校验：把 items 涉及到的商品和客户都取出来，交给课程那边校验报名。

@@ -8,6 +8,7 @@ package buy
 import (
 	appRepo "payment/internal/app/command/appRepo"
 	"payment/internal/domain/repo"
+	timer "payment/internal/pkg"
 )
 
 type Handler struct {
@@ -18,6 +19,7 @@ type Handler struct {
 	courseService    appRepo.CourseService
 	pay              appRepo.PayService
 	tx               appRepo.Transaction
+	scheduler        timer.Scheduler
 }
 
 // NewHandler 构造：依赖由上层（wire）注入。
@@ -29,6 +31,7 @@ func NewHandler(
 	courseService appRepo.CourseService,
 	pay appRepo.PayService,
 	tx appRepo.Transaction,
+	scheduler timer.Scheduler,
 ) *Handler {
 	return &Handler{
 		orderCommand:     orderCommand,
@@ -38,5 +41,6 @@ func NewHandler(
 		courseService:    courseService,
 		pay:              pay,
 		tx:               tx,
+		scheduler:        scheduler,
 	}
 }

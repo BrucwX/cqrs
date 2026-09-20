@@ -22,12 +22,16 @@ type Timer interface {
 
 // Scheduler 负责管理和调度所有定时任务
 type Scheduler interface {
-	// AfterFunc 在延迟 d 之后在独立协程中执行任务 f
-	AfterFunc(d time.Duration, task Task) (Timer, error)
+	// AfterFunc 注册一个「延迟 d 之后执行一次」的任务，返回它的句柄。
+	// id 全局唯一，之后可用 Cancel(id) 精确停掉这一个。
+	AfterFunc(id string, d time.Duration, task Task) (Timer, error)
 
-	// Every 周期性执行任务，interval 为执行间隔
-	Every(interval time.Duration, task Task) (Timer, error)
+	// Every 注册一个「每隔 interval 执行一次」的周期任务，返回它的句柄。
+	Every(id string, interval time.Duration, task Task) (Timer, error)
 
-	// Close 优雅停止调度器，释放底层资源
+	// Cancel 停止并移除指定 id 的任务；返回之前是否存在（false = 没这个任务 / 已停）。
+	Cancel(id string) bool
+
+	// Close 优雅停止调度器，释放底层资源（等价于停掉所有任务）。
 	Close(ctx context.Context) error
 }
