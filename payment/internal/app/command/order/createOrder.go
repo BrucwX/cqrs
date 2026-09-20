@@ -32,7 +32,7 @@ type CreateOrderIn struct {
 // 全程一个事务：任何一步出错都整体回滚 —— 「行项归了单但订单没建出来」这种半成品不能留。
 func (h *Handler) CreateOrder(ctx context.Context, in CreateOrderIn) (err error) {
 	if len(in.OrderItemIDs) == 0 {
-		return ErrOrderItemsRequired
+		return orderagg.ErrOrderItemsRequired
 	}
 
 	ctx, err = h.tx.Begin(ctx)
@@ -52,7 +52,7 @@ func (h *Handler) CreateOrder(ctx context.Context, in CreateOrderIn) (err error)
 		return err
 	}
 	if !ok {
-		return ErrOrderNotCreatable
+		return orderagg.ErrOrderNotCreatable
 	}
 
 	now := time.Now()

@@ -8,7 +8,6 @@ package appRepo
 import "context"
 
 // Transaction 手动开/关一个事务。
-//
 type Transaction interface {
 	// Begin 开启事务，返回带着它的 ctx。
 	Begin(ctx context.Context) (context.Context, error)
