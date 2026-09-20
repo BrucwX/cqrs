@@ -15,6 +15,8 @@ var (
 
 	// ErrProductTargetRequired 具体商品必须指向一个目标（如课程 / 服务包的 id）。
 	ErrProductTargetRequired = errors.New("product target is required")
+	// ErrUnsupportedProductType 还不支持的**商品类型**：这类商品怎么校验、买完要做什么还没定义。
+	ErrUnsupportedProductType = errors.New("unsupported product type")
 
 	// --- 仓库层用（等 MustGetProduct 在适配层落地就会用到） ---
 

@@ -30,3 +30,16 @@ func (ps Products) TargetIds() []string {
 	}
 	return ids
 }
+
+// GroupByType 按**商品类型**把这一批商品分开：key 是分类，value 是这一类的那几件。
+//
+// 留着的用处：哪天真要多卖几类（不同类型「怎么校验、买完要做什么」不一样），
+// 调用方先分组、再一类一类派给对应能力。
+func (ps Products) GroupByType() map[Type]Products {
+	groups := make(map[Type]Products)
+	for _, p := range ps {
+		t := p.Type()
+		groups[t] = append(groups[t], p)
+	}
+	return groups
+}
