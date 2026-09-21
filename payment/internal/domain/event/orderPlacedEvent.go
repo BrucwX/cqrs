@@ -1,11 +1,12 @@
 package event
 
-import (
-	"payment/internal/domain/aggregate/customer"
-	"payment/internal/domain/aggregate/orderItem"
-)
+const topic = "Order"
 
 type OrderPlacedEvent struct {
-	OrderItems orderItem.OrderItems
-	Customer   customer.Customer
+	EventMeta
+	CustomerId string
 }
+
+func (O *OrderPlacedEvent) Topic() EventTopic { return topic }
+
+func (O *OrderPlacedEvent) isDomainEvent() {}
