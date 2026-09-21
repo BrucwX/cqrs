@@ -15,6 +15,8 @@ var (
 
 	// --- 状态迁移（能走到这里的都是「状态对了、条件不满足」） ---
 
+	// ErrOrderNotPending 订单不是待支付状态（已经付了 / 取消 / 关单），没有可付的了。
+	ErrOrderNotPending = errors.New("order is not pending")
 	// ErrOrderExpired 订单已过支付时限，不能再支付（要先关单）。
 	ErrOrderExpired = errors.New("order has expired")
 	// ErrOrderNotExpired 订单还没到期，不能关单。

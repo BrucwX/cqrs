@@ -1,6 +1,6 @@
-package buy
+package course
 
-// Package buy 是「买课」用例（写侧）。
+// Package course 是「买课」用例（写侧）。
 //
 // 一个用例一个 Handler：拿到写侧仓储端口 + 领域判定服务 + 事务端口，
 // 按「先判、过了才写」的顺序来。
@@ -19,6 +19,7 @@ type Handler struct {
 	courseService    appRepo.CourseService
 	pay              appRepo.PayService
 	tx               appRepo.Transaction
+	idservice        appRepo.IdempotencyService
 	scheduler        timer.Scheduler
 }
 
@@ -31,6 +32,7 @@ func NewHandler(
 	courseService appRepo.CourseService,
 	pay appRepo.PayService,
 	tx appRepo.Transaction,
+	idservice appRepo.IdempotencyService,
 	scheduler timer.Scheduler,
 ) *Handler {
 	return &Handler{
@@ -41,6 +43,7 @@ func NewHandler(
 		courseService:    courseService,
 		pay:              pay,
 		tx:               tx,
+		idservice:        idservice,
 		scheduler:        scheduler,
 	}
 }

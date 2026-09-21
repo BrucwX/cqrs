@@ -31,16 +31,25 @@ type PayService interface {
 
 // PayIntent 一次支付的「意图」：谁、哪张单、多少钱、走哪条路。
 //
-// 渠道专属的东西（openid / return_url / 场景）不进领域，丢进 Scene / Extra，
+// 标识分两层，别混：
+//   - OrderID / CustomerID 是**我方**的主键（商户单号就用订单号，见 order.MarkPaid）；
+//   - ThirdPartyOrderID / ThirdPartyCustomerID 是**第三方平台侧**的对应标识，
+//     查单、对账、退款关联都得靠它们。外部 id 一律 string：openid、平台单号
+//     的形态由平台定，别假设它一定是数字。
+//
+// 其余渠道专属的东西（return_url / 商品描述 / 证书序列号…）仍丢进 Scene / Extra，
 // 由渠道实现自己解读。
 type PayIntent struct {
-	OrderID int64
+	OrderID              int64  // 我方订单号（也就是交给平台的商户单号）
+	CustomerID           int64  // 我方顾客 id
+	ThirdPartyOrderID    string // 第三方平台的订单 id：这笔单在平台侧的唯一标识
+	ThirdPartyCustomerID string // 第三方平台的顾客 id：微信 openid / 支付宝 buyer_id 等
 
-	CustomerID int64
-	Amount     int64            // 分：跟订单 payableAmount 对齐
-	Channel    order.PayChannel // 支付途径（微信 / 支付宝 / 银行卡…）
-	Scene      string           // 渠道内场景：app / h5 / native / jsapi
-	Extra      map[string]string
+	Amount         int64            // 分：跟订单 payableAmount 对齐
+	Channel        order.PayChannel // 支付途径（微信 / 支付宝 / 银行卡…）
+	Scene          string           // 渠道内场景：app / h5 / native / jsapi
+	IdempotencyKey string           // 等幂key
+	Extra          map[string]string
 }
 
 // PayResult 一次 Prepare 的结果：前端下一步怎么办，或同步渠道的最终结果。
