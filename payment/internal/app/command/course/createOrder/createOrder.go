@@ -85,7 +85,7 @@ func (h *Handler) CreateCOrder(ctx context.Context, in CreateCOrderIn) (out Crea
 
 	// 开启超时关单：支付窗口过了还没付，就把这张订单关掉
 	// （异步，不在本事务里）。
-	if err = h.p.Notify(ctx, pending.ID()); err != nil {
+	if err = h.p.Notify(ctx, pending.ID(), defaultPaymentWindow); err != nil {
 		return CreateCOrderOut{}, err
 	}
 
