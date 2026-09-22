@@ -10,7 +10,6 @@ import (
 	"payment/internal/ports"
 )
 
-// defaultPaymentWindow 没传支付时限时的默认值：30 分钟不付就会被关单。
 const defaultPaymentWindow = 3 * time.Minute
 
 // CreateCOrderIn 下单入参。
@@ -86,7 +85,7 @@ func (h *Handler) CreateCOrder(ctx context.Context, in CreateCOrderIn) (out Crea
 
 	// 开启超时关单：支付窗口过了还没付，就把这张订单关掉
 	// （异步，不在本事务里）。
-	if err = h.p.ClosePayNotify(ctx, pending.ID()); err != nil {
+	if err = h.p.Notify(ctx, pending.ID()); err != nil {
 		return CreateCOrderOut{}, err
 	}
 
@@ -109,7 +108,6 @@ func (h *Handler) CreateCOrder(ctx context.Context, in CreateCOrderIn) (out Crea
 
 	return CreateCOrderOut{OrderID: pending.ID(), Pay: payResult}, nil
 }
-
 
 // CheckCanBuy 买之前的校验：把 items 涉及到的商品和客户都取出来，交给课程那边校验报名。
 //

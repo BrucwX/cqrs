@@ -20,7 +20,7 @@ type Handler struct {
 	pay              ports.PayService
 	tx               ports.Transaction
 	idservice        ports.IdempotencyService
-	p                ports.ClosePayProducer
+	p                ports.ClosePayQueue
 }
 
 // NewHandler 构造：依赖由上层（wire）注入。
@@ -33,7 +33,7 @@ func NewHandler(
 	pay ports.PayService,
 	tx ports.Transaction,
 	idservice ports.IdempotencyService,
-	p ports.ClosePayProducer,
+	p ports.ClosePayQueue,
 ) *Handler {
 	return &Handler{
 		orderCommand:     orderCommand,
