@@ -1,4 +1,4 @@
-package ports
+package service
 
 import (
 	"payment/internal/conf"
@@ -14,7 +14,7 @@ type HTTPServer struct {
 
 // NewHTTPServer 创建 payment 的 HTTP 服务器。
 //
-// 加资源时：把 service.NewXxxService 加进参数列表，并在下面用
+// 加资源时：把本包的 NewXxxService 加进参数列表，并在下面用
 // xxxv1.RegisterXxxServiceHTTPServer(srv, svc) 注册 —— 多个 service 各自注册到
 // 同一个 mux，路由不会冲突。
 func NewHTTPServer(c *conf.Server) *HTTPServer {

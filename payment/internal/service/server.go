@@ -1,4 +1,4 @@
-package ports
+package service
 
 import "github.com/go-kratos/kratos/v3/transport"
 

@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"payment/internal/conf"
-	"payment/internal/ports"
+	"payment/internal/service"
 
 	"github.com/go-kratos/kratos/contrib/otel/v3/tracing"
 	"github.com/go-kratos/kratos/v3"
@@ -34,7 +34,7 @@ func init() {
 	flag.StringVar(&flagconf, "conf", "../../configs", "config path, eg: -conf config.yaml")
 }
 
-func newApp(logger *slog.Logger, servers *ports.Servers) *kratos.App {
+func newApp(logger *slog.Logger, servers *service.Servers) *kratos.App {
 	return kratos.New(
 		kratos.ID(id),
 		kratos.Name(Name),

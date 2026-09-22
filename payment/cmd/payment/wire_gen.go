@@ -7,13 +7,12 @@
 package main
 
 import (
-	"github.com/go-kratos/kratos/v3"
 	"log/slog"
 	"payment/internal/conf"
-	"payment/internal/ports"
-)
+	"payment/internal/service"
 
-import (
+	"github.com/go-kratos/kratos/v3"
+
 	_ "go.uber.org/automaxprocs"
 )
 
@@ -22,11 +21,11 @@ import (
 // wireApp init kratos application.
 //
 // payment 上下文只有一个，它的 ProviderSet（internal 根包）把
-// adapters / app / domain / service / ports 一次装齐；HTTP/gRPC 由 ports 提供。
+// adapters / app / domain / service 一次装齐；HTTP/gRPC 服务器由 service 提供。
 func wireApp(server *conf.Server, data *conf.Data, logger *slog.Logger) (*kratos.App, func(), error) {
-	httpServer := ports.NewHTTPServer(server)
-	grpcServer := ports.NewGRPCServer(server)
-	servers := ports.NewServers(httpServer, grpcServer)
+	httpServer := service.NewHTTPServer(server)
+	grpcServer := service.NewGRPCServer(server)
+	servers := service.NewServers(httpServer, grpcServer)
 	app := newApp(logger, servers)
 	return app, func() {
 	}, nil

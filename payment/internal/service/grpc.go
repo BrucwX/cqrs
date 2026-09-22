@@ -1,4 +1,4 @@
-package ports
+package service
 
 import (
 	"payment/internal/conf"
@@ -14,7 +14,7 @@ type GRPCServer struct {
 
 // NewGRPCServer 创建 payment 的 gRPC 服务器。
 //
-// 加资源时：把 service.NewXxxService 加进参数列表，并在下面用
+// 加资源时：把本包的 NewXxxService 加进参数列表，并在下面用
 // xxxv1.RegisterXxxServiceServer(srv, svc) 注册。
 func NewGRPCServer(c *conf.Server) *GRPCServer {
 	var opts = []grpc.ServerOption{

@@ -3,7 +3,7 @@ package command
 import (
 	"context"
 
-	appcmd "payment/internal/app/command/appRepo"
+	"payment/internal/ports"
 )
 
 // Begin 开启事务，转发给 MysqlData。
@@ -21,5 +21,5 @@ func (d *CommandImpl) Rollback(ctx context.Context) error {
 	return d.MysqlData.Rollback(ctx)
 }
 
-// 编译期约束：CommandImpl 必须实现 app/command.Transaction。
-var _ appcmd.Transaction = (*CommandImpl)(nil)
+// 编译期约束：CommandImpl 必须实现 ports.Transaction。
+var _ ports.Transaction = (*CommandImpl)(nil)

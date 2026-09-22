@@ -18,7 +18,7 @@ import (
 // wireApp init kratos application.
 //
 // payment 上下文只有一个，它的 ProviderSet（internal 根包）把
-// adapters / app / domain / service / ports 一次装齐；HTTP/gRPC 由 ports 提供。
+// adapters / app / domain / service 一次装齐；HTTP/gRPC 服务器由 service 提供。
 func wireApp(*conf.Server, *conf.Data, *slog.Logger) (*kratos.App, func(), error) {
 	panic(wire.Build(
 		payment.ProviderSet,

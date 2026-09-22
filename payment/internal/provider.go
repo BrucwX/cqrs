@@ -7,8 +7,9 @@
 //	app/command            写侧用例（handler）+ 命令侧领域判定服务
 //	app/query              读侧用例（handler）
 //	domain/service         跨聚合根的领域规则（写路径判定）
-//	service                传输层：proto <-> 用例入参的转换
-//	ports                  HTTP / gRPC 服务器
+//	service                传输层：HTTP / gRPC 服务器 + proto <-> 用例入参的转换
+//
+// ports（端口 / 接口）不在这张表里 —— 接口不需要谁“提供”，绑定写在 adapters 里。
 package payment
 
 import (
@@ -19,7 +20,6 @@ import (
 	appcommand "payment/internal/app/command"
 	appquery "payment/internal/app/query"
 	domainservice "payment/internal/domain/service"
-	"payment/internal/ports"
 	"payment/internal/service"
 )
 
@@ -35,8 +35,6 @@ var ProviderSet = wire.NewSet(
 	appquery.ProviderSet,
 	// domain - 跨聚合规则
 	domainservice.ProviderSet,
-	// service
+	// service - 传输层（HTTP / gRPC 服务器 + 各 service）
 	service.ProviderSet,
-	// ports
-	ports.ProviderSet,
 )

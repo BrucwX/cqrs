@@ -3,8 +3,8 @@
 // 本包只放 provider.go：汇总各 handler 子包的构造函数，以及命令侧专用的
 // 领域判定服务（domain/service）。
 //
-// Transaction 端口在子包 appRepo/ 里 —— handler 子包 import 端口，而本包
-// import handler 子包，两端都不碰对方，所以不会成环。
+// 端口（Transaction / CourseService / PayService / IdempotencyService）在
+// internal/ports/ 里 —— 用例只认接口，实现由 adapters/ 提供。
 package command
 
 import "github.com/google/wire"
