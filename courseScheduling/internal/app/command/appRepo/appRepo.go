@@ -1,27 +1,33 @@
 // Package appRepo 定义命令侧的存储端口。
-//
-// 单独放在一个子包里，而不是和 provider.go 一起放 app/command 父包：
-// handler 子包要 import 这个端口，而父包的 provider.go 又要 import handler 子包，
-// 两端都不碰对方，才不会成环。
 package appRepo
 
-import "context"
+import (
+	"context"
+	"errors"
 
-// Transaction 手动开/关一个事务。
-//
-// Begin 返回的 ctx 带着事务，之后必须拿它去调仓库 —— 事务靠 ctx 传递，
-// 用外面的 ctx 就跑到事务外了。
-//
-// 实现在存储侧（见 adapters/command/data/mysql 的 transaction.go）：
-// 期间任何仓库发出的读也落在同一个事务里。
-// ⚠️ 前提是读也走写库。如果读走 adapters/query/data/mysql 的从库，两边不共享事务，
-// 就不构成原子读了。
+	"courseScheduling/internal/domain/aggregate/classroom"
+)
+
+// Transaction 真事务：Begin 开一个数据库事务放进 ctx，End 按 err 提交或回滚。
 type Transaction interface {
-	// Begin 开启事务，返回带着它的 ctx。
 	Begin(ctx context.Context) (context.Context, error)
-
-	// End 结束事务：err 非 nil 就回滚，否则提交。
-	//
-	// 把 err 原样带出来，好在 defer 里一行收尾（见类型注释里的用法）。
 	End(ctx context.Context, err error) error
+}
+
+var ErrVersionConflict = errors.New("optimistic lock version conflict")
+
+// OptimisticTransaction 乐观锁事务：不加锁，靠「读版本 → 写时校验版本」发现并发，
+// 版本对不上就重跑**整个用例**。
+
+type OptimisticTransaction interface {
+	// RunUpdatClassroom 跑一次「更新教室」：id 是目标教室，updateFn 表达「怎么改」。
+	//
+	// 读教室（连同 lock_version）、带版本写回、冲突重试都由实现负责：
+	// 版本对不上就重跑 updateFn，最多 10 次，用光了才升级为真事务（行锁）。
+	// ⚠️ updateFn 会被执行多次，别在里面干发号 / 发消息这类事。
+	RunUpdatClassroom(
+		ctx context.Context,
+		id string,
+		updateFn func(ctx context.Context, cl *classroom.Classroom) (*classroom.Classroom, error),
+	) error
 }

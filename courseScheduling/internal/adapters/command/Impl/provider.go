@@ -16,6 +16,7 @@ var ProviderSet = wire.NewSet(
 	mysql.NewMysqlData,
 	NewCommandImpl,
 	wire.Bind(new(appcmd.Transaction), new(*CommandImpl)),
+	wire.Bind(new(appcmd.OptimisticTransaction), new(*CommandImpl)),
 	wire.Bind(new(repo.AbsenceRecordCommand), new(*CommandImpl)),
 	wire.Bind(new(repo.ClassroomCommand), new(*CommandImpl)),
 	wire.Bind(new(repo.CourseCommand), new(*CommandImpl)),

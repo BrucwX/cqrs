@@ -7,6 +7,7 @@ import (
 	"os"
 	"testing"
 
+	appcmd "courseScheduling/internal/app/command/appRepo"
 	"courseScheduling/internal/conf"
 	"courseScheduling/internal/domain/aggregate/classroom"
 	repo "courseScheduling/internal/domain/repo/command"
@@ -196,5 +197,125 @@ func TestClassroomImpTransaction(t *testing.T) {
 	}
 	if _, err := c.MustGetClassroom(context.Background(), cl.ID()); err != nil {
 		t.Fatalf("MustGet(after commit) = %v, want nil", err)
+	}
+}
+
+// sneakInUpdate 在「读到」和「写回」之间插一刀：直接再走一次版本化更新，
+// 把 lock_version 往前推一格 —— 等价于「别人在你的读和写之间抢先提交了」。
+//
+// 插在 updateFn 里是因为 UpdateClassroom 的顺序正是 读 → updateFn → 写回，
+// 只有在回调里动手才能稳定制造出冲突（否则只是白改一次）。
+func sneakInUpdate(t *testing.T, c *MysqlData, id string) error {
+	t.Helper()
+	return c.UpdateClassroom(context.Background(), id,
+		func(_ context.Context, cur *classroom.Classroom) (*classroom.Classroom, error) {
+			return cur, nil
+		})
+}
+
+// TestClassroomImpOptimisticRetry 版本冲突被重试吸收：第一次冲突，第二次成功。
+func TestClassroomImpOptimisticRetry(t *testing.T) {
+	c := newCommandData(t)
+	cl := createAndTrack(t, c)
+
+	attempts := 0
+	newCap := 25
+
+	err := c.RunUpdatClassroom(context.Background(), cl.ID(),
+		func(ctx context.Context, cur *classroom.Classroom) (*classroom.Classroom, error) {
+			attempts++
+			if attempts == 1 {
+				if err := sneakInUpdate(t, c, cl.ID()); err != nil {
+					return nil, err
+				}
+			}
+			if err := cur.Update(nil, &newCap, nil); err != nil {
+				return nil, err
+			}
+			return cur, nil
+		})
+	if err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	if attempts != 2 {
+		t.Errorf("fn 执行了 %d 次, want 2（第一次冲突后重试）", attempts)
+	}
+
+	got, err := c.MustGetClassroom(context.Background(), cl.ID())
+	if err != nil {
+		t.Fatalf("MustGet: %v", err)
+	}
+	if got.Capacity() != 25 {
+		t.Errorf("Capacity = %d, want 25（重试后的那次应当写成功）", got.Capacity())
+	}
+}
+
+// TestClassroomImpOptimisticFallsBack 连续 10 次都被抢先：升级为真事务（带行锁），
+// 第 11 次写入成功。
+func TestClassroomImpOptimisticFallsBack(t *testing.T) {
+	c := newCommandData(t)
+	cl := createAndTrack(t, c)
+
+	attempts := 0
+	newCap := 18
+
+	err := c.RunUpdatClassroom(context.Background(), cl.ID(),
+		func(ctx context.Context, cur *classroom.Classroom) (*classroom.Classroom, error) {
+			attempts++
+			// 前 maxOptimisticRetries 次都插一刀，逼它把重试用光
+			if attempts <= maxOptimisticRetries {
+				if err := sneakInUpdate(t, c, cl.ID()); err != nil {
+					return nil, err
+				}
+			}
+			if err := cur.Update(nil, &newCap, nil); err != nil {
+				return nil, err
+			}
+			return cur, nil
+		})
+	if err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	if attempts != maxOptimisticRetries+1 {
+		t.Errorf("fn 执行了 %d 次, want %d（10 次乐观 + 1 次真事务）", attempts, maxOptimisticRetries+1)
+	}
+
+	got, err := c.MustGetClassroom(context.Background(), cl.ID())
+	if err != nil {
+		t.Fatalf("MustGet: %v", err)
+	}
+	if got.Capacity() != 18 {
+		t.Errorf("Capacity = %d, want 18（兜底那次应当写成功）", got.Capacity())
+	}
+}
+
+// TestClassroomImpVersionConflict 直接撞版本：读到的版本写回时对不上就报冲突，
+// 不会把别人的改动盖掉。
+func TestClassroomImpVersionConflict(t *testing.T) {
+	c := newCommandData(t)
+	cl := createAndTrack(t, c)
+
+	newCap := 40
+	err := c.UpdateClassroom(context.Background(), cl.ID(),
+		func(ctx context.Context, cur *classroom.Classroom) (*classroom.Classroom, error) {
+			// 读到之后别人抢先提交
+			if err := sneakInUpdate(t, c, cl.ID()); err != nil {
+				return nil, err
+			}
+			if err := cur.Update(nil, &newCap, nil); err != nil {
+				return nil, err
+			}
+			return cur, nil
+		})
+	if !errors.Is(err, appcmd.ErrVersionConflict) {
+		t.Fatalf("err = %v, want ErrVersionConflict", err)
+	}
+
+	got, err := c.MustGetClassroom(context.Background(), cl.ID())
+	if err != nil {
+		t.Fatalf("MustGet: %v", err)
+	}
+	if got.Capacity() == 40 {
+		t.Error("冲突时不该写进去")
 	}
 }

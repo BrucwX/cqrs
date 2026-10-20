@@ -15,6 +15,7 @@ package command
 
 import (
 	"context"
+	"fmt"
 
 	"courseScheduling/internal/adapters/memImp4test"
 	"courseScheduling/internal/domain/aggregate/absence"
@@ -107,4 +108,30 @@ func (d *Data) Begin(ctx context.Context) (context.Context, error) {
 // End 满足 app/command.Transaction；内存里没什么可收尾的，把 err 透出去。
 func (d *Data) End(_ context.Context, err error) error {
 	return err
+}
+
+// RunUpdatClassroom 满足 app/command.OptimisticTransaction。
+//
+// 内存里只有一份 map、写操作被同一把锁串起来，不存在「读了又被别人改掉」这回事，
+// 也就没有版本冲突可重试：读 → 改 → 写回，一遍就够，也不需要真事务兜底。
+func (d *Data) RunUpdatClassroom(
+	ctx context.Context,
+	id string,
+	updateFn func(ctx context.Context, cl *classroom.Classroom) (*classroom.Classroom, error),
+) error {
+	current, ok := d.ClassroomByID(id)
+	if !ok {
+		return fmt.Errorf("%w: %s", classroom.ErrClassroomNotFound, id)
+	}
+
+	updated, err := updateFn(ctx, current)
+	if err != nil {
+		return err
+	}
+	if updated == nil {
+		return classroom.ErrClassroomRequired
+	}
+
+	d.SaveClassroom(updated)
+	return nil
 }

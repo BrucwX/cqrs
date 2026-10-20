@@ -12,7 +12,7 @@ func ScanClassroom(sc Scanner) (*model.Classroom, error) {
 	po := &model.Classroom{}
 	if err := sc.Scan(
 		&po.ID, &po.Building, &po.Floor, &po.Room,
-		&po.Capacity, &po.Allocated, &po.Status,
+		&po.Capacity, &po.Allocated, &po.Status, &po.LockVersion,
 	); err != nil {
 		return nil, err
 	}

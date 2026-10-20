@@ -24,7 +24,7 @@ func newHandler(t *testing.T) (*Handler, *memImp4test.Data) {
 	t.Cleanup(cleanup)
 
 	data := commandmemory.NewData(store)
-	return NewHandler(memorycmd.NewClassroomCommand(data), data), store
+	return NewHandler(memorycmd.NewClassroomCommand(data), data, data), store
 }
 
 func newTestClassroom(t *testing.T, id string) *classroom.Classroom {

@@ -77,6 +77,7 @@ func (c *TeacherCommand) GetTeacher(ctx context.Context, id int64) (*teacher.Tea
 // 与 Get 的差别：Get 找不到时是 (nil, nil)（给「查到了没」的调用方），
 // MustGetTeacher 是规则判定要用的，找不到必须报错。
 func (c *TeacherCommand) MustGetTeacher(ctx context.Context, teacherID int64) (teacher.Teacher, error) {
+	c.re.
 	item, ok := c.data.TeacherByID(teacherID)
 	if !ok {
 		return teacher.Teacher{}, fmt.Errorf("%w: %d", teacher.ErrTeacherNotFound, teacherID)

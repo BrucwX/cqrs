@@ -7,15 +7,18 @@ package command
 
 import (
 	"payment/internal/adapters/command/data/mysql"
+	"payment/internal/adapters/command/data/redis"
 )
 
 // CommandImpl 写侧命令实现。
 type CommandImpl struct {
 	MysqlData *mysql.MysqlData
-	// RedisData *redis.RedisData // 待接入
+	// RedisData 目前只承载延时队列（ports.DelayScheduler），
+	// 各聚合仓储要读写 Redis 时再在对应方法里组合它。
+	RedisData *redis.RedisData
 }
 
 // NewCommandImpl 组装写侧命令实现。
-func NewCommandImpl(mysqlData *mysql.MysqlData) *CommandImpl {
-	return &CommandImpl{MysqlData: mysqlData}
+func NewCommandImpl(mysqlData *mysql.MysqlData, redisData *redis.RedisData) *CommandImpl {
+	return &CommandImpl{MysqlData: mysqlData, RedisData: redisData}
 }

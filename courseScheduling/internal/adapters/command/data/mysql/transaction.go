@@ -43,17 +43,57 @@ func (d *MysqlData) Begin(ctx context.Context) (context.Context, error) {
 //
 // 必须传 Begin 返回的那个 ctx。传错 ctx 时报错而不是默默什么都不做 ——
 // 那意味着事务根本没开，写进去的东西也不会提交。
+//
+// 包内想「Begin / defer 回滚 / 干活 / 显式提交」分开写的话，用 commit / rollback。
 func (d *MysqlData) End(ctx context.Context, err error) error {
-	txv, ok := ctx.Value(txKey{}).(txValue)
-	if !ok {
-		return fmt.Errorf("mysql: end: no transaction in context")
-	}
-
 	if err != nil {
-		if rbErr := txv.tx.Rollback(); rbErr != nil && !errors.Is(rbErr, sql.ErrTxDone) {
+		if rbErr := d.rollback(ctx); rbErr != nil {
 			log.Error("mysql rollback", "err", rbErr)
 		}
 		return err
 	}
-	return txv.tx.Commit()
+	return d.commit(ctx)
+}
+
+// txFrom 取 ctx 里的真事务；没有就是调用方传错了 ctx。
+func (d *MysqlData) txFrom(ctx context.Context) (txValue, error) {
+	txv, ok := ctx.Value(txKey{}).(txValue)
+	if !ok {
+		return txValue{}, errors.New("mysql: no transaction in context")
+	}
+	return txv, nil
+}
+
+// commit 提交 ctx 里的事务。
+func (d *MysqlData) commit(ctx context.Context) error {
+	txv, err := d.txFrom(ctx)
+	if err != nil {
+		return fmt.Errorf("mysql: commit: %w", err)
+	}
+	if err := txv.tx.Commit(); err != nil {
+		return fmt.Errorf("mysql: commit: %w", err)
+	}
+	return nil
+}
+
+// rollback 回滚 ctx 里的事务。
+//
+// 已经结束（提交/回滚过）不算错 —— defer 里无条件回滚时会碰到，是正常路径。
+func (d *MysqlData) rollback(ctx context.Context) error {
+	txv, err := d.txFrom(ctx)
+	if err != nil {
+		return fmt.Errorf("mysql: rollback: %w", err)
+	}
+	if err := txv.tx.Rollback(); err != nil && !errors.Is(err, sql.ErrTxDone) {
+		return fmt.Errorf("mysql: rollback: %w", err)
+	}
+	return nil
+}
+
+// inTx 判断 ctx 里有没有真事务 —— 仓库据此决定「读」要不要加行锁：
+// 真事务里读用 SELECT ... FOR UPDATE 锁住行（兜底那条路就靠它必然写成），
+// 乐观重试的每一次读都不该锁（锁了就不是乐观锁了）。
+func (d *MysqlData) inTx(ctx context.Context) bool {
+	_, ok := ctx.Value(txKey{}).(txValue)
+	return ok
 }

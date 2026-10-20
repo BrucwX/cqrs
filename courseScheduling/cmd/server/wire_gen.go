@@ -7,9 +7,9 @@
 package main
 
 import (
-	"courseScheduling/internal/adapters/command/Impl"
+	command "courseScheduling/internal/adapters/command/Impl"
 	"courseScheduling/internal/adapters/command/data/mysql"
-	"courseScheduling/internal/adapters/query/Impl"
+	query "courseScheduling/internal/adapters/query/Impl"
 	mysql2 "courseScheduling/internal/adapters/query/data/mysql"
 	"courseScheduling/internal/app/command/absence"
 	"courseScheduling/internal/app/command/classroom"
@@ -37,11 +37,10 @@ import (
 	"courseScheduling/internal/domain/service/scheduleConflict"
 	"courseScheduling/internal/ports"
 	"courseScheduling/internal/service"
-	"github.com/go-kratos/kratos/v3"
 	"log/slog"
-)
 
-import (
+	"github.com/go-kratos/kratos/v3"
+
 	_ "go.uber.org/automaxprocs"
 )
 
@@ -69,7 +68,7 @@ func wireApp(server *conf.Server, data *conf.Data, logger *slog.Logger) (*kratos
 	teacherHandler := teacher.NewHandler(commandImpl, commandImpl)
 	handler2 := teacher2.NewHandler(queryImpl)
 	teacherService := service.NewTeacherService(teacherHandler, handler2)
-	classroomHandler := classroom.NewHandler(commandImpl, commandImpl)
+	classroomHandler := classroom.NewHandler(commandImpl, commandImpl, commandImpl)
 	handler3 := classroom2.NewHandler(queryImpl)
 	classroomService := service.NewClassroomService(classroomHandler, handler3)
 	courseHandler := course.NewHandler(commandImpl, commandImpl)

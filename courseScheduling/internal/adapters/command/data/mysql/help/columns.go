@@ -4,14 +4,16 @@ package help
 // 扫成 model 里的 PO。
 //
 // 与读侧（adapters/query/data/mysql/implement/help）一一对应：列清单与扫行是「表结构」
-// 的事，implement 里只留每个仓库一份 SQL。两边的差别是写侧暂未启用乐观锁，
-// 所以这里的列清单不含 lock_version。
+// 的事，implement 里只留每个仓库一份 SQL。
+//
+// ⚠️ 目前只有 classroom 启用了乐观锁（列清单带 lock_version、写回时校验版本）；
+// 其余表的 lock_version 列建好了但还没读，接的时候照 classroom 的写法来。
 
-// 每张表的列清单（不含 lock_version —— 乐观锁暂未启用）。顺序必须与建表脚本、
-// 与 model 包里字段声明顺序一致 —— ScanXxx 是按位置扫的，这里错了不会报错，
-// 只会静静地把值塞进错的字段。
+// 每张表的列清单。顺序必须与建表脚本、与 model 包里字段声明顺序一致 ——
+// ScanXxx 是按位置扫的，这里错了不会报错，只会静静地把值塞进错的字段。
+// 带 lock_version 的表要把它放在**最后**（跟 model 的字段顺序对齐）。
 const (
-	ClassroomColumns        = `id, building, floor, room, capacity, allocated, status`
+	ClassroomColumns        = `id, building, floor, room, capacity, allocated, status, lock_version`
 	StudentColumns          = `id, name, student_type, phone, email, status, created_at, updated_at`
 	TeacherColumns          = `id, student_id, name, title, phone, email, status, created_at, updated_at`
 	CourseColumns           = `id, course_type_id, capacity_max, capacity_enrolled, enroll_start_at, enroll_end_at, drop_deadline, period_start_at, period_end_at, total_hours, completed_hours`

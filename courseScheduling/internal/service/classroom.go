@@ -24,35 +24,53 @@ func NewClassroomService(cmd *classroomcmd.Handler, qry *classroomqry.Handler) *
 	return &ClassroomService{cmd: cmd, qry: qry}
 }
 
-// SaveClassroom 新增或更新教室。
+// SaveClassroom 新增或更新教室：没带 ID 走新增（ID 由聚合生成），带了 ID 走更新。
 func (s *ClassroomService) SaveClassroom(ctx context.Context, req *classroomv1.SaveClassroomRequest) (*emptypb.Empty, error) {
-	in := classroomcmd.ClassroomInput{}
-	if req.Classroom != nil {
-		if req.Classroom.Id != "" {
-			id := req.Classroom.Id
-			in.ID = &id
-		}
-		if req.Classroom.Location != nil {
+	var (
+		locPtr *classroomdo.Location
+		capPtr *int
+		stPtr  *classroomdo.Status
+	)
+	if c := req.GetClassroom(); c != nil {
+		if c.Location != nil {
 			loc, err := classroomdo.NewLocation(
-				req.Classroom.Location.Building,
-				int(req.Classroom.Location.Floor),
-				req.Classroom.Location.Room,
+				c.Location.Building,
+				int(c.Location.Floor),
+				c.Location.Room,
 			)
 			if err != nil {
 				return nil, err
 			}
-			in.Location = &loc
+			locPtr = &loc
 		}
-		if req.Classroom.Capacity != 0 {
-			c := int(req.Classroom.Capacity)
-			in.Capacity = &c
+		if c.Capacity != 0 {
+			capacity := int(c.Capacity)
+			capPtr = &capacity
 		}
-		if req.Classroom.Status != classroomv1.ClassroomStatus_CLASSROOM_STATUS_UNSPECIFIED {
-			st := classroomdo.Status(req.Classroom.Status)
-			in.Status = &st
+		if c.Status != classroomv1.ClassroomStatus_CLASSROOM_STATUS_UNSPECIFIED {
+			status := classroomdo.Status(c.Status)
+			stPtr = &status
 		}
 	}
-	if err := s.cmd.SaveClassroom(ctx, in); err != nil {
+
+	if id := req.GetClassroom().GetId(); id != "" {
+		err := s.cmd.UpdateClassroom(ctx, classroomcmd.UpdateClassroomInput{
+			ID:       id,
+			Location: locPtr,
+			Capacity: capPtr,
+			Status:   stPtr,
+		})
+		if err != nil {
+			return nil, err
+		}
+		return &emptypb.Empty{}, nil
+	}
+
+	if err := s.cmd.CreateClassroom(ctx, classroomcmd.CreateClassroomInput{
+		Location: locPtr,
+		Capacity: capPtr,
+		Status:   stPtr,
+	}); err != nil {
 		return nil, err
 	}
 	return &emptypb.Empty{}, nil
